@@ -4,7 +4,10 @@
 \alias{scTenifoldKNK}
 \title{scTenifoldKNK}
 \usage{
-scTenifoldKNK(countMatrix, gKO = NULL)
+scTenifoldKNK(countMatrix, gKO = NULL, method = "CUR",
+  qc_mtThreshold = 0.1, qc_minLSize = 1000, nc_nNet = 10,
+  nc_nCells = 500, nc_nComp = 3, nc_scaleScores = TRUE,
+  nc_symmetric = FALSE, nc_q = 0.8)
 }
 \arguments{
 \item{countMatrix}{countMatrix}

@@ -4,5 +4,6 @@ doCUR <- function(WT,gKO){
   C <- KO@C
   C[gKO,] <- 0
   KO <- C %*% KO@U %*% KO@R
+  KO <- round(KO, 1)
   return(KO)
 }
