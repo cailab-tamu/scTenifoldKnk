@@ -13,7 +13,6 @@ realList <- realData$diffRegulation$gene[realData$diffRegulation$p.adj < 0.05]
 simList <- simData$diffRegulation$gene[simData$diffRegulation$p.adj < 0.05]
 sharedList <- intersect(realList, simList)
 
-library(OrderedList)
 realOrder <- realData$diffRegulation$gene
 simOrder <- simData$diffRegulation$gene
 
@@ -72,7 +71,7 @@ allDB <- c(BP,CC,MF)
 
 zValues <- simData$diffRegulation$Z
 names(zValues) <- toupper(simData$diffRegulation$gene)
-gseaResult <- fgseaMultilevel(allDB, zValues)
+gseaResult <- fgsea(allDB, zValues, 1e6)
 gseaResult <- gseaResult[gseaResult$padj < 0.05 & gseaResult$NES > 0,]
 gseaResult <- gseaResult[order(gseaResult$NES, decreasing = TRUE),]
 
@@ -98,13 +97,13 @@ fgsea::plotEnrichment(pathway = allDB[['chylomicron assembly (GO:0034378)']], zV
 dev.off()
 
 
-realZ <- realData$diffRegulation$Z
+realZ <- realData$diffRegulation$distance
 names(realZ) <- realData$diffRegulation$gene
 
-simZ <- DR$Z #simData$diffRegulation$Z
-names(simZ) <- DR$gene #simData$diffRegulation$gene
+simZ <- simData$diffRegulation$distance #simData$diffRegulation$Z
+names(simZ) <- simData$diffRegulation$gene
 
-sharedGenes <- intersect(realData$diffRegulation$gene, DR$gene)#simData$diffRegulation$gene)
+sharedGenes <- intersect(realData$diffRegulation$gene, simData$diffRegulation$gene)
 round(cor(realZ[sharedGenes], simZ[sharedGenes], method = 'sp'),2)
 
 Z <- data.frame(realZ = realZ[sharedGenes], simZ = simZ[sharedGenes], geneName = sharedGenes)
