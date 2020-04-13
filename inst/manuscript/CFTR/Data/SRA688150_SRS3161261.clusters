@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<!-- Required meta tags -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="author" content="ICMC at Karolinska Institutet, Oscar Franzen">
+	<meta name="keywords" content="science, biology, bioinformatics, biological database, scRNA-seq, single cell RNA sequencing, meta analysis, gene expression">
+	<link rel="shortcut icon" href="./img/fi.png" type="image/x-icon">
+
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="./css/bootstrap.min.css">
+
+	<title>List of clusters and cell types | PanglaoDB</title>
+
+	<script src="./node_modules/jquery/dist/jquery.min.js"></script>
+	<script src="js/popper.min.js"></script>
+	<script src="./js/bootstrap.min.js"></script>
+
+	<link href="fontawesome-free-5.8.1-web/css/all.css" rel="stylesheet">
+</head>
+
+
+<div class="container">
+	<div class="row" style="margin-top:20px">
+		<div class="col-sm-12">
+			<span style="text-align:center; display:block; font-weight:bold; font-size:16px;">Lung</span>
+			<span style="text-align:center; display:block; color:grey">SRA688150 SRS3161261</span>
+		</div>
+	</div>
+
+	<div class="row" style="margin-top:20px">
+		<div class="col-sm-12">
+
+			<style>
+				th {
+					padding:0px !important;
+					vertical-align:middle !important;
+				}
+
+				td {
+					padding:0px !important
+				}
+			</style>
+
+			<div class="table-responsive">
+				<table class="table table-hover" style="font-size:11px; word-break:break-all" id="tbl" name="tbl">
+					<tr>
+						<th scope="col" style="margin-right:10px; width:20px">Cluster ID</th>
+						<th scope="col" style="margin-right:10px; width:20px">Number of<br>cells</th>
+						<th scope="col" style="margin-right:10px; width:40px">Inferred cell type</th>
+						<th scope="col" style="margin-right:10px; width:20px">P-value</th>
+						<th scope="col" style="margin-right:10px; width:20px">Adjusted<br>p-value</th>
+						<th scope="col" style="margin-right:10px; width:20px">Activity<br>score</th>
+					</tr>
+
+					<tr><td>0</td><td>443</td><td>Pulmonary alveolar type II cells</td><td>9.88E-26</td><td>5.07E-23</td><td>113.636</td></tr><tr><td>1</td><td>358</td><td>Pulmonary alveolar type II cells</td><td>1.83E-24</td><td>3.75E-22</td><td>108.351</td></tr><tr><td>2</td><td>245</td><td>Pulmonary alveolar type II cells</td><td>1.77E-25</td><td>6.04E-23</td><td>129.648</td></tr><tr><td>3</td><td>196</td><td>Pulmonary alveolar type II cells</td><td>4.52E-28</td><td>4.63E-25</td><td>134.79</td></tr><tr><td>4</td><td>23</td><td>Clara cells</td><td>4.19E-14</td><td>7.16E-12</td><td>134.356</td></tr><tr><td>5</td><td>15</td><td>Pulmonary alveolar type II cells</td><td>1.46E-24</td><td>3.75E-22</td><td>111.122</td></tr>
+			 	</table>
+			</div>
+		</div>
+	</div>
+
+	<div class="row" style="margin-top:10px">
+		<div class="col-sm-12 text-center" style="font-size:12px">
+			<a href="index.html">Main page</a> | <a href="view_data.php?sra=SRA688150&srs=SRS3161261">Sample record</a> | <a href="view_interactive_tsne_data.html?sra=SRA688150&srs=SRS3161261&plot=tsne#">t-SNE plot</a> | <a href="faq.html">Help</a> | <a href="about.html">About</a>
+		</div>
+	</div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<!-- Required meta tags -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="author" content="ICMC at Karolinska Institutet, Oscar Franzen">
+	<meta name="keywords" content="science, biology, bioinformatics, biological database, scRNA-seq, single cell RNA sequencing, meta analysis, gene expression">
+	<link rel="shortcut icon" href="./img/fi.png" type="image/x-icon">
+
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="./css/bootstrap.min.css">
+
+	<title>List of clusters and cell types | PanglaoDB</title>
+
+	<script src="./node_modules/jquery/dist/jquery.min.js"></script>
+	<script src="js/popper.min.js"></script>
+	<script src="./js/bootstrap.min.js"></script>
+
+	<link href="fontawesome-free-5.8.1-web/css/all.css" rel="stylesheet">
+</head>
+
+
+<div class="container">
+	<div class="row" style="margin-top:20px">
+		<div class="col-sm-12">
+			<span style="text-align:center; display:block; font-weight:bold; font-size:16px;">Lung endoderm</span>
+			<span style="text-align:center; display:block; color:grey">SRA692557 SRS4245406</span>
+		</div>
+	</div>
+
+	<div class="row" style="margin-top:20px">
+		<div class="col-sm-12">
+
+			<style>
+				th {
+					padding:0px !important;
+					vertical-align:middle !important;
+				}
+
+				td {
+					padding:0px !important
+				}
+			</style>
+
+			<div class="table-responsive">
+				<table class="table table-hover" style="font-size:11px; word-break:break-all" id="tbl" name="tbl">
+					<tr>
+						<th scope="col" style="margin-right:10px; width:20px">Cluster ID</th>
+						<th scope="col" style="margin-right:10px; width:20px">Number of<br>cells</th>
+						<th scope="col" style="margin-right:10px; width:40px">Inferred cell type</th>
+						<th scope="col" style="margin-right:10px; width:20px">P-value</th>
+						<th scope="col" style="margin-right:10px; width:20px">Adjusted<br>p-value</th>
+						<th scope="col" style="margin-right:10px; width:20px">Activity<br>score</th>
+					</tr>
+
+					<tr><td>0</td><td>1824</td><td>Pulmonary alveolar type II cells</td><td>3.95E-7</td><td>1.40E-4</td><td>34.575</td></tr><tr><td>1</td><td>1161</td><td>Pulmonary alveolar type II cells</td><td>1.24E-14</td><td>2.19E-11</td><td>66.8824</td></tr><tr><td>2</td><td>994</td><td>Pulmonary alveolar type II cells</td><td>1.71E-11</td><td>2.02E-8</td><td>48.7323</td></tr><tr><td>3</td><td>927</td><td>Pulmonary alveolar type II cells</td><td>9.00E-7</td><td>2.65E-4</td><td>31.9986</td></tr><tr><td>4</td><td>623</td><td>Pulmonary alveolar type II cells</td><td>3.67E-6</td><td>8.66E-4</td><td>32.2658</td></tr><tr><td>5</td><td>462</td><td>Pulmonary alveolar type II cells</td><td>1.58E-10</td><td>1.40E-7</td><td>39.3943</td></tr><tr><td>6</td><td>376</td><td>Pulmonary alveolar type II cells</td><td>1.72E-6</td><td>4.68E-4</td><td>29.7181</td></tr><tr><td>7</td><td>346</td><td>Pulmonary alveolar type II cells</td><td>1.37E-7</td><td>6.08E-5</td><td>34.5891</td></tr><tr><td>8</td><td>265</td><td>Pulmonary alveolar type II cells</td><td>7.40E-7</td><td>2.38E-4</td><td>34.8844</td></tr><tr><td>9</td><td>250</td><td>Ependymal cells</td><td>3.74E-18</td><td>1.32E-14</td><td>58.4305</td></tr><tr><td>10</td><td>108</td><td>Pulmonary alveolar type II cells</td><td>1.81E-7</td><td>7.10E-5</td><td>35.4976</td></tr><tr><td>11</td><td>98</td><td>Pulmonary alveolar type II cells</td><td>3.19E-4</td><td>4.28E-2</td><td>22.5385</td></tr><tr><td>12</td><td>90</td><td>Pulmonary alveolar type II cells</td><td>5.00E-9</td><td>2.53E-6</td><td>47.4963</td></tr><tr><td>13</td><td>52</td><td>Pulmonary alveolar type II cells</td><td>9.60E-5</td><td>1.48E-2</td><td>26.5172</td></tr><tr><td>14</td><td>37</td><td>Endothelial cells</td><td>4.86E-5</td><td>8.61E-3</td><td>15.1436</td></tr><tr><td>15</td><td>34</td><td>Unknown</td><td>1.87E-3</td><td>2.06E-1</td><td></td></tr><tr><td>16</td><td>24</td><td>Unknown</td><td>1.66E-1</td><td>1.00E+0</td><td></td></tr><tr><td>17</td><td>23</td><td>Unknown</td><td>8.75E-3</td><td>6.89E-1</td><td></td></tr><tr><td>18</td><td>18</td><td>Clara cells</td><td>5.82E-6</td><td>1.29E-3</td><td>46.5691</td></tr><tr><td>19</td><td>15</td><td>Goblet cells</td><td>4.74E-5</td><td>8.61E-3</td><td>43.9997</td></tr>
+			 	</table>
+			</div>
+		</div>
+	</div>
+
+	<div class="row" style="margin-top:10px">
+		<div class="col-sm-12 text-center" style="font-size:12px">
+			<a href="index.html">Main page</a> | <a href="view_data.php?sra=SRA692557&srs=SRS4245406">Sample record</a> | <a href="view_interactive_tsne_data.html?sra=SRA692557&srs=SRS4245406&plot=tsne#">t-SNE plot</a> | <a href="faq.html">Help</a> | <a href="about.html">About</a>
+		</div>
+	</div>
+</div>
+
+</body>
+</html>
