@@ -1,0 +1,8 @@
+﻿GENE,GEO,DOI,
+Trem2,https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE130626,10.1016/j.neuron.2019.12.007,
+Nkx2-1,https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE129584,10.1073/pnas.1906663116,
+Hnf4a/Hnf4g,https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM3477500,10.1038/s41588-019-0384-0,
+Hnf4a/Smad4,https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM3477501,10.1038/s41588-019-0384-0,
+Mecp2,https://www.ncbi.nlm.nih.gov/sra/?term=SRR6854124,10.1016/j.cell.2018.06.021,https://www.ncbi.nlm.nih.gov/sra/?term=SRR6854123
+Cftr,https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE113049,10.1172/jci.insight.123637,
+Dmd,https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM4116571,10.1038/s41598-019-57110-6,

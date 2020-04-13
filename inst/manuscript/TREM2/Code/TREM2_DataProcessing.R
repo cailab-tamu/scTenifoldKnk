@@ -9,13 +9,10 @@ rownames(WT) <- readLines('../Data/geneNames_WT.txt')
 colnames(WT) <- readLines('../Data/barcodes_WT.txt')
 
 TREM2 <- sccTenifoldKNK(WT, 'Trem2',nc_q = 0.95)
-vD <- TREM2$diffRegulation$Z
-n <- length(vD)
-D <- TREM2$diffRegulation$Z
-D <- sapply(seq_len(10), function(X){sample(D, replace = TRUE)})
-D <- as.numeric(D)
-D <- ecdf(D)
-plot(1-D(vD))
+TREM2$KO <- TREM2$WT
+TREM2$KO['Trem2',] <- 0
+TREM2$manifoldAlignment <- scTenifoldNet::manifoldAlignment(TREM2$WT,TREM2$KO)
+
 plotDR(TREM2)
 #png(width = 5000, height = 5000, res = 300)
 plotKO(TREM2, 'Trem2')

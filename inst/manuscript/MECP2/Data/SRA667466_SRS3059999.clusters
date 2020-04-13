@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<!-- Required meta tags -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="author" content="ICMC at Karolinska Institutet, Oscar Franzen">
+	<meta name="keywords" content="science, biology, bioinformatics, biological database, scRNA-seq, single cell RNA sequencing, meta analysis, gene expression">
+	<link rel="shortcut icon" href="./img/fi.png" type="image/x-icon">
+
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="./css/bootstrap.min.css">
+
+	<title>List of clusters and cell types | PanglaoDB</title>
+
+	<script src="./node_modules/jquery/dist/jquery.min.js"></script>
+	<script src="js/popper.min.js"></script>
+	<script src="./js/bootstrap.min.js"></script>
+
+	<link href="fontawesome-free-5.8.1-web/css/all.css" rel="stylesheet">
+</head>
+
+
+<div class="container">
+	<div class="row" style="margin-top:20px">
+		<div class="col-sm-12">
+			<span style="text-align:center; display:block; font-weight:bold; font-size:16px;">Hypothalamus</span>
+			<span style="text-align:center; display:block; color:grey">SRA667466 SRS3059999</span>
+		</div>
+	</div>
+
+	<div class="row" style="margin-top:20px">
+		<div class="col-sm-12">
+
+			<style>
+				th {
+					padding:0px !important;
+					vertical-align:middle !important;
+				}
+
+				td {
+					padding:0px !important
+				}
+			</style>
+
+			<div class="table-responsive">
+				<table class="table table-hover" style="font-size:11px; word-break:break-all" id="tbl" name="tbl">
+					<tr>
+						<th scope="col" style="margin-right:10px; width:20px">Cluster ID</th>
+						<th scope="col" style="margin-right:10px; width:20px">Number of<br>cells</th>
+						<th scope="col" style="margin-right:10px; width:40px">Inferred cell type</th>
+						<th scope="col" style="margin-right:10px; width:20px">P-value</th>
+						<th scope="col" style="margin-right:10px; width:20px">Adjusted<br>p-value</th>
+						<th scope="col" style="margin-right:10px; width:20px">Activity<br>score</th>
+					</tr>
+
+					<tr><td>0</td><td>1215</td><td>Neurons</td><td>5.21E-11</td><td>1.13E-8</td><td>35.5166</td></tr><tr><td>1</td><td>426</td><td>Neurons</td><td>2.07E-11</td><td>5.26E-9</td><td>32.2591</td></tr><tr><td>2</td><td>303</td><td>Oligodendrocytes</td><td>8.14E-26</td><td>3.52E-23</td><td>77.2077</td></tr><tr><td>3</td><td>248</td><td>Oligodendrocytes</td><td>2.01E-31</td><td>1.56E-28</td><td>92.689</td></tr><tr><td>4</td><td>234</td><td>Neurons</td><td>2.58E-37</td><td>3.35E-34</td><td>81.4363</td></tr><tr><td>5</td><td>233</td><td>Endothelial cells</td><td>4.56E-7</td><td>6.83E-5</td><td>32.5318</td></tr><tr><td>6</td><td>187</td><td>Oligodendrocyte progenitor cells</td><td>7.22E-7</td><td>1.04E-4</td><td>29.7513</td></tr><tr><td>7</td><td>171</td><td>Microglia</td><td>3.89E-9</td><td>7.98E-7</td><td>44.9518</td></tr><tr><td>8</td><td>169</td><td>Astrocytes</td><td>1.65E-15</td><td>5.36E-13</td><td>81.6262</td></tr><tr><td>9</td><td>158</td><td>Oligodendrocytes</td><td>2.33E-27</td><td>1.30E-24</td><td>86.9902</td></tr><tr><td>10</td><td>124</td><td>Neuroendocrine cells</td><td>6.63E-5</td><td>6.98E-3</td><td>25.172</td></tr><tr><td>11</td><td>110</td><td>Neurons</td><td>9.84E-29</td><td>6.39E-26</td><td>66.0713</td></tr><tr><td>12</td><td>107</td><td>Unknown</td><td>5.09E-2</td><td>1.00E+0</td><td></td></tr><tr><td>13</td><td>90</td><td>Oligodendrocyte progenitor cells</td><td>2.16E-11</td><td>5.26E-9</td><td>55.2506</td></tr><tr><td>14</td><td>60</td><td>Neurons</td><td>6.84E-12</td><td>1.90E-9</td><td>34.1522</td></tr><tr><td>15</td><td>33</td><td>Unknown</td><td>3.04E-2</td><td>1.00E+0</td><td></td></tr><tr><td>16</td><td>32</td><td>Neurons</td><td>2.72E-26</td><td>1.32E-23</td><td>57.2829</td></tr><tr><td>17</td><td>32</td><td>Neurons</td><td>3.04E-43</td><td>1.18E-39</td><td>79.5019</td></tr><tr><td>18</td><td>29</td><td>Macrophages</td><td>4.38E-6</td><td>5.69E-4</td><td>33.163</td></tr><tr><td>19</td><td>27</td><td>Neurons</td><td>1.15E-7</td><td>2.12E-5</td><td>37.3241</td></tr><tr><td>20</td><td>20</td><td>Neurons</td><td>4.31E-38</td><td>8.39E-35</td><td>66.6724</td></tr><tr><td>21</td><td>14</td><td>Fibroblasts</td><td>1.21E-7</td><td>2.15E-5</td><td>37.9258</td></tr>
+			 	</table>
+			</div>
+		</div>
+	</div>
+
+	<div class="row" style="margin-top:10px">
+		<div class="col-sm-12 text-center" style="font-size:12px">
+			<a href="index.html">Main page</a> | <a href="view_data.php?sra=SRA667466&srs=SRS3059999">Sample record</a> | <a href="view_interactive_tsne_data.html?sra=SRA667466&srs=SRS3059999&plot=tsne#">t-SNE plot</a> | <a href="faq.html">Help</a> | <a href="about.html">About</a>
+		</div>
+	</div>
+</div>
+
+</body>
+</html>
