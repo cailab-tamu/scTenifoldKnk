@@ -3,12 +3,13 @@ library(Matrix)
 # Reading input files
 cellInfo <- read.csv('../Data/GSE130626_cell_info.csv.gz', stringsAsFactors = FALSE)
 geneInfo <- read.csv('../Data/GSE130626_gene_info.csv.gz', stringsAsFactors = FALSE)
+geneInfo <- geneInfo[complete.cases(geneInfo),]
 UMI <- read.csv('../Data/GSE130626_umi_counts.csv.gz', row.names = 1)
 
 # Replacing Ensembl to Symbols
 UMI <- Matrix(as.matrix(UMI))
 UMI <- UMI[geneInfo$gene_id,]
-rownames(UMI) <- make.unique(geneInfo$name)
+rownames(UMI) <- geneInfo$symbol
 
 # Selecting treatment
 cellInfo <- cellInfo[cellInfo$treatment == 'cuprizone',]
