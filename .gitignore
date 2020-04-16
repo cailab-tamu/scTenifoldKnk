@@ -1,6 +1,4 @@
 .Rproj.user
-inst/manuscript/CFTR/Data/matrix_SRS4245406.mtx
-inst/manuscript/CFTR/Data/matrix_SRS3161261.mtx
 inst/manuscript/CFTR_1.R
 inst/manuscript/CFTR_2.R
 inst/manuscript/DMD.R
@@ -11,3 +9,4 @@ inst/manuscript/MECP2_2.R
 inst/manuscript/NKX21.R
 inst/manuscript/runSH.sh
 inst/manuscript/TREM2.R
+*.mtx
