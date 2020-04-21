@@ -21,6 +21,7 @@ scTenifoldKnk <- function(countMatrix, gKO = NULL){
   set.seed(1)
   DR <- scTenifoldNet::dRegulation(MA)
   D <- DR$distance[-seq_along(gKO)]
+  DR$FC <- DR$distance^2/mean(D^2)
   DR$p.value <- c(rep(0,length(gKO)),pchisq((D^2/mean(D^2)), df = 1, lower.tail = FALSE))
   DR$p.adj <- p.adjust(DR$p.value)
   outputList <- list()
@@ -31,12 +32,14 @@ scTenifoldKnk <- function(countMatrix, gKO = NULL){
   return(outputList)
 }
 
-Q <- 0.8
+Q <- 0.9
 K1 <- scTenifoldKnk(A,1)
 K1$diffRegulation <- K1$diffRegulation[paste0(1:10),]
 K7 <- scTenifoldKnk(A,7)
 K7$diffRegulation <- K7$diffRegulation[paste0(1:10),]
 
-plot(K7$diffRegulation$Z)
+plot(K1$diffRegulation$FC)
 g <- c(rep(1,6),rep(2,4))
+par(mfrow=c(1,2))
+boxplot(K1$diffRegulation$Z ~ g)
 boxplot(K7$diffRegulation$Z ~ g)
