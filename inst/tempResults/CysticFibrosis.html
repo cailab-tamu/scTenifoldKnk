@@ -1,0 +1,3374 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <base href="/Harmonizome/" />
+        <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="application-name" content="Harmonizome">
+
+<link rel="shortcut icon" href="image/logo_16x16.png?v=3">
+
+<link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic,500,700,700italic" rel="stylesheet" type="text/css">
+
+<script src="lib/jquery/jquery.min.js"></script>
+<link href="lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<script src="lib/bootstrap/js/bootstrap.min.js"></script>
+<link href="https://code.jquery.com/ui/1.11.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet" type="text/css">
+<script src="lib/typeahead/typeahead.bundle.min.js"></script>
+<link href="lib/dataTables/dataTables.bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="lib/dataTables/responsive.bootstrap.min.css" rel="stylesheet" type="text/css">
+<script src="lib/dataTables/dataTables.min.js"></script>
+<script src="lib/dataTables/dataTables.bootstrap.min.js"></script>
+
+<link href="dist/style/common.css" rel="stylesheet" type="text/css">
+<link href="dist/style/pages.css" rel="stylesheet" type="text/css">
+<link href="dist/style/overrides.css" rel="stylesheet" type="text/css">
+<script src="script/common.js"></script>
+
+<script>
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-6277639-23', 'auto');
+	ga('send', 'pageview');
+</script>
+        
+            
+                <title>Gene Set - Cystic Fibrosis</title>
+            
+            
+        
+        
+            
+            
+                <meta name="description" content="Search for genes and functional terms extracted and organized from over a hundred publicly available resources."/>
+            
+        
+
+        
+        
+            
+            
+                <meta name="keywords" content="harmonizome, lincs, bd2k, dcic, bd2k-lincs dcic, data coordination and integration center,
+                    biomedical, systems biology, drug discovery, gene signature,
+                    genomics, transcriptomics, proteomics, metabolomics,
+                    genes, proteins, cell lines, tissues, perturbations, diseases, phenotypes, drugs,
+                    maayan lab, avi ma'ayan, avi maayan"/>
+            
+        
+
+        
+            
+            
+                
+            
+        
+
+        
+            
+        
+    </head>
+    <body>
+        
+            
+                <div id="navbar-wrapper" class="navbar-static-top">
+	<div class="container">
+		<h1 class="pull-left">
+			<a href="">
+				<img src="image/logo_30x26.png">
+				<span class="project-title">Harmonizome</span>
+			</a>
+		</h1>
+
+		
+
+<div class="search-bar in-navbar">
+	<form accept-charset="utf-8" class="form-horizontal" action="search" method="GET">
+		<select class="entity-dropdown form-control all" name="t">
+			<option value="all">All</option>
+			<option value="gene">Genes</option>
+			<option value="geneSet">Gene Sets</option>
+			<option value="dataset">Datasets</option>
+		</select>
+		
+		<!-- If you're wondering why the order of the elements is reversed, see
+		     this simplified demo of how the search bar works:
+		     http://jsfiddle.net/0z1uup9t/
+		  -->
+		<div class="submit-button input-group-btn">
+			<button type="submit" class="btn btn-default">
+				<span class="glyphicon glyphicon-search"></span>
+			</button>
+		</div>
+		<div class="input-bar">
+			<label for="q" class="sr-only">Search</label>
+            
+                
+                
+                    <input data-provide="typeahead" type="text" class="form-control" name="q">
+                
+            
+		</div>
+	</form>
+</div>
+
+
+		<!-- This is the dropdown button for the mobile version of the site -->
+		<div id="menu-dropdown" class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#menu" aria-expanded="false" aria-controls="navbar">
+			<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+		</div>
+
+		<div id="menu" class="navbar-collapse collapse pull-right">
+	<ul class="nav navbar-nav list-inline">
+		<li class="search-item">
+			<a href="">Search</a>
+		</li>
+		<li>
+			<a href="download">Download</a>
+		</li>
+		<li>
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown">Visualize</a>
+			<ul class="dropdown-menu">
+				<li><a href="visualize/heat_map/global">Global Heat Map</a></li>
+				<li><a href="visualize/heat_map/dataset">Dataset Heat Maps</a></li>
+				<li><a href="visualize/heat_map/gene_similarity">Gene Similarity Heat Maps</a></li>
+                <li><a href="visualize/heat_map/attribute_similarity">Attribute Similarity Heat Maps</a></li>
+                <li><a href="visualize/heat_map/dataset_pairs">Dataset Pair Heat Maps</a></li>
+                <li><a href="visualize/heat_map/input_genes">Heat Map with Input Genes</a></li>
+			</ul>
+		</li>
+		<li>
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown">Predict</a>
+			<ul class="dropdown-menu">
+				<li><a href="machine_learning">Intro</a></li>
+				<li><a href="machine_learning/ic_predictions">Ion channels</a></li>
+				<li><a href="machine_learning/mp_predictions">Mouse phenotypes</a></li>
+				<li><a href="machine_learning/gl_predictions">GPCR-Ligands</a></li>
+				<li><a href="machine_learning/ks_predictions">Kinase-substrates</a></li>
+			</ul>
+		</li>
+		<li>
+			<a href="documentation">API</a>
+		</li>
+		<li>
+			<a href="mobile">Mobile</a>
+		</li>
+		<li>
+			<a href="about">About</a>
+		</li>
+	</ul>
+</div>
+	</div>
+</div>
+            
+            
+        
+        <div class="wrapper">
+            <div class="container">
+                
+
+    
+    
+
+    <div class="gene-set-page">
+        <h1 class="capitalize">Cystic Fibrosis <span class="note gene-set">Gene Set</span></h1>
+        <section>
+            <table class="table">
+                <tr>
+                    <td class="col-md-2">Dataset</td>
+                    <td class="col-md-10">
+                        <a href="dataset/HuGE+Navigator+Gene-Phenotype+Associations">HuGE Navigator Gene-Phenotype Associations</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">Category</td>
+                    <td class="col-md-10 initial">
+                        disease or phenotype associations
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">Type</td>
+                    <td class="col-md-10 initial">phenotype</td>
+                </tr>
+                
+                    <tr>
+                        <td class="col-md-2">Description</td>
+                        <td class="col-md-10 initial">An autosomal recessive disease that is characterized by the buildup of thick, sticky mucus that can damage many organs. (<a href="naming_authority/Human+Disease+Ontology">Human Disease Ontology</a>, <a href="http://purl.obolibrary.org/obo/DOID_1485" target="_blank">DOID_1485</a>)
+                        </td>
+                    </tr>
+                
+                
+                <tr>
+                    <td class="col-md-2">Similar Terms</td>
+                    <td class="col-md-10">
+                        <a class="btn btn-default glyphicon glyphicon-search"
+                           data-toggle="tooltip"
+                           data-placement="right"
+                           title="Search for similar gene sets with related terms."
+                           href="search?q=cystic+fibrosis&t=geneSet"
+                           target="_blank">
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-2">Downloads &amp; Tools</td>
+                    <td class="col-md-10">
+                        <noscript>
+                            <p class="instruction">The Enrichr link requires JavaScript.</p>
+                        </noscript>
+                        <div class="downloads-tools">
+                            <a class="btn btn-default glyphicon glyphicon-cloud-download"
+                                data-toggle="tooltip"
+                                data-placement="right"
+                                title="Access the gene set from the API."
+                                href="api/1.0/gene_set/Cystic+Fibrosis/HuGE+Navigator+Gene-Phenotype+Associations"
+                                target="_blank">
+                            </a>
+
+                            <!-- It doesn't make sense to pipe to Enrichr without enough genes -->
+                            
+                                <button class="btn btn-default enrichr"
+                                    data-toggle="tooltip"
+                                    data-placement="right"
+                                    title="Perform enrichment analysis against over 70 gene set libraries with Enrichr, a popular gene set enrichment analysis tool."
+                                    ><img src="image/tool/enrichr.png">
+                                </button>
+                            
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </section>
+        <section class="gene-set-list">
+            <h2>Genes</h2>
+            <p class="instruction">252 genes associated with the <strong>Cystic Fibrosis</strong> phenotype by text-mining GWAS publications from the HuGE Navigator Gene-Phenotype Associations dataset.</p>
+            <div>
+                
+                    <h4 class="initial"> </h4>
+                
+                <table class="table data-table genes">
+                    <thead>
+                        <tr>
+                            <th class="col-md-2">Symbol</th>
+                            <th class="col-md-5">Name</th>
+                            
+                        </tr>
+                    </thead>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/ABCB1">
+                                    ABCB1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                ATP-binding cassette, sub-family B (MDR/TAP), member 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/ABCB4">
+                                    ABCB4
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                ATP-binding cassette, sub-family B (MDR/TAP), member 4
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/ABCC1">
+                                    ABCC1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                ATP-binding cassette, sub-family C (CFTR/MRP), member 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/ABL1">
+                                    ABL1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                ABL proto-oncogene 1, non-receptor tyrosine kinase
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/ABO">
+                                    ABO
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                ABO blood group (transferase A, alpha 1-3-N-acetylgalactosaminyltransferase; transferase B, alpha 1-3-galactosyltransferase)
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/ACE">
+                                    ACE
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                angiotensin I converting enzyme
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/ACKR3">
+                                    ACKR3
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                atypical chemokine receptor 3
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/ADIPOR2">
+                                    ADIPOR2
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                adiponectin receptor 2
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/ADRB2">
+                                    ADRB2
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                adrenoceptor beta 2, surface
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/AGER">
+                                    AGER
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                advanced glycosylation end product-specific receptor
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/AKT1">
+                                    AKT1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                v-akt murine thymoma viral oncogene homolog 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/AKT2">
+                                    AKT2
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                v-akt murine thymoma viral oncogene homolog 2
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/AKT3">
+                                    AKT3
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                v-akt murine thymoma viral oncogene homolog 3
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/APIP">
+                                    APIP
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                APAF1 interacting protein
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/AZU1">
+                                    AZU1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                azurocidin 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/BMX">
+                                    BMX
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                BMX non-receptor tyrosine kinase
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/C3">
+                                    C3
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                complement component 3
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CALCR">
+                                    CALCR
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                calcitonin receptor
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CAPN10">
+                                    CAPN10
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                calpain 10
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CCL1">
+                                    CCL1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                chemokine (C-C motif) ligand 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CCL11">
+                                    CCL11
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                chemokine (C-C motif) ligand 11
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CCL13">
+                                    CCL13
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                chemokine (C-C motif) ligand 13
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CCL2">
+                                    CCL2
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                chemokine (C-C motif) ligand 2
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CCL23">
+                                    CCL23
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                chemokine (C-C motif) ligand 23
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CCL24">
+                                    CCL24
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                chemokine (C-C motif) ligand 24
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CCL26">
+                                    CCL26
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                chemokine (C-C motif) ligand 26
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CCL3">
+                                    CCL3
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                chemokine (C-C motif) ligand 3
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CCL4">
+                                    CCL4
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                chemokine (C-C motif) ligand 4
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CCL7">
+                                    CCL7
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                chemokine (C-C motif) ligand 7
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CCL8">
+                                    CCL8
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                chemokine (C-C motif) ligand 8
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CCR1">
+                                    CCR1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                chemokine (C-C motif) receptor 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CCR3">
+                                    CCR3
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                chemokine (C-C motif) receptor 3
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CCR5">
+                                    CCR5
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                chemokine (C-C motif) receptor 5 (gene/pseudogene)
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CCR6">
+                                    CCR6
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                chemokine (C-C motif) receptor 6
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CCR7">
+                                    CCR7
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                chemokine (C-C motif) receptor 7
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CCR9">
+                                    CCR9
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                chemokine (C-C motif) receptor 9
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CCRL2">
+                                    CCRL2
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                chemokine (C-C motif) receptor-like 2
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CD14">
+                                    CD14
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                CD14 molecule
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CDC42">
+                                    CDC42
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                cell division cycle 42
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CDKAL1">
+                                    CDKAL1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                CDK5 regulatory subunit associated protein 1-like 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CDKN2A">
+                                    CDKN2A
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                cyclin-dependent kinase inhibitor 2A
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CDKN2B">
+                                    CDKN2B
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                cyclin-dependent kinase inhibitor 2B (p15, inhibits CDK4)
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CFB">
+                                    CFB
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                complement factor B
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CFTR">
+                                    CFTR
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                cystic fibrosis transmembrane conductance regulator (ATP-binding cassette sub-family C, member 7)
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CHIT1">
+                                    CHIT1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                chitinase 1 (chitotriosidase)
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CHUK">
+                                    CHUK
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                conserved helix-loop-helix ubiquitous kinase
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CLCA1">
+                                    CLCA1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                chloride channel accessory 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CLCA4">
+                                    CLCA4
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                chloride channel accessory 4
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CLCN2">
+                                    CLCN2
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                chloride channel, voltage-sensitive 2
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/COL1A1">
+                                    COL1A1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                collagen, type I, alpha 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CSK">
+                                    CSK
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                c-src tyrosine kinase
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CXCL10">
+                                    CXCL10
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                chemokine (C-X-C motif) ligand 10
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CXCL11">
+                                    CXCL11
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                chemokine (C-X-C motif) ligand 11
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CXCL13">
+                                    CXCL13
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                chemokine (C-X-C motif) ligand 13
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CXCL14">
+                                    CXCL14
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                chemokine (C-X-C motif) ligand 14
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CXCL2">
+                                    CXCL2
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                chemokine (C-X-C motif) ligand 2
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CXCL3">
+                                    CXCL3
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                chemokine (C-X-C motif) ligand 3
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CXCL6">
+                                    CXCL6
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                chemokine (C-X-C motif) ligand 6
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CXCL8">
+                                    CXCL8
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                chemokine (C-X-C motif) ligand 8
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CXCR1">
+                                    CXCR1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                chemokine (C-X-C motif) receptor 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CXCR2">
+                                    CXCR2
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                chemokine (C-X-C motif) receptor 2
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CYBB">
+                                    CYBB
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                cytochrome b-245, beta polypeptide
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CYP21A2">
+                                    CYP21A2
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                cytochrome P450, family 21, subfamily A, polypeptide 2
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/CYP2C19">
+                                    CYP2C19
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                cytochrome P450, family 2, subfamily C, polypeptide 19
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/DEFA4">
+                                    DEFA4
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                defensin, alpha 4, corticostatin
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/DEFB1">
+                                    DEFB1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                defensin, beta 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/DEFB103B">
+                                    DEFB103B
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                defensin, beta 103B
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/DEFB104A">
+                                    DEFB104A
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                defensin, beta 104A
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/DEFB4A">
+                                    DEFB4A
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                defensin, beta 4A
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/DUOX1">
+                                    DUOX1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                dual oxidase 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/DUOX2">
+                                    DUOX2
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                dual oxidase 2
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/DUOXA1">
+                                    DUOXA1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                dual oxidase maturation factor 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/EDN1">
+                                    EDN1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                endothelin 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/EDN2">
+                                    EDN2
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                endothelin 2
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/EDN3">
+                                    EDN3
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                endothelin 3
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/EDNRA">
+                                    EDNRA
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                endothelin receptor type A
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/EDNRB">
+                                    EDNRB
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                endothelin receptor type B
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/EHF">
+                                    EHF
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                ets homologous factor
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/ESR1">
+                                    ESR1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                estrogen receptor 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/FCGR2A">
+                                    FCGR2A
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                Fc fragment of IgG, low affinity IIa, receptor (CD32)
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/FCN1">
+                                    FCN1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                ficolin (collagen/fibrinogen domain containing) 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/FCN2">
+                                    FCN2
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                ficolin (collagen/fibrinogen domain containing lectin) 2
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/FGR">
+                                    FGR
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                FGR proto-oncogene, Src family tyrosine kinase
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/FPR2">
+                                    FPR2
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                formyl peptide receptor 2
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/FUT2">
+                                    FUT2
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                fucosyltransferase 2 (secretor status included)
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/FUT3">
+                                    FUT3
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                fucosyltransferase 3 (galactoside 3(4)-L-fucosyltransferase, Lewis blood group)
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/FYN">
+                                    FYN
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                FYN proto-oncogene, Src family tyrosine kinase
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/GCLC">
+                                    GCLC
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                glutamate-cysteine ligase, catalytic subunit
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/GSTM1">
+                                    GSTM1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                glutathione S-transferase mu 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/GSTM3">
+                                    GSTM3
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                glutathione S-transferase mu 3 (brain)
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/GSTP1">
+                                    GSTP1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                glutathione S-transferase pi 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/GSTT1">
+                                    GSTT1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                glutathione S-transferase theta 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/HCK">
+                                    HCK
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                HCK proto-oncogene, Src family tyrosine kinase
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/HFE">
+                                    HFE
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                hemochromatosis
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/HLA-DQA1">
+                                    HLA-DQA1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                major histocompatibility complex, class II, DQ alpha 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/HLA-DQB1">
+                                    HLA-DQB1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                major histocompatibility complex, class II, DQ beta 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/HLA-DRB1">
+                                    HLA-DRB1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                major histocompatibility complex, class II, DR beta 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/HMOX1">
+                                    HMOX1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                heme oxygenase 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/HRAS">
+                                    HRAS
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                Harvey rat sarcoma viral oncogene homolog
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/HSPA1B">
+                                    HSPA1B
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                heat shock 70kDa protein 1B
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/ICAM1">
+                                    ICAM1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                intercellular adhesion molecule 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/IFNGR1">
+                                    IFNGR1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                interferon gamma receptor 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/IFRD1">
+                                    IFRD1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                interferon-related developmental regulator 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/IGF2BP2">
+                                    IGF2BP2
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                insulin-like growth factor 2 mRNA binding protein 2
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/IKBKB">
+                                    IKBKB
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                inhibitor of kappa light polypeptide gene enhancer in B-cells, kinase beta
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/IL10">
+                                    IL10
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                interleukin 10
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/IL17C">
+                                    IL17C
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                interleukin 17C
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/IL18">
+                                    IL18
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                interleukin 18
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/IL1A">
+                                    IL1A
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                interleukin 1, alpha
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/IL1B">
+                                    IL1B
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                interleukin 1, beta
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/IL1R1">
+                                    IL1R1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                interleukin 1 receptor, type I
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/IL1RN">
+                                    IL1RN
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                interleukin 1 receptor antagonist
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/IL2">
+                                    IL2
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                interleukin 2
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/IL4">
+                                    IL4
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                interleukin 4
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/IL6">
+                                    IL6
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                interleukin 6
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/IRAK1">
+                                    IRAK1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                interleukin-1 receptor-associated kinase 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/IRAK2">
+                                    IRAK2
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                interleukin-1 receptor-associated kinase 2
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/IRAK4">
+                                    IRAK4
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                interleukin-1 receptor-associated kinase 4
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/KRT18">
+                                    KRT18
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                keratin 18, type I
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/KRT19">
+                                    KRT19
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                keratin 19, type I
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/KRT8">
+                                    KRT8
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                keratin 8, type II
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/LBP">
+                                    LBP
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                lipopolysaccharide binding protein
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/LCK">
+                                    LCK
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                LCK proto-oncogene, Src family tyrosine kinase
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/LCT">
+                                    LCT
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                lactase
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/LMAN1">
+                                    LMAN1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                lectin, mannose-binding, 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/LPO">
+                                    LPO
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                lactoperoxidase
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/LTA">
+                                    LTA
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                lymphotoxin alpha
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/LYN">
+                                    LYN
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                LYN proto-oncogene, Src family tyrosine kinase
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/MAPK1">
+                                    MAPK1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                mitogen-activated protein kinase 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/MAPK10">
+                                    MAPK10
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                mitogen-activated protein kinase 10
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/MAPK11">
+                                    MAPK11
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                mitogen-activated protein kinase 11
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/MAPK13">
+                                    MAPK13
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                mitogen-activated protein kinase 13
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/MAPK14">
+                                    MAPK14
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                mitogen-activated protein kinase 14
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/MAPK8">
+                                    MAPK8
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                mitogen-activated protein kinase 8
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/MAPK9">
+                                    MAPK9
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                mitogen-activated protein kinase 9
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/MASP1">
+                                    MASP1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                mannan-binding lectin serine peptidase 1 (C4/C2 activating component of Ra-reactive factor)
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/MASP2">
+                                    MASP2
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                mannan-binding lectin serine peptidase 2
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/MBL2">
+                                    MBL2
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                mannose-binding lectin (protein C) 2, soluble
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/MEFV">
+                                    MEFV
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                Mediterranean fever
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/MIF">
+                                    MIF
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                macrophage migration inhibitory factor (glycosylation-inhibiting factor)
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/MMP12">
+                                    MMP12
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                matrix metallopeptidase 12
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/MSRA">
+                                    MSRA
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                methionine sulfoxide reductase A
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/MUC1">
+                                    MUC1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                mucin 1, cell surface associated
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/MUC2">
+                                    MUC2
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                mucin 2, oligomeric mucus/gel-forming
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/MUC5AC">
+                                    MUC5AC
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                mucin 5AC, oligomeric mucus/gel-forming
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/MUC7">
+                                    MUC7
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                mucin 7, secreted
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/NCF2">
+                                    NCF2
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                neutrophil cytosolic factor 2
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/NCF4">
+                                    NCF4
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                neutrophil cytosolic factor 4, 40kDa
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/NFKBIA">
+                                    NFKBIA
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                nuclear factor of kappa light polypeptide gene enhancer in B-cells inhibitor, alpha
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/NFKBIB">
+                                    NFKBIB
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                nuclear factor of kappa light polypeptide gene enhancer in B-cells inhibitor, beta
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/NFKBIE">
+                                    NFKBIE
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                nuclear factor of kappa light polypeptide gene enhancer in B-cells inhibitor, epsilon
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/NOS1">
+                                    NOS1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                nitric oxide synthase 1 (neuronal)
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/NOS2">
+                                    NOS2
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                nitric oxide synthase 2, inducible
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/NOS3">
+                                    NOS3
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                nitric oxide synthase 3 (endothelial cell)
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/NOX1">
+                                    NOX1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                NADPH oxidase 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/NOX3">
+                                    NOX3
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                NADPH oxidase 3
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/NOX4">
+                                    NOX4
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                NADPH oxidase 4
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/NOX5">
+                                    NOX5
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                NADPH oxidase, EF-hand calcium binding domain 5
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/NR3C1">
+                                    NR3C1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                nuclear receptor subfamily 3, group C, member 1 (glucocorticoid receptor)
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/NRAS">
+                                    NRAS
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                neuroblastoma RAS viral (v-ras) oncogene homolog
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/OGG1">
+                                    OGG1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                8-oxoguanine DNA glycosylase
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/P2RY1">
+                                    P2RY1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                purinergic receptor P2Y, G-protein coupled, 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/P2RY2">
+                                    P2RY2
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                purinergic receptor P2Y, G-protein coupled, 2
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/PAK1">
+                                    PAK1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                p21 protein (Cdc42/Rac)-activated kinase 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/PAK2">
+                                    PAK2
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                p21 protein (Cdc42/Rac)-activated kinase 2
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/PF4V1">
+                                    PF4V1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                platelet factor 4 variant 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/PIK3CA">
+                                    PIK3CA
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                phosphatidylinositol-4,5-bisphosphate 3-kinase, catalytic subunit alpha
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/PIK3CB">
+                                    PIK3CB
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                phosphatidylinositol-4,5-bisphosphate 3-kinase, catalytic subunit beta
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/PIK3CD">
+                                    PIK3CD
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                phosphatidylinositol-4,5-bisphosphate 3-kinase, catalytic subunit delta
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/PIK3R1">
+                                    PIK3R1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                phosphoinositide-3-kinase, regulatory subunit 1 (alpha)
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/PIK3R2">
+                                    PIK3R2
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                phosphoinositide-3-kinase, regulatory subunit 2 (beta)
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/PIK3R5">
+                                    PIK3R5
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                phosphoinositide-3-kinase, regulatory subunit 5
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/PLA2G2A">
+                                    PLA2G2A
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                phospholipase A2, group IIA (platelets, synovial fluid)
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/PLA2G2D">
+                                    PLA2G2D
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                phospholipase A2, group IID
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/PLA2G2E">
+                                    PLA2G2E
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                phospholipase A2, group IIE
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/PLA2G2F">
+                                    PLA2G2F
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                phospholipase A2, group IIF
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/PLA2G3">
+                                    PLA2G3
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                phospholipase A2, group III
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/PLA2G4A">
+                                    PLA2G4A
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                phospholipase A2, group IVA (cytosolic, calcium-dependent)
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/PLA2G4B">
+                                    PLA2G4B
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                phospholipase A2, group IVB (cytosolic)
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/PLA2G4C">
+                                    PLA2G4C
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                phospholipase A2, group IVC (cytosolic, calcium-independent)
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/PLCB1">
+                                    PLCB1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                phospholipase C, beta 1 (phosphoinositide-specific)
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/PLCB2">
+                                    PLCB2
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                phospholipase C, beta 2
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/PLCB3">
+                                    PLCB3
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                phospholipase C, beta 3 (phosphatidylinositol-specific)
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/PLCB4">
+                                    PLCB4
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                phospholipase C, beta 4
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/PLCD1">
+                                    PLCD1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                phospholipase C, delta 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/PLCD3">
+                                    PLCD3
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                phospholipase C, delta 3
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/PLCD4">
+                                    PLCD4
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                phospholipase C, delta 4
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/PLCE1">
+                                    PLCE1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                phospholipase C, epsilon 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/PLCG1">
+                                    PLCG1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                phospholipase C, gamma 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/PLCG2">
+                                    PLCG2
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                phospholipase C, gamma 2 (phosphatidylinositol-specific)
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/PPP2R1A">
+                                    PPP2R1A
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                protein phosphatase 2, regulatory subunit A, alpha
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/PPP2R4">
+                                    PPP2R4
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                protein phosphatase 2A activator, regulatory subunit 4
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/PRSS1">
+                                    PRSS1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                protease, serine, 1 (trypsin 1)
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/PTGS1">
+                                    PTGS1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                prostaglandin-endoperoxide synthase 1 (prostaglandin G/H synthase and cyclooxygenase)
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/PTGS2">
+                                    PTGS2
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                prostaglandin-endoperoxide synthase 2 (prostaglandin G/H synthase and cyclooxygenase)
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/PTK2">
+                                    PTK2
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                protein tyrosine kinase 2
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/PTK2B">
+                                    PTK2B
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                protein tyrosine kinase 2 beta
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/PTX3">
+                                    PTX3
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                pentraxin 3, long
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/RAC1">
+                                    RAC1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                ras-related C3 botulinum toxin substrate 1 (rho family, small GTP binding protein Rac1)
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/RAC2">
+                                    RAC2
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                ras-related C3 botulinum toxin substrate 2 (rho family, small GTP binding protein Rac2)
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/RASSF6">
+                                    RASSF6
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                Ras association (RalGDS/AF-6) domain family member 6
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/RHOA">
+                                    RHOA
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                ras homolog family member A
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/RHOC">
+                                    RHOC
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                ras homolog family member C
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/RHOG">
+                                    RHOG
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                ras homolog family member G
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/ROCK1">
+                                    ROCK1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                Rho-associated, coiled-coil containing protein kinase 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/ROCK2">
+                                    ROCK2
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                Rho-associated, coiled-coil containing protein kinase 2
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/SCNN1A">
+                                    SCNN1A
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                sodium channel, non voltage gated 1 alpha subunit
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/SCNN1B">
+                                    SCNN1B
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                sodium channel, non voltage gated 1 beta subunit
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/SCNN1G">
+                                    SCNN1G
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                sodium channel, non voltage gated 1 gamma subunit
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/SERPINA1">
+                                    SERPINA1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                serpin peptidase inhibitor, clade A (alpha-1 antiproteinase, antitrypsin), member 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/SFTPD">
+                                    SFTPD
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                surfactant protein D
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/SLC26A9">
+                                    SLC26A9
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                solute carrier family 26 (anion exchanger), member 9
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/SLC40A1">
+                                    SLC40A1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                solute carrier family 40 (iron-regulated transporter), member 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/SLC4A4">
+                                    SLC4A4
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                solute carrier family 4 (sodium bicarbonate cotransporter), member 4
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/SLC6A14">
+                                    SLC6A14
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                solute carrier family 6 (amino acid transporter), member 14
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/SLC9A3">
+                                    SLC9A3
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                solute carrier family 9, subfamily A (NHE3, cation proton antiporter 3), member 3
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/SNAP23">
+                                    SNAP23
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                synaptosomal-associated protein, 23kDa
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/SNCA">
+                                    SNCA
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                synuclein, alpha (non A4 component of amyloid precursor)
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/SPINK1">
+                                    SPINK1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                serine peptidase inhibitor, Kazal type 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/SRC">
+                                    SRC
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                SRC proto-oncogene, non-receptor tyrosine kinase
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/STAT3">
+                                    STAT3
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                signal transducer and activator of transcription 3 (acute-phase response factor)
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/STX1A">
+                                    STX1A
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                syntaxin 1A (brain)
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/TAP1">
+                                    TAP1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                transporter 1, ATP-binding cassette, sub-family B (MDR/TAP)
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/TAP2">
+                                    TAP2
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                transporter 2, ATP-binding cassette, sub-family B (MDR/TAP)
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/TCF7L2">
+                                    TCF7L2
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                transcription factor 7-like 2 (T-cell specific, HMG-box)
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/TF">
+                                    TF
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                transferrin
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/TFR2">
+                                    TFR2
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                transferrin receptor 2
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/TGFB1">
+                                    TGFB1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                transforming growth factor, beta 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/TLR1">
+                                    TLR1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                toll-like receptor 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/TLR10">
+                                    TLR10
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                toll-like receptor 10
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/TLR2">
+                                    TLR2
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                toll-like receptor 2
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/TLR3">
+                                    TLR3
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                toll-like receptor 3
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/TLR4">
+                                    TLR4
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                toll-like receptor 4
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/TLR5">
+                                    TLR5
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                toll-like receptor 5
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/TLR6">
+                                    TLR6
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                toll-like receptor 6
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/TLR7">
+                                    TLR7
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                toll-like receptor 7
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/TLR8">
+                                    TLR8
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                toll-like receptor 8
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/TLR9">
+                                    TLR9
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                toll-like receptor 9
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/TNF">
+                                    TNF
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                tumor necrosis factor
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/TNFRSF1A">
+                                    TNFRSF1A
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                tumor necrosis factor receptor superfamily, member 1A
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/TRAF1">
+                                    TRAF1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                TNF receptor-associated factor 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/TRAF2">
+                                    TRAF2
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                TNF receptor-associated factor 2
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/TRAF3">
+                                    TRAF3
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                TNF receptor-associated factor 3
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/TRAF4">
+                                    TRAF4
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                TNF receptor-associated factor 4
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/TRAF5">
+                                    TRAF5
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                TNF receptor-associated factor 5
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/TRAF6">
+                                    TRAF6
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                TNF receptor-associated factor 6, E3 ubiquitin protein ligase
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/UGT1A1">
+                                    UGT1A1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                UDP glucuronosyltransferase 1 family, polypeptide A1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/VCAM1">
+                                    VCAM1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                vascular cell adhesion molecule 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/VDR">
+                                    VDR
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                vitamin D (1,25- dihydroxyvitamin D3) receptor
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/XRCC1">
+                                    XRCC1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                X-ray repair complementing defective repair in Chinese hamster cells 1
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/YES1">
+                                    YES1
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                YES proto-oncogene 1, Src family tyrosine kinase
+                            </td>
+                            
+                        </tr>
+                    
+                        <tr>
+                            <td class="col-md-2">
+                                <a href="gene/ZAP70">
+                                    ZAP70
+                                </a>
+                            </td>
+                            <td class="col-md-5">
+                                zeta-chain (TCR) associated protein kinase 70kDa
+                            </td>
+                            
+                        </tr>
+                    
+                </table>
+            </div>
+            
+        </section>
+    </div>
+
+            </div>
+        </div>
+        <div class="footer container-full">
+	<div class="container">
+		<div class="pull-left">
+			<ul id="contact" class="list-inline">
+				<li>
+					<a href="http://icahn.mssm.edu/research/labs/maayan-laboratory" target="_blank">Ma'ayan Lab<span class="hide-on-mobile">oratory of Computational Systems Biology</span></a>
+				</li>
+				<li class="left-border">
+					<a href="contact">Contact Us</a>
+				</li>
+				<li class="left-border">
+					<a href="terms">Terms</a>
+				</li>
+			</ul>
+			<div id="citation">
+				<h6>Please acknowledge the Harmonizome in your publications by citing the following reference:</h6>
+				<p>
+					<a href="http://database.oxfordjournals.org/content/2016/baw100.short" target="_blank">
+						Rouillard AD, Gundersen GW, Fernandez NF, Wang Z, Monteiro CD, McDermott MG, Ma'ayan A. 
+						<em>The harmonizome: a collection of processed datasets gathered to serve and mine knowledge 
+						about genes and proteins</em>. Database (Oxford). 2016 Jul 3;2016. pii: baw100.
+					</a>
+				</p>
+			</div>
+			<div>
+				<h6>Funding</h6>
+				<ul id="funders">
+			        <li>
+			            <a href="http://lincs-dcic.org/" target="_blank">BD2K-LINCS Data Coordination and Integration Center</a>
+			        </li>
+			        <li>
+						<a href="https://druggablegenome.net" target="_blank">Illuminating the Druggable Genome<span class="hide-on-mobile">, Knowledge Management Center</span></a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	    <div id="share" class="pull-right hide-on-mobile">
+			<a href="https://www.linkedin.com/shareArticle?url=http://www.maayanlab.net/harmonizome" target="_blank">
+				<img src="image/share/linkedin.png">
+			</a>
+			<a href="https://plus.google.com/share?url=http://www.maayanlab.net/harmoziome" target="_blank">
+				<img src="image/share/google-plus.png">
+			</a>
+			<a href="http://www.facebook.com/sharer/sharer.php?u=http://www.maayanlab.net/harmonizome/" target="_blank">
+				<img src="image/share/facebook.png">
+			</a>
+			<a href="http://twitter.com/share" target="_blank">
+				<img src="image/share/twitter.png">
+			</a>
+		</div>
+	</div>
+</div>
+    </body>
+</html>
+
+<script src="script/gene-set-page.js"></script>
+<script>
+	HARMONIZOME.setupDataTable(false);
+</script>
