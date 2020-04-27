@@ -80,7 +80,7 @@ plotEnrichment(pathway = MGI[[gSet]], stats = Z) +
   xlab('Gene rank') + ylab('Enrichment Score')
 dev.off()
 
-png('../Results/ego_GSM4116571.png', width = 4000, height = 4000, res = 300)
+png('../Results/ego_GSM4116571.png', width = 3000, height = 3000, res = 300, bg = NA)
 X <- GSM4116571
 gKO <- 'Dmd'
 q <- 0.995
@@ -118,6 +118,7 @@ E$Term <- unlist(lapply(strsplit(E$Term,''), function(X){
   return(X)
 }))
 E <- E[E$Term %in% c("Actin filament", "Contractile actin filament bundle", "Actomyosin", "Focal adhesion", "Assembly of collagen fibrils and other multimeric structures", "Extracellular matrix organization"),]
+E$Term <- gsub('Assembly of collagen fibrils and other multimeric structures','Assembly of collagen fibrils',E$Term)
 E <- E[c(1,2,3,4,5,6,8),]
 tPlot <- strsplit(E$Genes, ';')
 pPlot <- matrix(0,nrow = length(V(netPlot)), ncol = nrow(E))
