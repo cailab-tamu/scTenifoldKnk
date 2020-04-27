@@ -49,6 +49,7 @@ source('https://raw.githubusercontent.com/dosorio/utilities/master/singleCell/pl
 source('https://raw.githubusercontent.com/dosorio/utilities/master/singleCell/plotKO.R')
 
 load('../Results/SRS4245406.RData')
+
 write.csv(SRS4245406$diffRegulation, file = '../Results/scTenifoldKnk_SRS4245406.csv', row.names = FALSE, quote = FALSE)
 png('../Results/drSRS4245406.png', width = 2000, height = 2000, res = 300, pointsize = 20)
 plotDR(SRS4245406)
@@ -57,6 +58,11 @@ dev.off()
 Z <- SRS4245406$diffRegulation$Z
 names(Z) <- toupper(SRS4245406$diffRegulation$gene)
 
+CC <- gmtPathways('https://amp.pharm.mssm.edu/Enrichr/geneSetLibrary?mode=text&libraryName=GO_Cellular_Component_2018')
+BP <- gmtPathways('https://amp.pharm.mssm.edu/Enrichr/geneSetLibrary?mode=text&libraryName=GO_Biological_Process_2018')
+MF <- gmtPathways('https://amp.pharm.mssm.edu/Enrichr/geneSetLibrary?mode=text&libraryName=GO_Molecular_Function_2018')
+GO <- c(CC, BP, MF)
+E <- fgseaMultilevel(GO, Z)
 
 
 MGI <- gmtPathways('https://amp.pharm.mssm.edu/Enrichr/geneSetLibrary?mode=text&libraryName=MGI_Mammalian_Phenotype_Level_4_2019')
