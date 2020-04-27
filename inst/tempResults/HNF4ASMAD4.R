@@ -13,6 +13,6 @@ source('https://raw.githubusercontent.com/dosorio/utilities/master/singleCell/pl
 
 load('all0.9/HNF4ASMAD4_0.9_GSM4116571.RData')
 GSM3477499 <- fixPValues(GSM3477499)
-save(GSM3477499, file = '../manuscript/HNF4A-SMAD4/GSM3477499.RData')
+save(GSM3477499, file = '../manuscript/HNF4A-SMAD4/Results/GSM3477499.RData')
 
 plotDR(GSM3477499)
