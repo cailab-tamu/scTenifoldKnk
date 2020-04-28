@@ -158,9 +158,22 @@ dev.off()
 
 REACTOME <- gmtPathways('https://amp.pharm.mssm.edu/Enrichr/geneSetLibrary?mode=text&libraryName=Reactome_2016')
 Enrichment <- fgseaMultilevel(REACTOME, zGSM3716703)
+Enrichment <- Enrichment[Enrichment$NES > 0 & Enrichment$padj < 0.05,]
 png('../Results/gsea3_GSM3716703.png', width = 1000, height = 1000, res = 300)
 gSet <- "Extracellular matrix organization Homo sapiens R-HSA-1474244"
 plotEnrichment(REACTOME[[gSet]], zGSM3716703) +
   labs(title = "Extracellular matrix organization", subtitle = paste0('FDR = ', formatC(Enrichment$padj[Enrichment$pathway %in% gSet], digits = 2, format = 'e'))) +
+  xlab('Gene rank') + ylab('Enrichment Score')
+dev.off()
+
+CC <- gmtPathways('https://amp.pharm.mssm.edu/Enrichr/geneSetLibrary?mode=text&libraryName=GO_Cellular_Component_2018')
+ccEnrichment <- fgseaMultilevel(CC, zGSM3716703)
+ccEnrichment <- ccEnrichment[ccEnrichment$NES > 0,]
+ccEnrichment <- ccEnrichment[ccEnrichment$padj < 0.05,]
+
+png('../Results/gsea4_GSM3716703.png', width = 1000, height = 1000, res = 300)
+gSet <- "microvillus (GO:0005902)"
+plotEnrichment(CC[[gSet]], zGSM3716703) +
+  labs(title = "Microvillus (GO:0005902)", subtitle = paste0('FDR = ', formatC(ccEnrichment$padj[ccEnrichment$pathway %in% gSet], digits = 2, format = 'e'))) +
   xlab('Gene rank') + ylab('Enrichment Score')
 dev.off()
