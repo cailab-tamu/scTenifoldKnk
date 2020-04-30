@@ -14,8 +14,8 @@ mean(SERGIO != 0)
 corValues <- as.matrix(scTenifoldNet::pcNet(as.matrix(SERGIO), symmetric = TRUE, nComp = 5))
 png('fig1_PCR.png', width = 2300, height = 2000, res = 300)
 ComplexHeatmap::Heatmap(corValues, row_order = seq_len(nrow(SERGIO)), column_order = seq_len(nrow(SERGIO)), name = 'PCR', show_row_names = FALSE, show_column_names = FALSE) +
-  rowAnnotation(link = anno_mark(at = 1:10,
-                                 labels = paste0(1:10)))
+  rowAnnotation(link = anno_mark(at = c(20,50,100),
+                                 labels = paste0('G',c(20,50,100))))
 dev.off()
 
 countMatrix <- SERGIO
@@ -23,7 +23,6 @@ set.seed(1)
 X <- scTenifoldNet::makeNetworks(countMatrix, q = 0.9)
 X <- scTenifoldNet::tensorDecomposition(X)
 X <- X$X
-gKO <- 80
 plotKO <- function(gKO){
   Y <- X
   Y[gKO,] <- 0
