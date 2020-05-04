@@ -33,6 +33,7 @@
 # save(GSM3477499, file = 'HNF4AG_GSM4116571.RData')
 library(fgsea)
 library(ggplot2)
+library(enrichR)
 source('https://raw.githubusercontent.com/dosorio/utilities/master/singleCell/plotDR.R')
 source('https://raw.githubusercontent.com/dosorio/utilities/master/singleCell/plotKO.R')
 

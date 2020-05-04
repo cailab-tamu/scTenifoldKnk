@@ -63,6 +63,13 @@ BP <- gmtPathways('https://amp.pharm.mssm.edu/Enrichr/geneSetLibrary?mode=text&l
 MF <- gmtPathways('https://amp.pharm.mssm.edu/Enrichr/geneSetLibrary?mode=text&libraryName=GO_Molecular_Function_2018')
 GO <- c(CC, BP, MF)
 E <- fgseaMultilevel(GO, Z)
+E <- E[E$NES > 0 & E$padj < 0.05,]
+png('../Results/mp1_SRS4245406.png', width = 1000, height = 1000, res = 300)
+gSet <- 'positive regulation of ion transmembrane transporter activity (GO:0032414)'
+plotEnrichment(pathway = GO[[gSet]], stats = Z) +
+  labs(title = 'Regulation of ion transmembrane\ntransporter activity (GO:0032414)', subtitle = paste0('FDR = ', formatC(E$padj[E$pathway %in% gSet], format = 'e', digits = 3))) +
+  xlab('Gene rank') + ylab('Enrichment Score')
+dev.off()
 
 
 MGI <- gmtPathways('https://amp.pharm.mssm.edu/Enrichr/geneSetLibrary?mode=text&libraryName=MGI_Mammalian_Phenotype_Level_4_2019')
@@ -72,12 +79,12 @@ E <- E[order(E$pval),]
 E$leadingEdge <- unlist(lapply(E$leadingEdge, function(X){paste0(X, collapse = ';')}))
 write.csv(E, file = '../Results/enrichmentMP.csv', row.names = FALSE, quote = FALSE)
 
-png('../Results/mp1_SRS4245406.png', width = 1000, height = 1000, res = 300)
-gSet <- 'MP:0004782 abnormal surfactant physiology'
-plotEnrichment(pathway = MGI[[gSet]], stats = Z) +
-  labs(title = 'Abnormal surfactant physiology\nMP:0004782', subtitle = paste0('FDR = ', formatC(E$padj[E$pathway %in% gSet], format = 'e', digits = 3))) +
-  xlab('Gene rank') + ylab('Enrichment Score')
-dev.off()
+# png('../Results/mp1_SRS4245406.png', width = 1000, height = 1000, res = 300)
+# gSet <- 'MP:0004782 abnormal surfactant physiology'
+# plotEnrichment(pathway = MGI[[gSet]], stats = Z) +
+#   labs(title = 'Abnormal surfactant physiology\nMP:0004782', subtitle = paste0('FDR = ', formatC(E$padj[E$pathway %in% gSet], format = 'e', digits = 3))) +
+#   xlab('Gene rank') + ylab('Enrichment Score')
+# dev.off()
 png('../Results/mp2_SRS4245406.png', width = 1000, height = 1000, res = 300)
 gSet <- 'MP:0004780 abnormal surfactant secretion'
 plotEnrichment(pathway = MGI[[gSet]], stats = Z) +
