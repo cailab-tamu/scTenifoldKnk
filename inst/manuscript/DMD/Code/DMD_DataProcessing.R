@@ -55,8 +55,8 @@ names(Z) <- toupper(GSM4116571$diffRegulation$gene)
 
 MGI <- gmtPathways('https://amp.pharm.mssm.edu/Enrichr/geneSetLibrary?mode=text&libraryName=MGI_Mammalian_Phenotype_Level_4_2019')
 E <- fgseaMultilevel(MGI, Z)
-E <- E[E$padj < 0.05,]
-E <- E[order(1/abs(E$NES),E$pval),]
+E <- E[E$padj < 0.05 & E$NES > 0,]
+E <- E[order(1/E$NES,E$pval),]
 E$leadingEdge <- unlist(lapply(E$leadingEdge, function(X){paste0(X, collapse = ';')}))
 write.csv(E, file = '../Results/enrichmentMP.csv', row.names = FALSE, quote = FALSE)
 
