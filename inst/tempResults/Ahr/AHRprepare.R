@@ -1,23 +1,23 @@
-# library(Matrix)
-# library(Seurat)
-# source('https://raw.githubusercontent.com/dosorio/utilities/master/singleCell/scQC.R')
-# 
-# load('C:/Users/danie/Filr/Net Folders/VIBS Lab/Cailab/ChapkinLab_CailabReport/CailabReport_Dataset.RData')
-# metadata <- read.csv('C:/Users/danie/Filr/Net Folders/VIBS Lab/Cailab/ChapkinLab_CailabReport/CailabReport_Table2.csv', stringsAsFactors = FALSE)
-# metadata <- metadata[metadata$CLASS == 'WT',]
-# 
-# ALL <- ALL@assays$RNA@counts
-# 
-# sapply(unique(metadata$CT), function(X){
-#   tempData <- ALL[,metadata$X[metadata$CT %in% X]]
-#   tempData <- scQC(tempData)
-#   if(ncol(tempData) > 500){
-#     tempData <- tempData[rowMeans(tempData != 0) > 0.05,]
-#     writeMM(tempData, paste0(X, '.mtx'))
-#     writeLines(rownames(tempData), paste0('geneList_',X,'.txt'))
-#     writeLines(colnames(tempData), paste0('barcodes_',X,'.txt'))  
-#   }
-# })
+library(Matrix)
+library(Seurat)
+source('https://raw.githubusercontent.com/dosorio/utilities/master/singleCell/scQC.R')
+
+load('Z:/Cailab/ChapkinLab_CailabReport/CailabReport_Dataset.RData')
+metadata <- read.csv('Z:/Cailab/ChapkinLab_CailabReport/CailabReport_Table2.csv', stringsAsFactors = FALSE)
+metadata <- metadata[metadata$CLASS == 'KO',]
+
+ALL <- ALL@assays$RNA@counts
+
+sapply(unique(metadata$CT), function(X){
+  tempData <- ALL[,metadata$X[metadata$CT %in% X]]
+  tempData <- scQC(tempData)
+  if(ncol(tempData) > 500){
+    tempData <- tempData[rowMeans(tempData != 0) > 0.05,]
+    writeMM(tempData, paste0(X, '+KO.mtx'))
+    writeLines(rownames(tempData), paste0('geneList_',X,'_KO.txt'))
+    writeLines(colnames(tempData), paste0('barcodes_',X,'_KO.txt'))
+  }
+})
 sapply(list.files(pattern = '.mtx'), function(Z){
   fileContent <- paste0("X <- '", Z,"'
          library(Matrix)
