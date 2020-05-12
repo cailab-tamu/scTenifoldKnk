@@ -1,73 +1,70 @@
-APC/C:Cdc20 mediated degradation of mitotic proteins Homo sapiens R-HSA-176409
-APC/C:Cdh1 mediated degradation of Cdc20 and other APC/C:Cdh1 targeted proteins in late mitosis/early G1 Homo sapiens R-HSA-174178
-APC:Cdc20 mediated degradation of cell cycle proteins prior to satisfation of the cell cycle checkpoint Homo sapiens R-HSA-179419
-AUF1 (hnRNP D0) binds and destabilizes mRNA Homo sapiens R-HSA-450408
-Activation of APC/C and APC/C:Cdc20 mediated degradation of mitotic proteins Homo sapiens R-HSA-176814
-Antigen processing-Cross presentation Homo sapiens R-HSA-1236975
-Asparagine N-linked glycosylation Homo sapiens R-HSA-446203
-Assembly of the pre-replicative complex Homo sapiens R-HSA-68867
-Autodegradation of the E3 ubiquitin ligase COP1 Homo sapiens R-HSA-349425
-CDK-mediated phosphorylation and removal of Cdc6 Homo sapiens R-HSA-69017
-CDT1 association with the CDC6:ORC:origin complex Homo sapiens R-HSA-68827
-Cdc20:Phospho-APC/C mediated degradation of Cyclin A Homo sapiens R-HSA-174184
-Cross-presentation of soluble exogenous antigens (endosomes) Homo sapiens R-HSA-1236978
-Cyclin A:Cdk2-associated events at S phase entry Homo sapiens R-HSA-69656
-Cyclin E associated events during G1/S transition Homo sapiens R-HSA-69202
-DNA Replication Homo sapiens R-HSA-69306
-DNA Replication Pre-Initiation Homo sapiens R-HSA-69002
-Defective GALNT12 causes colorectal cancer 1 (CRCS1) Homo sapiens R-HSA-5083636
-Defective GALNT3 causes familial hyperphosphatemic tumoral calcinosis (HFTC) Homo sapiens R-HSA-5083625
-Degradation of DVL Homo sapiens R-HSA-4641258
-Degradation of GLI1 by the proteasome Homo sapiens R-HSA-5610780
-Degradation of GLI2 by the proteasome Homo sapiens R-HSA-5610783
-Diseases associated with O-glycosylation of proteins Homo sapiens R-HSA-3906995
-Diseases of glycosylation Homo sapiens R-HSA-3781865
-ER-Phagosome pathway Homo sapiens R-HSA-1236974
-G1/S DNA Damage Checkpoints Homo sapiens R-HSA-69615
-G1/S Transition Homo sapiens R-HSA-69206
-G2/M Checkpoints Homo sapiens R-HSA-69481
-GLI3 is processed to GLI3R by the proteasome Homo sapiens R-HSA-5610785
-Hedgehog ligand biogenesis Homo sapiens R-HSA-5358346
-Hh mutants abrogate ligand secretion Homo sapiens R-HSA-5387390
-Hh mutants that don't undergo autocatalytic processing are degraded by ERAD Homo sapiens R-HSA-5362768
-M/G1 Transition Homo sapiens R-HSA-68874
-Metabolism Homo sapiens R-HSA-1430728
-Metabolism of amino acids and derivatives Homo sapiens R-HSA-71291
-Metabolism of polyamines Homo sapiens R-HSA-351202
-Metabolism of proteins Homo sapiens R-HSA-392499
-Mitochondrial translation Homo sapiens R-HSA-5368287
-Mitochondrial translation elongation Homo sapiens R-HSA-5389840
-Mitochondrial translation initiation Homo sapiens R-HSA-5368286
-Mitochondrial translation termination Homo sapiens R-HSA-5419276
-O-linked glycosylation Homo sapiens R-HSA-5173105
-O-linked glycosylation of mucins Homo sapiens R-HSA-913709
-Orc1 removal from chromatin Homo sapiens R-HSA-68949
-Regulation of APC/C activators between G1/S and early anaphase Homo sapiens R-HSA-176408
-Regulation of Apoptosis Homo sapiens R-HSA-169911
-Regulation of DNA replication Homo sapiens R-HSA-69304
-Regulation of RAS by GAPs Homo sapiens R-HSA-5658442
-Regulation of activated PAK-2p34 by proteasome mediated degradation Homo sapiens R-HSA-211733
-Regulation of ornithine decarboxylase (ODC) Homo sapiens R-HSA-350562
-Removal of licensing factors from origins Homo sapiens R-HSA-69300
-Respiratory electron transport Homo sapiens R-HSA-611105
-Respiratory electron transport, ATP synthesis by chemiosmotic coupling, and heat production by uncoupling proteins. Homo sapiens R-HSA-163200
-S Phase Homo sapiens R-HSA-69242
-SCF(Skp2)-mediated degradation of p27/p21 Homo sapiens R-HSA-187577
-SCF-beta-TrCP mediated degradation of Emi1 Homo sapiens R-HSA-174113
-SRP-dependent cotranslational protein targeting to membrane Homo sapiens R-HSA-1799339
-Stabilization of p53 Homo sapiens R-HSA-69541
-Switching of origins to a post-replicative state Homo sapiens R-HSA-69052
-Synthesis of DNA Homo sapiens R-HSA-69239
-Termination of O-glycan biosynthesis Homo sapiens R-HSA-977068
-The citric acid (TCA) cycle and respiratory electron transport Homo sapiens R-HSA-1428517
-The role of GTSE1 in G2/M progression after G2 checkpoint Homo sapiens R-HSA-8852276
 Translation Homo sapiens R-HSA-72766
-Ubiquitin Mediated Degradation of Phosphorylated Cdc25A Homo sapiens R-HSA-69601
-Ubiquitin-dependent degradation of Cyclin D Homo sapiens R-HSA-75815
-Ubiquitin-dependent degradation of Cyclin D1 Homo sapiens R-HSA-69229
-Vif-mediated degradation of APOBEC3G Homo sapiens R-HSA-180585
+Metabolism of polyamines Homo sapiens R-HSA-351202
+Hedgehog 'on' state Homo sapiens R-HSA-5632684
+Signaling by Hedgehog Homo sapiens R-HSA-5358351
+Hedgehog 'off' state Homo sapiens R-HSA-5610787
+Degradation of beta-catenin by the destruction complex Homo sapiens R-HSA-195253
+Antigen processing-Cross presentation Homo sapiens R-HSA-1236975
+ER-Phagosome pathway Homo sapiens R-HSA-1236974
+Autodegradation of Cdh1 by Cdh1:APC/C Homo sapiens R-HSA-174084
+APC/C:Cdc20 mediated degradation of Securin Homo sapiens R-HSA-174154
+APC/C:Cdh1 mediated degradation of Cdc20 and other APC/C:Cdh1 targeted proteins in late mitosis/early G1 Homo sapiens R-HSA-174178
+APC/C-mediated degradation of cell cycle proteins Homo sapiens R-HSA-174143
+Regulation of mitotic cell cycle Homo sapiens R-HSA-453276
+Regulation of APC/C activators between G1/S and early anaphase Homo sapiens R-HSA-176408
+Activation of APC/C and APC/C:Cdc20 mediated degradation of mitotic proteins Homo sapiens R-HSA-176814
+APC/C:Cdc20 mediated degradation of mitotic proteins Homo sapiens R-HSA-176409
+APC:Cdc20 mediated degradation of cell cycle proteins prior to satisfation of the cell cycle checkpoint Homo sapiens R-HSA-179419
+Cdc20:Phospho-APC/C mediated degradation of Cyclin A Homo sapiens R-HSA-174184
+Regulation of RAS by GAPs Homo sapiens R-HSA-5658442
+NIK-->noncanonical NF-kB signaling Homo sapiens R-HSA-5676590
+Degradation of GLI1 by the proteasome Homo sapiens R-HSA-5610780
+GLI3 is processed to GLI3R by the proteasome Homo sapiens R-HSA-5610785
+Degradation of GLI2 by the proteasome Homo sapiens R-HSA-5610783
+SCF-beta-TrCP mediated degradation of Emi1 Homo sapiens R-HSA-174113
 Vpu mediated degradation of CD4 Homo sapiens R-HSA-180534
-p53-Dependent G1 DNA Damage Response Homo sapiens R-HSA-69563
-p53-Dependent G1/S DNA damage checkpoint Homo sapiens R-HSA-69580
+CDK-mediated phosphorylation and removal of Cdc6 Homo sapiens R-HSA-69017
+Ubiquitin-dependent degradation of Cyclin D1 Homo sapiens R-HSA-69229
+Ubiquitin-dependent degradation of Cyclin D Homo sapiens R-HSA-75815
+Regulation of activated PAK-2p34 by proteasome mediated degradation Homo sapiens R-HSA-211733
+Regulation of Apoptosis Homo sapiens R-HSA-169911
+Autodegradation of the E3 ubiquitin ligase COP1 Homo sapiens R-HSA-349425
+Stabilization of p53 Homo sapiens R-HSA-69541
 p53-Independent DNA Damage Response Homo sapiens R-HSA-69610
 p53-Independent G1/S DNA damage checkpoint Homo sapiens R-HSA-69613
+Ubiquitin Mediated Degradation of Phosphorylated Cdc25A Homo sapiens R-HSA-69601
+Vif-mediated degradation of APOBEC3G Homo sapiens R-HSA-180585
+AUF1 (hnRNP D0) binds and destabilizes mRNA Homo sapiens R-HSA-450408
+Degradation of AXIN Homo sapiens R-HSA-4641257
+Degradation of DVL Homo sapiens R-HSA-4641258
+Hh mutants that don't undergo autocatalytic processing are degraded by ERAD Homo sapiens R-HSA-5362768
+Hh mutants abrogate ligand secretion Homo sapiens R-HSA-5387390
+Hedgehog ligand biogenesis Homo sapiens R-HSA-5358346
+The role of GTSE1 in G2/M progression after G2 checkpoint Homo sapiens R-HSA-8852276
+Cross-presentation of soluble exogenous antigens (endosomes) Homo sapiens R-HSA-1236978
+Regulation of ornithine decarboxylase (ODC) Homo sapiens R-HSA-350562
+G1/S DNA Damage Checkpoints Homo sapiens R-HSA-69615
+p53-Dependent G1/S DNA damage checkpoint Homo sapiens R-HSA-69580
+p53-Dependent G1 DNA Damage Response Homo sapiens R-HSA-69563
+SCF(Skp2)-mediated degradation of p27/p21 Homo sapiens R-HSA-187577
+Cyclin A:Cdk2-associated events at S phase entry Homo sapiens R-HSA-69656
+Cyclin E associated events during G1/S transition Homo sapiens R-HSA-69202
+G1/S Transition Homo sapiens R-HSA-69206
+Synthesis of DNA Homo sapiens R-HSA-69239
+DNA Replication Homo sapiens R-HSA-69306
+DNA Replication Pre-Initiation Homo sapiens R-HSA-69002
+M/G1 Transition Homo sapiens R-HSA-68874
+Regulation of DNA replication Homo sapiens R-HSA-69304
+Removal of licensing factors from origins Homo sapiens R-HSA-69300
+Switching of origins to a post-replicative state Homo sapiens R-HSA-69052
+Orc1 removal from chromatin Homo sapiens R-HSA-68949
+Assembly of the pre-replicative complex Homo sapiens R-HSA-68867
+CDT1 association with the CDC6:ORC:origin complex Homo sapiens R-HSA-68827
+Regulation of mRNA stability by proteins that bind AU-rich elements Homo sapiens R-HSA-450531
+MAPK6/MAPK4 signaling Homo sapiens R-HSA-5687128
+Asymmetric localization of PCP proteins Homo sapiens R-HSA-4608870
+Prefoldin mediated transfer of substrate  to CCT/TriC Homo sapiens R-HSA-389957
+Cooperation of Prefoldin and TriC/CCT  in actin and tubulin folding Homo sapiens R-HSA-389958
+Glutathione conjugation Homo sapiens R-HSA-156590
+Detoxification of Reactive Oxygen Species Homo sapiens R-HSA-3299685
+Respiratory electron transport Homo sapiens R-HSA-611105

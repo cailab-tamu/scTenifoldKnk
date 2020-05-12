@@ -1,0 +1,3 @@
+"","Term","Overlap","P.value","Adjusted.P.value","Old.P.value","Old.Adjusted.P.value","Odds.Ratio","Combined.Score","Genes"
+"Reactome_2016.1","Cholesterol biosynthesis Homo sapiens R-HSA-191273","3/23",7.76616335847374e-06,0.0118822299384648,0,0,76.7263427109974,902.741761518458,"SQLE;HMGCS1;MSMO1"
+"BioPlanet_2019.1","Cholesterol biosynthesis","3/24",8.86531657512581e-06,0.01338662802844,0,0,73.5294117647059,855.394405029531,"SQLE;HMGCS1;MSMO1"
