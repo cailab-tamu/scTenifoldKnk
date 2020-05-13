@@ -96,9 +96,9 @@ plotEnrichment(PANGLAODB$Enterocytes,Z2) + labs(title = 'Enterocytes - Abs(FC) r
 dev.off()
 
 set.seed(1)
-E1 <- fgsea(REACTOME, Z1, 1e4)
+E1 <- fgsea(REACTOME, Z1,1e6)
 set.seed(1)
-E2 <- fgsea(REACTOME, Z2, 1e4)
+E2 <- fgsea(REACTOME, Z2,1e6)
 
 E1 <- E1[E1$NES > 0 & E1$padj < 0.05,]
 E1$leadingEdge <- unlist(lapply(E1$leadingEdge, function(X){paste0(sort(X), collapse = ';')}))

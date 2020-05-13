@@ -1,4 +1,6 @@
 Host Interactions of HIV factors Homo sapiens R-HSA-162909
+Infectious disease Homo sapiens R-HSA-5663205
+HIV Infection Homo sapiens R-HSA-162906
 rRNA processing Homo sapiens R-HSA-72312
 Peptide chain elongation Homo sapiens R-HSA-156902
 Eukaryotic Translation Elongation Homo sapiens R-HSA-156842
@@ -15,11 +17,9 @@ Formation of the ternary complex, and subsequently, the 43S complex Homo sapiens
 Ribosomal scanning and start codon recognition Homo sapiens R-HSA-72702
 Translation initiation complex formation Homo sapiens R-HSA-72649
 Activation of the mRNA upon binding of the cap-binding complex and eIFs, and subsequent binding to 43S Homo sapiens R-HSA-72662
-FCERI mediated MAPK activation Homo sapiens R-HSA-2871796
+Metabolism of amino acids and derivatives Homo sapiens R-HSA-71291
 NCAM signaling for neurite out-growth Homo sapiens R-HSA-375165
-Signalling to RAS Homo sapiens R-HSA-167044
-Frs2-mediated activation Homo sapiens R-HSA-170968
-Prolonged ERK activation events Homo sapiens R-HSA-169893
+VEGFR2 mediated cell proliferation Homo sapiens R-HSA-5218921
 ARMS-mediated activation Homo sapiens R-HSA-170984
 Signalling to p38 via RIT and RIN Homo sapiens R-HSA-187706
 GRB2 events in EGFR signaling Homo sapiens R-HSA-179812
@@ -31,11 +31,7 @@ FRS-mediated FGFR2 signaling Homo sapiens R-HSA-5654700
 FRS-mediated FGFR4 signaling Homo sapiens R-HSA-5654712
 FRS-mediated FGFR3 signaling Homo sapiens R-HSA-5654706
 FRS-mediated FGFR1 signaling Homo sapiens R-HSA-5654693
-MAPK1/MAPK3 signaling Homo sapiens R-HSA-5684996
-Signaling by Leptin Homo sapiens R-HSA-2586552
-Interleukin receptor SHC signaling Homo sapiens R-HSA-912526
-Programmed Cell Death Homo sapiens R-HSA-5357801
-Apoptosis Homo sapiens R-HSA-109581
+Gastrin-CREB signalling pathway via PKC and MAPK Homo sapiens R-HSA-881907
 Metabolism of polyamines Homo sapiens R-HSA-351202
 Hedgehog 'on' state Homo sapiens R-HSA-5632684
 Signaling by Hedgehog Homo sapiens R-HSA-5358351
@@ -54,7 +50,6 @@ APC/C:Cdc20 mediated degradation of mitotic proteins Homo sapiens R-HSA-176409
 APC:Cdc20 mediated degradation of cell cycle proteins prior to satisfation of the cell cycle checkpoint Homo sapiens R-HSA-179419
 Cdc20:Phospho-APC/C mediated degradation of Cyclin A Homo sapiens R-HSA-174184
 Regulation of RAS by GAPs Homo sapiens R-HSA-5658442
-Activation of NF-kappaB in B cells Homo sapiens R-HSA-1169091
 Dectin-1 mediated noncanonical NF-kB signaling Homo sapiens R-HSA-5607761
 NIK-->noncanonical NF-kB signaling Homo sapiens R-HSA-5676590
 Degradation of GLI1 by the proteasome Homo sapiens R-HSA-5610780
@@ -101,7 +96,6 @@ CDT1 association with the CDC6:ORC:origin complex Homo sapiens R-HSA-68827
 Regulation of mRNA stability by proteins that bind AU-rich elements Homo sapiens R-HSA-450531
 MAPK6/MAPK4 signaling Homo sapiens R-HSA-5687128
 Asymmetric localization of PCP proteins Homo sapiens R-HSA-4608870
-PCP/CE pathway Homo sapiens R-HSA-4086400
 TCF dependent signaling in response to WNT Homo sapiens R-HSA-201681
 Complex I biogenesis Homo sapiens R-HSA-6799198
 Respiratory electron transport Homo sapiens R-HSA-611105
