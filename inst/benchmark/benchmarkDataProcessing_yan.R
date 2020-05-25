@@ -68,8 +68,6 @@ countMatrix <- SERGIO
 set.seed(1)
 X <- scTenifoldNet::makeNetworks(countMatrix, q = 0.9)
 X <- scTenifoldNet::tensorDecomposition(X)
-X <- X$X
-X <- (X + t(X))/2
 plotKO <- function(gKO){
   Y <- X
   Y[gKO,] <- 0
