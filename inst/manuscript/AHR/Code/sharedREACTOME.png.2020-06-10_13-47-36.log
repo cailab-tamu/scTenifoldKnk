@@ -1,0 +1,7 @@
+INFO [2020-06-10 13:47:36] [[1]]
+INFO [2020-06-10 13:47:36] list(Simulation = drE$pathway[drE$padj < 0.05 & drE$NES > 0], 
+INFO [2020-06-10 13:47:36]     Real = deE$pathway[deE$padj < 0.05 & deE$NES > 0])
+INFO [2020-06-10 13:47:36] 
+INFO [2020-06-10 13:47:36] $filename
+INFO [2020-06-10 13:47:36] [1] "sharedREACTOME.png"
+INFO [2020-06-10 13:47:36] 
