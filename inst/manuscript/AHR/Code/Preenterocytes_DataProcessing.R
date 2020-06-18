@@ -66,6 +66,11 @@ drList <- DR$gene
 deList <- deList[deList %in% drList]
 drList <- drList[drList %in% deList]
 
+CLA <- compareList(deList,drList,B = 100, label = 'MAST (abs FC) vs\nscTenifoldKnk')
+png('cl1_Ahr.png', width = 1200, height = 1200, res = 300)
+CLA
+dev.off()
+
 library(OrderedList)
 png('DE_DR.png', width = 2000, height = 1000, res = 300)
 par(mar=c(3,3,1,1), mgp=c(1.5,0.5,0))
@@ -74,14 +79,11 @@ dev.off()
 
 
 library(fgsea)
-
-
-
-library(fgsea)
 KEGG <- gmtPathways('https://amp.pharm.mssm.edu/Enrichr/geneSetLibrary?mode=text&libraryName=KEGG_2019_Mouse')
 REACTOME <- gmtPathways('https://amp.pharm.mssm.edu/Enrichr/geneSetLibrary?mode=text&libraryName=Reactome_2016')
 drE <- fgsea(REACTOME, drZ, 1e6)
 deE <- fgsea(REACTOME, deZ, 1e6)
+
 library(UpSetR)
 png('fgsea.png', width = 600, height = 600, res = 300)
 upset(fromList(list(Simulation=drE$pathway[drE$padj < 0.05 & drE$NES > 0],Real=deE$pathway[deE$padj < 0.05 & deE$NES > 0])))
@@ -135,13 +137,17 @@ names(realZ) <- toupper(realKO$gene)
 realList <- realKO$gene
 drList <- DR$gene
 realList <- realList[realList %in% drList]
-drList <- drList[drList %in% realList]
+#drList <- drList[drList %in% realList]
 
 library(OrderedList)
 library(ggplot2)
 library(ggrepel)
-compareLists(realList,drList)
-plot(compareLists(realList,drList, alphas = 0.005))
+source('https://raw.githubusercontent.com/dosorio/utilities/master/singleCell/compareLists.R')
+CLB <- compareList(realList,drList,B = 100, label = 'scTenifoldNet vs\nscTenifoldKnk')
+png('cl2_Ahr.png', width = 1200, height = 1200, res = 300)
+CLB
+dev.off()
+#plot(compareLists(realList,drList, alphas = 0.005))
 
 rownames(DR) <- DR$gene
 rownames(realKO) <- realKO$gene
@@ -170,3 +176,42 @@ dev.off()
 # upset(fromList(list(Simulation=drE$pathway[drE$pval < 0.05 & drE$NES > 0],Real=koE$pathway[koE$pval < 0.05 & koE$NES > 0])))
 # #dev.off()
 
+
+library(fgsea)
+load('../Results/Preenterocytes.RData')
+MA <- O$manifoldAlignment
+MA <- MA[!grepl('_MT-|_RPL|_RPS',rownames(MA), ignore.case = TRUE),]
+DR <- scTenifoldNet::dRegulation(MA)
+#DR <- O$diffRegulation
+DR$FC <- (DR$distance^2)/mean(DR$distance[-1]^2)
+DR$p.value <- pchisq(DR$FC, df = 1, lower.tail = FALSE)
+DR$p.adj <- p.adjust(DR$p.value, method = 'fdr')
+O$diffRegulation <- DR
+drZ <- DR$Z
+names(drZ) <- toupper(DR$gene)
+
+# drZ <- DR$Z
+# names(drZ) <- toupper(DR$gene)
+# CT <- read.table('PanglaoDB_markers_27_Mar_2020.tsv.gz', sep = '\t', header = TRUE)
+# CT <- CT[CT$organ %in% 'GI tract',]
+CT <- clustermole::clustermole_markers()
+CT <- CT[CT$species %in% 'Mouse',]
+CT <- CT[grepl('Intest', CT$organ, ignore.case = TRUE),]
+ctNames <- unique(CT$celltype)
+CT <- lapply(ctNames, function(X){
+  unique(CT$gene[CT$celltype %in% X])
+})
+names(CT) <- ctNames
+
+# CM <- gmtPathways('../Data/CannonicalMarkers.txt')
+# CM <- lapply(CM, toupper)
+library(ggplot2)
+png('DE_gseaMarkers.png', width = 1000, height = 1000, res = 300)
+E <- fgseaMultilevel(CT, deZ)
+plotEnrichment(CT$Enterocyte, deZ) + xlab('Gene rank') + ylab('Enrichment Score') + labs(title = 'Enterocytes', subtitle = paste0('MAST\nFDR = ', formatC(E$padj[E$pathway == 'Enterocyte'], 2, format = 'e'))) + theme_bw() + theme(plot.title = element_text(size=20))
+dev.off()
+
+png('DR_gseaMarkers.png', width = 1000, height = 1000, res = 300)
+E <- fgseaMultilevel(CT, drZ)
+plotEnrichment(CT$Enterocyte, drZ) + xlab('Gene rank') + ylab('Enrichment Score') + labs(title = 'Enterocytes', subtitle = paste0('scTenifoldKnk\nFDR = ', formatC(E$padj[E$pathway == 'Enterocyte'], 2, format = 'e'))) + theme_bw() + theme(plot.title = element_text(size=20))
+dev.off()
