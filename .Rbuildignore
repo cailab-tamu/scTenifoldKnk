@@ -1,2 +1,4 @@
 ^scTenifoldKNK\.Rproj$
 ^\.Rproj\.user$
+inst/manuscript/*
+inst/benchmark/*
