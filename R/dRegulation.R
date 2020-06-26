@@ -29,7 +29,6 @@ dRegulation <- function(manifoldOutput, gKO){
     return(O)
   })
   
-  dMetric <- dMetric/min(dMetric)
   ### BOX-COX
   lambdaValues <- seq(-2,2,length.out = 1000)
   lambdaValues <- lambdaValues[lambdaValues != 0]
@@ -41,18 +40,18 @@ dRegulation <- function(manifoldOutput, gKO){
     nD <- dMetric ^ BC
   }
   Z <- scale(nD)
-  FC <- (dMetric^2)/mean((dMetric[-seq_along(gKO)]^2))
-  pValues <- pchisq(q = FC,df = 1,lower.tail = FALSE)
-  pAdjusted <- p.adjust(pValues, method = 'fdr')
   dOut <- data.frame(
     gene = geneList, 
     distance = dMetric,
-    Z = Z,
-    FC = FC,
-    p.value = pValues,
-    p.adj = pAdjusted
-  )
-  dOut <- dOut[order(dOut$p.value),]
+    Z = Z
+    )
+  dOut <- dOut[order(dOut$distance, decreasing = TRUE),]
+  FC <- (dOut$distance^2)/mean((dOut$distance[-seq_len(length(gKO))]^2))
+  pValues <- pchisq(q = FC,df = 1,lower.tail = FALSE)
+  pAdjusted <- p.adjust(pValues, method = 'fdr')
+  dOut$FC = FC
+  dOut$p.value = pValues
+  dOut$p.adj = pAdjusted
   dOut <- as.data.frame.array(dOut)
   return(dOut)
 }

@@ -52,16 +52,3 @@ scTenifoldKNK <- function(countMatrix, gKO = NULL, qc_mtThreshold = 0.1, qc_minL
   outputList$diffRegulation <- DR
   return(outputList)
 }
-
-
-# sData <- read.csv('../inst/benchmark/SERGIO/simulationOutput.csv', header = FALSE)
-# sData <- as.matrix(sData)
-# rownames(sData) <- paste0('g',1:100)
-# colnames(sData) <- paste0('c',seq_len(ncol(sData)))
-# 
-# countMatrix <- sData
-# O <- scTenifoldKNK(sData, gKO = 20, nc_q = 0.9, qc_minLSize = 0)
-# O
-# 
-# source('https://raw.githubusercontent.com/dosorio/utilities/master/singleCell/plotDR.R')
-# plotDR(O, labelGenes = 'P')
