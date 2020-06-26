@@ -1,4 +1,4 @@
-#' @export scTenifoldKNK
+#' @export scTenifoldknk
 #' @importFrom Matrix Matrix rowMeans rowSums
 #' @importFrom RSpectra svds
 #' @importFrom scTenifoldNet makeNetworks tensorDecomposition manifoldAlignment dRegulation
