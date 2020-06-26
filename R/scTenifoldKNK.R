@@ -20,7 +20,7 @@
 #' @param td_maxError A decimal value between 0 and 1. Defines the relative Frobenius norm error tolerance.
 #' @param ma_nDim An integer value. Defines the number of dimensions of the low-dimensional feature space to be returned from the non-linear manifold alignment.
 
-scTenifoldKNK <- function(countMatrix, gKO = NULL, qc_mtThreshold = 0.1, qc_minLSize = 1000, nc_nNet = 10, nc_nCells = 500, nc_nComp = 3,
+scTenifoldKnk <- function(countMatrix, gKO = NULL, qc_mtThreshold = 0.1, qc_minLSize = 1000, nc_nNet = 10, nc_nCells = 500, nc_nComp = 3,
                           nc_scaleScores = TRUE, nc_symmetric = FALSE, nc_q = 0.9, td_K = 3, td_maxIter = 1000,
                           td_maxError = 1e-05, ma_nDim = 2){
   countMatrix <- scQC(countMatrix, mtThreshold = qc_mtThreshold, minLSize = qc_minLSize)
@@ -35,7 +35,6 @@ scTenifoldKNK <- function(countMatrix, gKO = NULL, qc_mtThreshold = 0.1, qc_minL
   set.seed(1)
   WT <- scTenifoldNet::tensorDecomposition(xList = WT, K = td_K, maxError = td_maxError, maxIter = td_maxIter)
   WT <- as.matrix(WT$X)
-  WT <- (WT + t(WT))/2
   KO <- WT
   KO[gKO,] <- 0
   set.seed(1)
