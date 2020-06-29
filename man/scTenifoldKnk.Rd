@@ -4,10 +4,22 @@
 \alias{scTenifoldKnk}
 \title{scTenifoldKNK}
 \usage{
-scTenifoldKnk(countMatrix, gKO = NULL, qc_mtThreshold = 0.1,
-  qc_minLSize = 1000, nc_nNet = 10, nc_nCells = 500, nc_nComp = 3,
-  nc_scaleScores = TRUE, nc_symmetric = FALSE, nc_q = 0.9,
-  td_K = 3, td_maxIter = 1000, td_maxError = 1e-05, ma_nDim = 2)
+scTenifoldKnk(
+  countMatrix,
+  gKO = NULL,
+  qc_mtThreshold = 0.1,
+  qc_minLSize = 1000,
+  nc_nNet = 10,
+  nc_nCells = 500,
+  nc_nComp = 3,
+  nc_scaleScores = TRUE,
+  nc_symmetric = FALSE,
+  nc_q = 0.9,
+  td_K = 3,
+  td_maxIter = 1000,
+  td_maxError = 1e-05,
+  ma_nDim = 2
+)
 }
 \arguments{
 \item{countMatrix}{countMatrix}
