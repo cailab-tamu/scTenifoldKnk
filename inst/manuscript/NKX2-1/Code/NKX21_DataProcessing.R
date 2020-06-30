@@ -41,7 +41,8 @@ source('https://raw.githubusercontent.com/dosorio/utilities/master/singleCell/pl
 source('https://raw.githubusercontent.com/dosorio/utilities/master/singleCell/plotKO.R')
 source('https://raw.githubusercontent.com/dosorio/utilities/master/idConvert/hsa2mmu_SYMBOL.R')
 
-load('../Results/GSM3716703.RData')
+load('../Results/NKX21__YC_GSM3716703.RData')
+GSM3716703 <- WT
 markerGenes <- read.csv('../Data/pnas.1906663116.sd01.csv', stringsAsFactors = FALSE, row.names = 1)
 markerGenes$T.test.p.value <- as.numeric(markerGenes$T.test.p.value)
 markerGenes <- markerGenes[complete.cases(markerGenes),]
@@ -56,11 +57,11 @@ markerGenesAT2 <- markerGenes$gene_short_name[markerGenes$T.test.p.value < 0.05]
 markerGenes <- unique(c(markerGenesAT1, markerGenesAT2))
 dGenes <- GSM3716703$diffRegulation$gene[GSM3716703$diffRegulation$p.adj < 0.01]
 
-png('../Results/dr_GSM3716703.png', width = 2500, height = 2500, res = 300)
+png('../Results/dr2_GSM3716703.png', width = 2500, height = 2500, res = 300)
 plotDR(GSM3716703, boldGenes = dGenes[dGenes %in% markerGenes])
 dev.off()
 
-png('../Results/ego_GSM3716703.png', width = 5000,height = 5000, res = 300, pointsize = 20, bg = NA)
+png('../Results/ego2_GSM3716703.png', width = 5000,height = 5000, res = 300, pointsize = 20, bg = NA)
 X <- GSM3716703
 gKO <- 'Nkx2-1'
 q <- 0.995
@@ -97,7 +98,7 @@ E$Term <- unlist(lapply(strsplit(E$Term,''), function(X){
   X <- gsub('[[:blank:]]$','',X)
   return(X)
 }))
-E <- E[c(1,2,3,6,8),]
+E <- E[c(1,4,14,19,22,25),]
 tPlot <- strsplit(E$Genes, ';')
 pPlot <- matrix(0,nrow = length(V(netPlot)), ncol = nrow(E))
 rownames(pPlot) <- toupper(names(V(netPlot)))
@@ -143,13 +144,13 @@ names(zGSM3716703) <- toupper(GSM3716703$diffRegulation$gene)
 GSEA <- fgseaMultilevel(CT, zGSM3716703)
 GSEA <- GSEA[order(GSEA$padj),]
 
-png('../Results/gsea1_GSM3716703.png', width = 1000, height = 1000, res = 300)
+png('../Results/YCgsea1_GSM3716703.png', width = 1000, height = 1000, res = 300)
 gSet <- 'Pulmonary alveolar type I cells'
 plotEnrichment(CT[[gSet]], zGSM3716703) +
   labs(title = gSet, subtitle = paste0('FDR = ', formatC(GSEA$padj[GSEA$pathway %in% gSet], digits = 2, format = 'e'))) +
   xlab('Gene rank') + ylab('Enrichment Score')
 dev.off()
-png('../Results/gsea2_GSM3716703.png', width = 1000, height = 1000, res = 300)
+png('../Results/YCgsea2_GSM3716703.png', width = 1000, height = 1000, res = 300)
 gSet <- 'Pulmonary alveolar type II cells'
 plotEnrichment(CT[[gSet]], zGSM3716703) +
   labs(title = gSet, subtitle = paste0('FDR = ', formatC(GSEA$padj[GSEA$pathway %in% gSet], digits = 2, format = 'e'))) +
@@ -159,7 +160,7 @@ dev.off()
 REACTOME <- gmtPathways('https://amp.pharm.mssm.edu/Enrichr/geneSetLibrary?mode=text&libraryName=Reactome_2016')
 Enrichment <- fgseaMultilevel(REACTOME, zGSM3716703)
 Enrichment <- Enrichment[Enrichment$NES > 0 & Enrichment$padj < 0.05,]
-png('../Results/gsea3_GSM3716703.png', width = 1000, height = 1000, res = 300)
+png('../Results/YCgsea3_GSM3716703.png', width = 1000, height = 1000, res = 300)
 gSet <- "Extracellular matrix organization Homo sapiens R-HSA-1474244"
 plotEnrichment(REACTOME[[gSet]], zGSM3716703) +
   labs(title = "Extracellular matrix organization", subtitle = paste0('FDR = ', formatC(Enrichment$padj[Enrichment$pathway %in% gSet], digits = 2, format = 'e'))) +
@@ -171,7 +172,7 @@ ccEnrichment <- fgseaMultilevel(CC, zGSM3716703)
 ccEnrichment <- ccEnrichment[ccEnrichment$NES > 0,]
 ccEnrichment <- ccEnrichment[ccEnrichment$padj < 0.05,]
 
-png('../Results/gsea4_GSM3716703.png', width = 1000, height = 1000, res = 300)
+png('../Results/YCgsea4_GSM3716703.png', width = 1000, height = 1000, res = 300)
 gSet <- "microvillus (GO:0005902)"
 plotEnrichment(CC[[gSet]], zGSM3716703) +
   labs(title = "Microvillus (GO:0005902)", subtitle = paste0('FDR = ', formatC(ccEnrichment$padj[ccEnrichment$pathway %in% gSet], digits = 2, format = 'e'))) +
