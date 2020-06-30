@@ -42,14 +42,15 @@ source('https://raw.githubusercontent.com/dosorio/utilities/master/singleCell/pl
 source('https://raw.githubusercontent.com/dosorio/utilities/master/singleCell/plotKO.R')
 source('https://raw.githubusercontent.com/dosorio/utilities/master/idConvert/hsa2mmu_SYMBOL.R')
 
-load('../Results/GSE130626.RData')
+load('../Results/TREM2__YC_GSE130626.RData')
+GSE130626 <- WT
 dGenes <- GSE130626$diffRegulation$gene[GSE130626$diffRegulation$p.adj < 0.05]
 
-png('../Results/dr_GSE130626.png', width = 2000, height = 2000, res = 300)
+png('../Results/dr2_GSE130626.png', width = 2000, height = 2000, res = 300)
 plotDR(GSE130626)
 dev.off()
 
-png('../Results/ego_GSE130626.png', width = 3000, height = 3000, res = 300, bg = NA)
+png('../Results/ego2_GSE130626.png', width = 3000, height = 3000, res = 300, bg = NA)
 X <- GSE130626
 gKO <- 'Trem2'
 q <- 0.995
@@ -87,7 +88,7 @@ E$Term <- unlist(lapply(strsplit(E$Term,''), function(X){
   return(X)
 }))
 E <- E[E$Term %in% c('Oxidative phosphorylation','Alzheimer disease','Cholesterol metabolism','Lysosome','Neutrophil mediated immunity'),]
-E <- E[c(1,2,5,6,9),]
+E <- E[c(1,2,4,5,6),]
 tPlot <- strsplit(E$Genes, ';')
 pPlot <- matrix(0,nrow = length(V(netPlot)), ncol = nrow(E))
 rownames(pPlot) <- toupper(names(V(netPlot)))
@@ -126,9 +127,9 @@ zGSE130626 <- GSE130626$diffRegulation$Z
 names(zGSE130626) <- toupper(GSE130626$diffRegulation$gene)
 
 MGI <- gmtPathways('https://amp.pharm.mssm.edu/Enrichr/geneSetLibrary?mode=text&libraryName=KEGG_2019_Mouse')
-E <- fgseaMultilevel(MGI, zGSE130626)
+E <- fgseaMultilevel(MGI, zGSE130626, eps = 0)
 
-png('../Results/gsea1_GSE130626.png', width = 1000, height = 1000, res = 300)
+png('../Results/YCgsea1_GSE130626.png', width = 1000, height = 1000, res = 300)
 gSet <- 'Cholesterol metabolism'
 plotEnrichment(MGI[[gSet]], zGSE130626) +
   labs(
@@ -137,7 +138,7 @@ plotEnrichment(MGI[[gSet]], zGSE130626) +
   xlab('Gene rank') +
   ylab('Enrichment Score')
 dev.off()
-png('../Results/gsea2_GSE130626.png', width = 1000, height = 1000, res = 300)
+png('../Results/YCgsea2_GSE130626.png', width = 1000, height = 1000, res = 300)
 gSet <- 'Alzheimer disease'
 plotEnrichment(MGI[[gSet]], zGSE130626) +
   labs(
@@ -146,7 +147,7 @@ plotEnrichment(MGI[[gSet]], zGSE130626) +
   xlab('Gene rank') +
   ylab('Enrichment Score')
 dev.off()
-png('../Results/gsea3_GSE130626.png', width = 1000, height = 1000, res = 300)
+png('../Results/YCgsea3_GSE130626.png', width = 1000, height = 1000, res = 300)
 gSet <- 'Lysosome'
 plotEnrichment(MGI[[gSet]], zGSE130626) +
   labs(
