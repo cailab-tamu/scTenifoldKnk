@@ -1,6 +1,11 @@
 library(Matrix)
 library(Seurat)
 library(harmony)
+library(ggplot2)
+library(ggrepel)
+
+load('../Results/knk_PreE.RData')
+DR <- O$diffRegulation
 
 WT <- readMM('../Data/Preenterocytes_WT.mtx')
 rownames(WT) <- readLines('../Data/Preenterocytes_WT_genes.txt')
@@ -45,19 +50,10 @@ BG <- rownames(DE)[DE$p_val_adj < 0.05 & abs(DE$avg_logFC) > 0.1]
 BG <- intersect(dF$G, BG)
 FF <- ifelse(dF$G %in% BG, 2, 1)
 
-png('VLN.png', width = 1500, height = 1500, res=300)
+png('VLN2.png', width = 1500, height = 1500, res=300)
 ggplot(dF, aes(FC, P, label = G)) + geom_point(color = dF$COL, alpha = gT) + xlim(c(-0.55,0.55)) + theme_bw() + xlab(log[2]~'Fold-Change') + ylab(-log[10]~'P-value') + geom_text_repel(box.padding = 0.15, segment.size = 0.05, aes(fontface= FF))
 dev.off()
 
-
-load('../Results/Preenterocytes.RData')
-MA <- O$manifoldAlignment
-MA <- MA[!grepl('_MT-|_RPL|_RPS',rownames(MA), ignore.case = TRUE),]
-DR <- scTenifoldNet::dRegulation(MA)
-DR$FC <- (DR$distance^2)/mean(DR$distance[-1]^2)
-DR$p.value <- pchisq(DR$FC, df = 1, lower.tail = FALSE)
-DR$p.adj <- p.adjust(DR$p.value, method = 'fdr')
-O$diffRegulation <- DR
 
 drZ <- DR$Z
 names(drZ) <- toupper(DR$gene)
@@ -66,13 +62,13 @@ drList <- DR$gene
 deList <- deList[deList %in% drList]
 drList <- drList[drList %in% deList]
 
-CLA <- compareList(deList,drList,B = 100, label = 'MAST (abs FC) vs\nscTenifoldKnk')
-png('cl1_Ahr.png', width = 1200, height = 1200, res = 300)
-CLA
-dev.off()
+# CLA <- compareList(deList,drList,B = 100, label = 'MAST (abs FC) vs\nscTenifoldKnk')
+# png('cl1_Ahr.png', width = 1200, height = 1200, res = 300)
+# CLA
+# dev.off()
 
 library(OrderedList)
-png('DE_DR.png', width = 2000, height = 1000, res = 300)
+png('DE_DR2.png', width = 2000, height = 1000, res = 300)
 par(mar=c(3,3,1,1), mgp=c(1.5,0.5,0))
 plot(compareLists(deList,drList, alphas = 0.005))
 dev.off()
@@ -85,7 +81,7 @@ drE <- fgsea(REACTOME, drZ, 1e6)
 deE <- fgsea(REACTOME, deZ, 1e6)
 
 library(UpSetR)
-png('fgsea.png', width = 600, height = 600, res = 300)
+png('fgsea2.png', width = 600, height = 600, res = 300)
 upset(fromList(list(Simulation=drE$pathway[drE$padj < 0.05 & drE$NES > 0],Real=deE$pathway[deE$padj < 0.05 & deE$NES > 0])))
 dev.off()
 
