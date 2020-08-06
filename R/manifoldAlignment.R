@@ -14,16 +14,16 @@ manifoldAlignment <- function(X, Y, d = 2, weight_method = 1, lambda = 0.9, sqrt
   Dcol <- apply(W, 2, sum)
   W <- Matrix(W)  
   
-  if(sqrt1 == 1){
-    Dcol = Dcol^(0.5)
-  }
+  #if(sqrt1 == 1){
+  #  Dcol = Dcol^(0.5)
+  #}
   
-  if(weight_method == 1){
+  #if(weight_method == 1){
     W = diag(Dcol) - W * (Drow^(-1)) * Dcol
-  } else {
-    Dcol[c(1:n)+n] = Dcol[c(1:n)]
-    W = diag(Dcol) - W * (Drow^(-1)) * Dcol
-  }
+  #} else {
+  #  Dcol[c(1:n)+n] = Dcol[c(1:n)]
+  #  W = diag(Dcol) - W * (Drow^(-1)) * Dcol
+  #}
   
   W = t(W) %*% W
   E <- suppressWarnings(RSpectra::eigs(W, d*2, 'SR'))
