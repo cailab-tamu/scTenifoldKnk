@@ -1,5 +1,5 @@
 #' @import Matrix
-manifoldAlignment <- function(X, Y, d = 2, weight_method = 1, lambda = 0.9, sqrt1 = 0){
+manifoldAlignment <- function(X, Y, d = 2, lambda = 0.9){
   sharedGenes <- intersect(rownames(X), rownames(Y))
   X <- X[sharedGenes, sharedGenes]
   n = dim(X)[1]
