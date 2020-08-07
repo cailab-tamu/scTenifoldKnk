@@ -10,6 +10,7 @@ manifoldAlignment <- function(X, Y, d = 2, lambda = 0.9){
   wXY <- lambda * (sum(wX) + sum(wY)) / (2 * sum(L)) * L
   W <- rbind(cbind(wX, wXY), cbind(t(wXY), wY))
   diag(W) <- 0
+  
   Drow <- apply(W, 1, sum)
   Dcol <- apply(W, 2, sum)
   W <- Matrix(W)  
@@ -19,13 +20,15 @@ manifoldAlignment <- function(X, Y, d = 2, lambda = 0.9){
   #}
   
   #if(weight_method == 1){
-    W = diag(Dcol) - W * (Drow^(-1)) * Dcol
+  ## Yan's approach
+  W = diag(Dcol) - W * (Drow^(-1)) * Dcol
+  W = t(W) %*% W
   #} else {
   #  Dcol[c(1:n)+n] = Dcol[c(1:n)]
   #  W = diag(Dcol) - W * (Drow^(-1)) * Dcol
   #}
   
-  W = t(W) %*% W
+ 
   E <- suppressWarnings(RSpectra::eigs(W, d*2, 'SR'))
   E$values <- suppressWarnings(as.numeric(E$values))
   E$vectors <- suppressWarnings(apply(E$vectors,2,as.numeric))
