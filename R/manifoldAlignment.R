@@ -72,6 +72,11 @@ manifoldAlignment_test <- function(X, Y, d = 2, lambda = 0.9, k = 2, gamma = 0.5
     Y = Yho
   }
   
+  X = X/ max(abs(X))
+  Y = Y/ max(abs(Y))
+
+  
+  
   L <- diag(length(sharedGenes))
   wX <- X+1
   wY <- Y+1
