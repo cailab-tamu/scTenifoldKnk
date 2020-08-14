@@ -4,7 +4,7 @@ library(harmony)
 library(ggplot2)
 library(ggrepel)
 
-load('../Results/KNKF.RData')
+load('../Results/Preenterocytes.RData')
 O$manifoldAlignment <- O$manifoldAlignment[!grepl('_Rpl|_Rps',rownames(O$manifoldAlignment)),]
 DR <- scTenifoldKnk:::dRegulation(O$manifoldAlignment, 'Ahr')
 O$diffRegulation <- DR
