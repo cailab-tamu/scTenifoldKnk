@@ -4,8 +4,10 @@ library(harmony)
 library(ggplot2)
 library(ggrepel)
 
-load('../Results/knk_PreE.RData')
-DR <- O$diffRegulation
+load('../Results/KNKF.RData')
+O$manifoldAlignment <- O$manifoldAlignment[!grepl('_Rpl|_Rps',rownames(O$manifoldAlignment)),]
+DR <- scTenifoldKnk:::dRegulation(O$manifoldAlignment, 'Ahr')
+O$diffRegulation <- DR
 
 WT <- readMM('../Data/Preenterocytes_WT.mtx')
 rownames(WT) <- readLines('../Data/Preenterocytes_WT_genes.txt')
@@ -50,7 +52,7 @@ BG <- rownames(DE)[DE$p_val_adj < 0.05 & abs(DE$avg_logFC) > 0.1]
 BG <- intersect(dF$G, BG)
 FF <- ifelse(dF$G %in% BG, 2, 1)
 
-png('VLN2.png', width = 1500, height = 1500, res=300)
+png('VLN3.png', width = 1500, height = 1500, res=300)
 ggplot(dF, aes(FC, P, label = G)) + geom_point(color = dF$COL, alpha = gT) + xlim(c(-0.55,0.55)) + theme_bw() + xlab(log[2]~'Fold-Change') + ylab(-log[10]~'P-value') + geom_text_repel(box.padding = 0.15, segment.size = 0.05, aes(fontface= FF))
 dev.off()
 
@@ -67,11 +69,11 @@ drList <- drList[drList %in% deList]
 # CLA
 # dev.off()
 
-library(OrderedList)
-png('DE_DR2.png', width = 2000, height = 1000, res = 300)
-par(mar=c(3,3,1,1), mgp=c(1.5,0.5,0))
-plot(compareLists(deList,drList, alphas = 0.005))
-dev.off()
+# library(OrderedList)
+# png('DE_DR2.png', width = 2000, height = 1000, res = 300)
+# par(mar=c(3,3,1,1), mgp=c(1.5,0.5,0))
+# plot(compareLists(deList,drList, alphas = 0.005))
+# dev.off()
 
 
 library(fgsea)
@@ -81,7 +83,7 @@ drE <- fgsea(REACTOME, drZ, 1e6)
 deE <- fgsea(REACTOME, deZ, 1e6)
 
 library(UpSetR)
-png('fgsea2.png', width = 600, height = 600, res = 300)
+png('fgsea3.png', width = 600, height = 600, res = 300)
 upset(fromList(list(Simulation=drE$pathway[drE$padj < 0.05 & drE$NES > 0],Real=deE$pathway[deE$padj < 0.05 & deE$NES > 0])))
 dev.off()
 
@@ -101,7 +103,7 @@ dev.off()
 source('https://raw.githubusercontent.com/dosorio/utilities/master/singleCell/plotKO.R')
 source('https://raw.githubusercontent.com/dosorio/utilities/master/singleCell/plotDR.R')
 
-png('KO.png', width = 3500, height = 3500, res = 300)
+png('KO3.png', width = 3500, height = 3500, res = 300)
 plotKO(O, 'Ahr', nCategories = 10)
 dev.off()
 
