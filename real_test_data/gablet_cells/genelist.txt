@@ -1,4 +1,3 @@
-genelist
 Gm19938
 Mrpl15
 Lypla1
@@ -570,7 +569,6 @@ Atf2
 Atp5g3
 Lnpk
 Hoxd13
-Hoxd8
 Mtx2
 Rps6-ps4
 Hnrnpa3
@@ -1752,7 +1750,6 @@ Hnrnpr
 Luzp1
 Kdm1a
 Ephb2
-C1qa
 Cdc42
 Usp48
 Rap1gap
@@ -2066,7 +2063,6 @@ Ep400
 Pus1
 Hscb
 Pitpnb
-Grk3
 2900026A02Rik
 Sart3
 Iscu
@@ -2103,7 +2099,6 @@ Vsig10
 Wsb2
 Rfc5
 Fbxo21
-Tesc
 Med13l
 Tbx3
 Sdsl
@@ -2642,7 +2637,6 @@ Strn4
 Calm3
 Pnmal2
 Ppp5c
-Ceacam12
 Pglyrp1
 Irf2bp1
 Foxa3
@@ -2900,7 +2894,6 @@ Fam168a
 Fchsd2
 Stard10
 Arap1
-Art2a-ps
 Clpb
 Inppl1
 Anapc15
@@ -3132,7 +3125,6 @@ Tbpl1
 Rps12
 Slc18b1
 Stx7
-Arg1
 Akap7
 Epb41l2
 Arhgap18
@@ -3470,7 +3462,6 @@ Kat6a
 Gins4
 Golga7
 Tcim
-Adam18
 Adam9
 Tm2d2
 Plekha2
@@ -4025,7 +4016,6 @@ Cwf19l2
 Aasdhppt
 Casp1
 Dcun1d5
-Mmp7
 Tmem123
 Birc2
 Birc3
@@ -5532,7 +5522,6 @@ Fam49b
 Efr3a
 Phf20l1
 Ndrg1
-St3gal1
 Khdrbs3
 Chrac1
 Ago2
@@ -6020,7 +6009,6 @@ BC003965
 Gnptg
 Ube2i
 Tpsg1
-Cacna1h
 Lmf1
 Fam173a
 Jmjd8
@@ -6335,7 +6323,6 @@ Reep5
 Brd8
 Kif20a
 Cdc23
-Gfra3
 Egr1
 Etf1
 Hspa9
@@ -6568,7 +6555,6 @@ Prpf19
 Ccdc86
 AW112010
 Ms4a8a
-Ms4a7
 Mrpl16
 Stx3
 Osbp
