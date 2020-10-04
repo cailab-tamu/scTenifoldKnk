@@ -1,0 +1,17 @@
+{
+"sctenifoldknk":
+{
+	"inputs":
+	[
+		{"name":"X", "kind":"required", "type":"numeric"},        
+        {"name":"genelist", "kind":"required", "type":["string","vector"]},
+        {"name":"kogene", "kind":"required", "type":["string","scalar"]},
+        {"name":"qqplot", "kind":"namevalue", "type":["logical","scalar"],"purpose":"Option"},
+        {"name":"smplmethod", "kind":"namevalue","type":["string", "choices={'Jackknife','Bootstrap'}"],"purpose":"Option"},
+        {"name":"nsubsmpl", "kind":"namevalue", "type":["scalar", "choices={10,20}"],"purpose":"nsubsmpl"},
+        {"name":"csubsmpl", "kind":"namevalue", "type":["scalar", "choices={500}"],"purpose":"csubsmpl"},
+        {"name":"tdmethod", "kind":"namevalue","type":["string", "choices={'CP','Tucker'}"],"purpose":"tdmethod"},
+        {"name":"savegrn", "kind":"namevalue", "type":["logical","scalar"]}
+	]
+}
+}
