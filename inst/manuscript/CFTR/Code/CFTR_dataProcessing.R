@@ -65,12 +65,17 @@ GO <- c(CC, BP, MF)
 E <- fgseaMultilevel(GO, Z)
 E <- E[E$NES > 0 & E$padj < 0.05,]
 E$leadingEdge <- unlist(lapply(E$leadingEdge, function(X){paste0(X, collapse = ';')}))
+
 png('../Results/mp1_SRS4245406.png', width = 1000, height = 1000, res = 300)
 gSet <- 'positive regulation of ion transmembrane transporter activity (GO:0032414)'
 plotEnrichment(pathway = GO[[gSet]], stats = Z) +
-  labs(title = 'Regulation of ion transmembrane\ntransporter activity (GO:0032414)', subtitle = paste0('FDR = ', formatC(E$padj[E$pathway %in% gSet], format = 'e', digits = 3))) +
-  xlab('Gene rank') + ylab('Enrichment Score')
+  labs(title = 'Regulation of ion\ntransmembrane transporter\nactivity (GO:0032414)', 
+       subtitle = paste0('FDR = ', formatC(E$padj[E$pathway %in% gSet], format = 'e', digits = 3))) +
+  xlab('Gene rank') + 
+  ylab('Enrichment Score') +
+  theme(plot.title = element_text(face = 2, size = 15))
 dev.off()
+
 E <- E[order(E$padj),]
 write.csv('../Results/goEnrichment_CFTR.csv')
 
@@ -87,17 +92,21 @@ write.csv(E, file = '../Results/enrichmentMP.csv', row.names = FALSE, quote = FA
 #   labs(title = 'Abnormal surfactant physiology\nMP:0004782', subtitle = paste0('FDR = ', formatC(E$padj[E$pathway %in% gSet], format = 'e', digits = 3))) +
 #   xlab('Gene rank') + ylab('Enrichment Score')
 # dev.off()
+
 png('../Results/mp2_SRS4245406.png', width = 1000, height = 1000, res = 300)
 gSet <- 'MP:0004780 abnormal surfactant secretion'
 plotEnrichment(pathway = MGI[[gSet]], stats = Z) +
-  labs(title = 'Abnormal surfactant secretion\nMP:0004780', subtitle = paste0('FDR = ', formatC(E$padj[E$pathway %in% gSet], format = 'e', digits = 3))) +
-  xlab('Gene rank') + ylab('Enrichment Score')
+  labs(title = 'Abnormal surfactant\nsecretion\n(MP:0004780)', subtitle = paste0('FDR = ', formatC(E$padj[E$pathway %in% gSet], format = 'e', digits = 3))) +
+  xlab('Gene rank') + ylab('Enrichment Score') +
+  theme(plot.title = element_text(face = 2, size = 15))
 dev.off()
+
 png('../Results/mp3_SRS4245406.png', width = 1000, height = 1000, res = 300)
 gSet <- 'MP:0002270 abnormal pulmonary alveolus morphology'
 plotEnrichment(pathway = MGI[[gSet]], stats = Z) +
-  labs(title = 'Abnormal alveolus morphology\nMP:0002270', subtitle = paste0('FDR = ', formatC(E$padj[E$pathway %in% gSet], format = 'e', digits = 3))) +
-  xlab('Gene rank') + ylab('Enrichment Score')
+  labs(title = 'Abnormal alveolus\nmorphology\n(MP:0002270)', subtitle = paste0('FDR = ', formatC(E$padj[E$pathway %in% gSet], format = 'e', digits = 3))) +
+  xlab('Gene rank') + ylab('Enrichment Score') +
+  theme(plot.title = element_text(face = 2, size = 15))
 dev.off()
 
 png('../Results/ego_SRS4245406.png', width = 3000, height = 3000, res = 300, pointsize = 20)
