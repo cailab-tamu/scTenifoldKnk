@@ -64,25 +64,25 @@ write.csv(E, file = '../Results/enrichmentMP.csv', row.names = FALSE, quote = FA
 png('../Results/mp1_GSM4116571.png', width = 1000, height = 1000, res = 300)
 gSet <- 'MP:0008438 abnormal cutaneous collagen fibril morphology'
 plotEnrichment(pathway = MGI[[gSet]], stats = Z) +
-  labs(title = 'Abnormal collagen fibril\nmorphology\n(MP:0008438)', subtitle = paste0('FDR = ', formatC(E$padj[E$pathway %in% gSet], format = 'e', digits = 3))) +
+  labs(title = 'Abnormal\ncollagen fibril\nmorphology\n(MP:0008438)', subtitle = paste0('FDR = ', formatC(E$padj[E$pathway %in% gSet], format = 'e', digits = 3))) +
   xlab('Gene rank') + ylab('Enrichment Score')  +
-  theme(plot.title = element_text(face = 2, size = 15))
+  theme(plot.title = element_text(face = 2, size = 25))
 dev.off()
 
 png('../Results/mp2_GSM4116571.png', width = 1000, height = 1000, res = 300)
 gSet <- 'MP:0000759 abnormal skeletal muscle morphology'
 plotEnrichment(pathway = MGI[[gSet]], stats = Z) +
-  labs(title = 'Abnormal skeletal muscle \nmorphology\n(MP:0000759)', subtitle = paste0('FDR = ', formatC(E$padj[E$pathway %in% gSet], format = 'e', digits = 3))) +
+  labs(title = 'Abnormal\nskeletal muscle \nmorphology\n(MP:0000759)', subtitle = paste0('FDR = ', formatC(E$padj[E$pathway %in% gSet], format = 'e', digits = 3))) +
   xlab('Gene rank') + ylab('Enrichment Score')  +
-  theme(plot.title = element_text(face = 2, size = 15))
+  theme(plot.title = element_text(face = 2, size = 25))
 dev.off()
 
 png('../Results/mp3_GSM4116571.png', width = 1000, height = 1000, res = 300)
 gSet <- 'MP:0003084 abnormal skeletal muscle fiber morphology'
 plotEnrichment(pathway = MGI[[gSet]], stats = Z) +
-  labs(title = 'Abnormal skeletal muscle\nfiber morphology\n(MP:0003084)', subtitle = paste0('FDR = ', formatC(E$padj[E$pathway %in% gSet], format = 'e', digits = 3))) +
+  labs(title = 'Abnormal\nmuscle fiber\nmorphology\n(MP:0003084)', subtitle = paste0('FDR = ', formatC(E$padj[E$pathway %in% gSet], format = 'e', digits = 3))) +
   xlab('Gene rank') + ylab('Enrichment Score')+
-  theme(plot.title = element_text(face = 2, size = 15))
+  theme(plot.title = element_text(face = 2, size = 25))
 dev.off()
 
 png('../Results/ego_GSM4116571.png', width = 3000, height = 3000, res = 300, bg = NA)
