@@ -98,7 +98,7 @@ E$Term <- unlist(lapply(strsplit(E$Term,''), function(X){
   X <- gsub('[[:blank:]]$','',X)
   return(X)
 }))
-E <- E[c(1,4,14,19,22,25),]
+E <- E[c(1,2,3,6,8),]
 tPlot <- strsplit(E$Genes, ';')
 pPlot <- matrix(0,nrow = length(V(netPlot)), ncol = nrow(E))
 rownames(pPlot) <- toupper(names(V(netPlot)))
@@ -109,7 +109,7 @@ pPlot <- lapply(seq_len(nrow(pPlot)), function(X){as.vector(pPlot[X,])})
 names(pPlot) <- names(V(netPlot))
 tPlot <- unique(unlist(tPlot))
 eGenes <- toupper(names(V(netPlot))) %in% tPlot
-vColor <- rgb(0,188/255,1,0.3)
+vColor <- rgb(195/255, 199/255, 198/255 ,0.3)
 pieColors <- list(hcl.colors(nrow(E), palette = 'Zissou 1', alpha = 0.7))
 par(mar=c(4,0,0,0), xpd = TRUE)
 suppressWarnings(plot(netPlot,

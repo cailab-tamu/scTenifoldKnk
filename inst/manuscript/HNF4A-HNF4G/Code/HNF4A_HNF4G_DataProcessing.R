@@ -46,7 +46,7 @@ png('../Results/dr_GSM3477499.png', width = 2000, height = 2000, res = 300)
 plotDR(GSM3477499)
 dev.off()
 
-png('../Results/ego_GSM3477499.png', width = 3000, height = 3000, res = 300, bg = NA)
+png('../Results/ego2_GSM3477499.png', width = 3000, height = 3000, res = 300, bg = NA)
 X <- GSM3477499
 gKO <- c('Hnf4a', 'Hnf4g')
 q <- 0.95
@@ -95,7 +95,7 @@ pPlot <- lapply(seq_len(nrow(pPlot)), function(X){as.vector(pPlot[X,])})
 names(pPlot) <- names(V(netPlot))
 tPlot <- unique(unlist(tPlot))
 eGenes <- toupper(names(V(netPlot))) %in% tPlot
-vColor <- rgb(0,188/255,1,0.3)
+vColor <- rgb(195/255, 199/255, 198/255 ,0.3)
 pieColors <- list(hcl.colors(nrow(E), palette = 'Zissou 1', alpha = 0.7))
 par(mar=c(4,0,0,0), xpd = TRUE)
 suppressWarnings(plot(netPlot,
