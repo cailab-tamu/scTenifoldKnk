@@ -128,25 +128,39 @@ names(CT) <- ctNames
 zGSM3477499 <- GSM3477499$diffRegulation$Z
 names(zGSM3477499) <- toupper(GSM3477499$diffRegulation$gene)
 
+set.seed(1)
 E <- fgseaMultilevel(CT, zGSM3477499)
 gSet <- 'Enterocytes'
 png('../Results/gsea1_GSM3477499.png', width = 1000, height = 1000, res = 300)
-plotEnrichment(CT[[gSet]], zGSM3477499) + labs(title = '\nEnterocytes', subtitle = paste0('FDR = ', formatC(E$padj[E$pathway %in% gSet], digits = 3, format = 'e'))) + xlab('Gene rank') + ylab('Enrichment Score')
+plotEnrichment(CT[[gSet]], zGSM3477499) + 
+  labs(title = '\nEnterocytes', subtitle = paste0('FDR = ', formatC(E$padj[E$pathway %in% gSet], digits = 3, format = 'e'))) + 
+  xlab('Gene rank') + 
+  ylab('Enrichment Score') + 
+  theme(plot.title = element_text(face = 2, size = 25))
 dev.off()
 
 CC <- gmtPathways('https://amp.pharm.mssm.edu/Enrichr/geneSetLibrary?mode=text&libraryName=GO_Cellular_Component_2018')
 BP <- gmtPathways('https://amp.pharm.mssm.edu/Enrichr/geneSetLibrary?mode=text&libraryName=GO_Biological_Process_2018')
 MF <- gmtPathways('https://amp.pharm.mssm.edu/Enrichr/geneSetLibrary?mode=text&libraryName=GO_Molecular_Function_2018')
 GO <- c(CC, BP, MF)
+set.seed(1)
 E <- fgseaMultilevel(GO, zGSM3477499)
 E <- E[E$padj < 0.05 & E$NES > 0,]
 
 png('../Results/gsea2_GSM3477499.png', width = 1000, height = 1000, res = 300)
 gSet <- "cytoplasmic vesicle lumen (GO:0060205)"
-plotEnrichment(GO[[gSet]], zGSM3477499) + labs(title = "Cytoplasmic vesicle lumen\nGO:0060205", subtitle = paste0('FDR = ', formatC(E$padj[E$pathway %in% gSet], digits = 3, format = 'e'))) + xlab('Gene rank') + ylab('Enrichment Score')
+plotEnrichment(GO[[gSet]], zGSM3477499) + 
+  labs(title = "Cytoplasmic\nvesicle lumen\n(GO:0060205)", subtitle = paste0('FDR = ', formatC(E$padj[E$pathway %in% gSet], digits = 3, format = 'e'))) + 
+  xlab('Gene rank') + 
+  ylab('Enrichment Score') + 
+  theme(plot.title = element_text(face = 2, size = 25))
 dev.off()
 
 png('../Results/gsea3_GSM3477499.png', width = 1000, height = 1000, res = 300)
 gSet <- "chylomicron assembly (GO:0034378)"
-plotEnrichment(GO[[gSet]], zGSM3477499) + labs(title = "Chylomicron assembly\nGO:0034378", subtitle = paste0('FDR = ', formatC(E$padj[E$pathway %in% gSet], digits = 3, format = 'e'))) + xlab('Gene rank') + ylab('Enrichment Score')
+plotEnrichment(GO[[gSet]], zGSM3477499) + 
+  labs(title = "Chylomicron\nassembly\n(GO:0034378)", subtitle = paste0('FDR = ', formatC(E$padj[E$pathway %in% gSet], digits = 3, format = 'e'))) + 
+  xlab('Gene rank') + 
+  ylab('Enrichment Score') + 
+  theme(plot.title = element_text(face = 2, size = 25))
 dev.off()
