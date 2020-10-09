@@ -254,18 +254,22 @@ ggplot(data = zScores, mapping = aes(SRS3059998, SRS3059999)) +
 dev.off()
 
 WP <- gmtPathways('https://amp.pharm.mssm.edu/Enrichr/geneSetLibrary?mode=text&libraryName=WikiPathways_2019_Human')
+set.seed(1)
 E <- fgseaMultilevel(WP,zSRS3059998)
 A <- plotEnrichment(WP$`Brain-Derived Neurotrophic Factor (BDNF) signaling pathway WP2380`, stats = zSRS3059998) +
   xlab('Gene rank') +
   ylab('Enrichment Score') +
-  labs(title = 'SRS3059998\nBDNF signaling pathway',
-       subtitle = paste0('FDR = ', formatC(E[grepl('\\(BDNF\\)',E$pathway),]$padj, digits = 2, format = 'e')))
+  labs(title = 'SRS3059998\nBDNF signaling\npathway',
+       subtitle = paste0('FDR = ', formatC(E[grepl('\\(BDNF\\)',E$pathway),]$padj, digits = 2, format = 'e'))) +
+  theme(plot.title = element_text(face = 2, size = 25))
+set.seed(1)
 E <- fgseaMultilevel(WP,zSRS3059999)
 B <- plotEnrichment(WP$`Brain-Derived Neurotrophic Factor (BDNF) signaling pathway WP2380`, stats = zSRS3059999) +
   xlab('Gene rank') +
   ylab('Enrichment Score') +
-  labs(title = 'SRS3059999\nBDNF signaling pathway',
-       subtitle = paste0('FDR = ', formatC(E[grepl('\\(BDNF\\)',E$pathway),]$padj, digits = 2, format = 'e')))
+  labs(title = 'SRS3059999\nBDNF signaling\npathway',
+       subtitle = paste0('FDR = ', formatC(E[grepl('\\(BDNF\\)',E$pathway),]$padj, digits = 2, format = 'e'))) +
+  theme(plot.title = element_text(face = 2, size = 25))
 png('../Results/bndf_SRS3059998.png', width = 1000, height = 750, res = 300)
 A
 dev.off()
