@@ -85,7 +85,7 @@ plotEnrichment(pathway = MGI[[gSet]], stats = Z) +
   theme(plot.title = element_text(face = 2, size = 25))
 dev.off()
 
-png('../Results/ego_GSM4116571.png', width = 3000, height = 3000, res = 300, bg = NA)
+png('../Results/silver_ego_GSM4116571.png', width = 3000, height = 3000, res = 300, bg = NA)
 X <- GSM4116571
 gKO <- 'Dmd'
 q <- 0.995
@@ -135,8 +135,10 @@ pPlot <- lapply(seq_len(nrow(pPlot)), function(X){as.vector(pPlot[X,])})
 names(pPlot) <- names(V(netPlot))
 tPlot <- unique(unlist(tPlot))
 eGenes <- toupper(names(V(netPlot))) %in% tPlot
-vColor <- rgb(0,188/255,1,0.3)
+#vColor <- rgb(0,188/255,1,0.3)
+vColor <- rgb(195/255, 199/255, 198/255 ,0.3)
 pieColors <- list(hcl.colors(nrow(E), palette = 'Zissou 1', alpha = 0.7))
+eBorder <- ifelse(unlist(lapply(pPlot, sum)) > 0, NA, NA)
 par(mar=c(4,0,0,0), xpd = TRUE)
 suppressWarnings(plot(netPlot,
                       layout = layPlot,
@@ -151,7 +153,7 @@ suppressWarnings(plot(netPlot,
                       edge.color = ifelse(E(netPlot)$W > 0, 'red', 'blue'),
                       edge.curved = ifelse(W == 0.2, 0, 0.1),
                       vertex.color = vColor,
-                      vertex.frame.color = NA))
+                      vertex.frame.color = eBorder))
 sigLevel <- formatC(E$Adjusted.P.value, digits = 2, format = 'g', width = 0, drop0trailing = TRUE)
 gSetNames <- lengths(strsplit(E$Genes, ';'))
 gSetNames <- paste0('(', gSetNames,') ', E$Term, ' FDR = ', sigLevel)
