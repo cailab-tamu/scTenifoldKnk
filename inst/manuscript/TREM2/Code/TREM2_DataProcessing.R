@@ -42,8 +42,7 @@ source('https://raw.githubusercontent.com/dosorio/utilities/master/singleCell/pl
 source('https://raw.githubusercontent.com/dosorio/utilities/master/singleCell/plotKO.R')
 source('https://raw.githubusercontent.com/dosorio/utilities/master/idConvert/hsa2mmu_SYMBOL.R')
 
-load('../Results/TREM2__YC_GSE130626.RData')
-GSE130626 <- WT
+load('../Results/GSE130626.RData')
 dGenes <- GSE130626$diffRegulation$gene[GSE130626$diffRegulation$p.adj < 0.05]
 
 png('../Results/dr2_GSE130626.png', width = 2000, height = 2000, res = 300)
@@ -127,32 +126,35 @@ zGSE130626 <- GSE130626$diffRegulation$Z
 names(zGSE130626) <- toupper(GSE130626$diffRegulation$gene)
 
 MGI <- gmtPathways('https://amp.pharm.mssm.edu/Enrichr/geneSetLibrary?mode=text&libraryName=KEGG_2019_Mouse')
-E <- fgseaMultilevel(MGI, zGSE130626, eps = 0)
+set.seed(1)
+E <- fgseaMultilevel(MGI, zGSE130626)
 
-png('../Results/YCgsea1_GSE130626.png', width = 1000, height = 1000, res = 300)
+png('../Results/gsea1_GSE130626.png', width = 1000, height = 1000, res = 300)
 gSet <- 'Cholesterol metabolism'
 plotEnrichment(MGI[[gSet]], zGSE130626) +
   labs(
-    title = gSet,
+    title = 'Cholesterol\nmetabolism',
     subtitle = paste0('FDR = ', formatC(E$padj[E$pathway %in% gSet], digits = 2, format = 'e'))) +
   xlab('Gene rank') +
-  ylab('Enrichment Score')
+  ylab('Enrichment Score') + theme(plot.title = element_text(face = 2, size = 25))
 dev.off()
-png('../Results/YCgsea2_GSE130626.png', width = 1000, height = 1000, res = 300)
+
+png('../Results/gsea2_GSE130626.png', width = 1000, height = 1000, res = 300)
 gSet <- 'Alzheimer disease'
 plotEnrichment(MGI[[gSet]], zGSE130626) +
   labs(
-    title = gSet,
+    title = 'Alzheimer\ndisease',
     subtitle = paste0('FDR = ', formatC(E$padj[E$pathway %in% gSet], digits = 2, format = 'e'))) +
   xlab('Gene rank') +
-  ylab('Enrichment Score')
+  ylab('Enrichment Score') + theme(plot.title = element_text(face = 2, size = 25))
 dev.off()
-png('../Results/YCgsea3_GSE130626.png', width = 1000, height = 1000, res = 300)
+
+png('../Results/gsea3_GSE130626.png', width = 1000, height = 1000, res = 300)
 gSet <- 'Lysosome'
 plotEnrichment(MGI[[gSet]], zGSE130626) +
   labs(
     title = gSet,
     subtitle = paste0('FDR = ', formatC(E$padj[E$pathway %in% gSet], digits = 2, format = 'e'))) +
   xlab('Gene rank') +
-  ylab('Enrichment Score')
+  ylab('Enrichment Score')  + theme(plot.title = element_text(face = 2, size = 25))
 dev.off()
