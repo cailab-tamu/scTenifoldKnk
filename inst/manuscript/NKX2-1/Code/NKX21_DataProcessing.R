@@ -41,8 +41,8 @@ source('https://raw.githubusercontent.com/dosorio/utilities/master/singleCell/pl
 source('https://raw.githubusercontent.com/dosorio/utilities/master/singleCell/plotKO.R')
 source('https://raw.githubusercontent.com/dosorio/utilities/master/idConvert/hsa2mmu_SYMBOL.R')
 
-load('../Results/NKX21__YC_GSM3716703.RData')
-GSM3716703 <- WT
+load('../Results/GSM3716703.RData')
+#GSM3716703 <- WT
 markerGenes <- read.csv('../Data/pnas.1906663116.sd01.csv', stringsAsFactors = FALSE, row.names = 1)
 markerGenes$T.test.p.value <- as.numeric(markerGenes$T.test.p.value)
 markerGenes <- markerGenes[complete.cases(markerGenes),]
@@ -141,40 +141,44 @@ names(CT) <- namesCT
 
 zGSM3716703 <- GSM3716703$diffRegulation$Z
 names(zGSM3716703) <- toupper(GSM3716703$diffRegulation$gene)
+set.seed(1)
 GSEA <- fgseaMultilevel(CT, zGSM3716703)
 GSEA <- GSEA[order(GSEA$padj),]
 
-png('../Results/YCgsea1_GSM3716703.png', width = 1000, height = 1000, res = 300)
+png('../Results/gsea1_GSM3716703.png', width = 1000, height = 1000, res = 300)
 gSet <- 'Pulmonary alveolar type I cells'
 plotEnrichment(CT[[gSet]], zGSM3716703) +
-  labs(title = gSet, subtitle = paste0('FDR = ', formatC(GSEA$padj[GSEA$pathway %in% gSet], digits = 2, format = 'e'))) +
-  xlab('Gene rank') + ylab('Enrichment Score')
+  labs(title = 'Pulmonary\nalveolar\ntype I cells', subtitle = paste0('FDR = ', formatC(GSEA$padj[GSEA$pathway %in% gSet], digits = 2, format = 'e'))) +
+  xlab('Gene rank') + ylab('Enrichment Score') + theme(plot.title = element_text(face = 2, size = 25))
 dev.off()
-png('../Results/YCgsea2_GSM3716703.png', width = 1000, height = 1000, res = 300)
+
+png('../Results/gsea2_GSM3716703.png', width = 1000, height = 1000, res = 300)
 gSet <- 'Pulmonary alveolar type II cells'
 plotEnrichment(CT[[gSet]], zGSM3716703) +
-  labs(title = gSet, subtitle = paste0('FDR = ', formatC(GSEA$padj[GSEA$pathway %in% gSet], digits = 2, format = 'e'))) +
-  xlab('Gene rank') + ylab('Enrichment Score')
+  labs(title = 'Pulmonary\nalveolar\ntype II cells', subtitle = paste0('FDR = ', formatC(GSEA$padj[GSEA$pathway %in% gSet], digits = 2, format = 'e'))) +
+  xlab('Gene rank') + ylab('Enrichment Score') + theme(plot.title = element_text(face = 2, size = 25))
 dev.off()
 
 REACTOME <- gmtPathways('https://amp.pharm.mssm.edu/Enrichr/geneSetLibrary?mode=text&libraryName=Reactome_2016')
+set.seed(1)
 Enrichment <- fgseaMultilevel(REACTOME, zGSM3716703)
 Enrichment <- Enrichment[Enrichment$NES > 0 & Enrichment$padj < 0.05,]
-png('../Results/YCgsea3_GSM3716703.png', width = 1000, height = 1000, res = 300)
+png('../Results/gsea3_GSM3716703.png', width = 1000, height = 1000, res = 300)
 gSet <- "Extracellular matrix organization Homo sapiens R-HSA-1474244"
 plotEnrichment(REACTOME[[gSet]], zGSM3716703) +
-  labs(title = "Extracellular matrix organization", subtitle = paste0('FDR = ', formatC(Enrichment$padj[Enrichment$pathway %in% gSet], digits = 2, format = 'e'))) +
-  xlab('Gene rank') + ylab('Enrichment Score')
+  labs(title = "Extracellular\nmatrix\norganization", subtitle = paste0('FDR = ', formatC(Enrichment$padj[Enrichment$pathway %in% gSet], digits = 2, format = 'e'))) +
+  xlab('Gene rank') + ylab('Enrichment Score') + theme(plot.title = element_text(face = 2, size = 25))
 dev.off()
 
 CC <- gmtPathways('https://amp.pharm.mssm.edu/Enrichr/geneSetLibrary?mode=text&libraryName=GO_Cellular_Component_2018')
+set.seed(1)
 ccEnrichment <- fgseaMultilevel(CC, zGSM3716703)
 ccEnrichment <- ccEnrichment[ccEnrichment$NES > 0,]
 ccEnrichment <- ccEnrichment[ccEnrichment$padj < 0.05,]
 
-png('../Results/YCgsea4_GSM3716703.png', width = 1000, height = 1000, res = 300)
+png('../Results/gsea4_GSM3716703.png', width = 1000, height = 1000, res = 300)
 gSet <- "microvillus (GO:0005902)"
 plotEnrichment(CC[[gSet]], zGSM3716703) +
-  labs(title = "Microvillus (GO:0005902)", subtitle = paste0('FDR = ', formatC(ccEnrichment$padj[ccEnrichment$pathway %in% gSet], digits = 2, format = 'e'))) +
-  xlab('Gene rank') + ylab('Enrichment Score')
+  labs(title = "Microvillus\n(GO:0005902)", subtitle = paste0('FDR = ', formatC(ccEnrichment$padj[ccEnrichment$pathway %in% gSet], digits = 2, format = 'e'))) +
+  xlab('Gene rank') + ylab('Enrichment Score') + theme(plot.title = element_text(face = 2, size = 25))
 dev.off()
