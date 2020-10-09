@@ -68,14 +68,6 @@ names(FC) <- toupper(rownames(DE))
 
 #### DR ####
 load('betaMALATko.RData')
-set.seed(1)
-MA <- scTenifoldNet::manifoldAlignment(MALAT1$WT, MALAT1$KO, d = 2)
-MA <- MA[!grepl('_Rpl|_Rps|_Rp[[:digit:]]+|_Mt-',rownames(MA), ignore.case = TRUE),]
-DR <- scTenifoldKnk:::dRegulation(MA, gKO = 'Malat1')
-DR$FC <- (DR$distance^2/mean(DR$distance[-c(1:3)]^2))
-DR$p.value <- pchisq(DR$FC, df = 1, lower.tail = FALSE)
-DR$p.adj <- p.adjust(DR$p.value, method = 'fdr')
-MALAT1$diffRegulation <- DR
 
 #### EGO PLOT #####
 png('egoMalat1.png', width = 6500,height = 5000, res = 300, pointsize = 20, bg = NA)
@@ -83,7 +75,7 @@ plotKO(MALAT1, 'Malat1')
 dev.off()
 
 
-#DR <- MALAT1$diffRegulation
+DR <- MALAT1$diffRegulation
 Z <- DR$Z
 names(Z) <- toupper(DR$gene)
 writeLines(DR$gene[DR$p.adj < 0.05])
