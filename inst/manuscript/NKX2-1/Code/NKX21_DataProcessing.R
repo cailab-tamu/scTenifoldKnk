@@ -42,6 +42,7 @@ source('https://raw.githubusercontent.com/dosorio/utilities/master/singleCell/pl
 source('https://raw.githubusercontent.com/dosorio/utilities/master/idConvert/hsa2mmu_SYMBOL.R')
 
 load('../Results/GSM3716703.RData')
+write.csv(GSM3716703$diffRegulation, '../Results/dr_GSM3716703.csv')
 #GSM3716703 <- WT
 markerGenes <- read.csv('../Data/pnas.1906663116.sd01.csv', stringsAsFactors = FALSE, row.names = 1)
 markerGenes$T.test.p.value <- as.numeric(markerGenes$T.test.p.value)
