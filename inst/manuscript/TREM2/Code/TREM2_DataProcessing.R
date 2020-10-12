@@ -43,6 +43,7 @@ source('https://raw.githubusercontent.com/dosorio/utilities/master/singleCell/pl
 source('https://raw.githubusercontent.com/dosorio/utilities/master/idConvert/hsa2mmu_SYMBOL.R')
 
 load('../Results/GSE130626.RData')
+write.csv(GSE130626$diffRegulation, '../Results/drTREM2.csv')
 dGenes <- GSE130626$diffRegulation$gene[GSE130626$diffRegulation$p.adj < 0.05]
 
 png('../Results/dr2_GSE130626.png', width = 2000, height = 2000, res = 300)
