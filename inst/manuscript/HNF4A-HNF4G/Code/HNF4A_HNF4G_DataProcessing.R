@@ -38,7 +38,7 @@ source('https://raw.githubusercontent.com/dosorio/utilities/master/singleCell/pl
 source('https://raw.githubusercontent.com/dosorio/utilities/master/singleCell/plotKO.R')
 
 load('../Results/GSM3477499.RData')
-
+write.csv(GSM3477499$diffRegulation, '../Results/drHNF4AG.csv')
 drGenes <- GSM3477499$diffRegulation$gene[GSM3477499$diffRegulation$p.adj < 0.05]
 writeLines(drGenes)
 
