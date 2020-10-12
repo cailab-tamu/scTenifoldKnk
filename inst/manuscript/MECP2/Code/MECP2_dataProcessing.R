@@ -58,6 +58,9 @@ source('https://raw.githubusercontent.com/dosorio/utilities/master/singleCell/pl
 load('../Results/SRS3059998.RData')
 load('../Results/SRS3059999.RData')
 
+write.csv(SRS3059998$diffRegulation, '../Results/drSRS3059998.csv')
+write.csv(SRS3059999$diffRegulation, '../Results/drSRS3059999.csv')
+
 gList1 <- SRS3059998$diffRegulation$gene[SRS3059998$diffRegulation$p.adj < 0.05]
 gList2 <- SRS3059999$diffRegulation$gene[SRS3059999$diffRegulation$p.adj < 0.05]
 
