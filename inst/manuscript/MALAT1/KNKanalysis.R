@@ -68,6 +68,8 @@ names(FC) <- toupper(rownames(DE))
 
 #### DR ####
 load('betaMALATko.RData')
+write.csv(MALAT1$diffRegulation, 'drMALAT1.csv')
+MALAT1$diffRegulation$gene[MALAT1$diffRegulation$p.adj < 0.05]
 
 #### EGO PLOT #####
 png('egoMalat1.png', width = 6500,height = 5000, res = 300, pointsize = 20, bg = NA)
