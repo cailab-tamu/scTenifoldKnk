@@ -5,9 +5,8 @@ library(ggplot2)
 library(ggrepel)
 
 load('../Results/Preenterocytes.RData')
-O$manifoldAlignment <- O$manifoldAlignment[!grepl('_Rpl|_Rps',rownames(O$manifoldAlignment)),]
-DR <- scTenifoldKnk:::dRegulation(O$manifoldAlignment, 'Ahr')
-O$diffRegulation <- DR
+drGenes  <- O$diffRegulation$gene[O$diffRegulation$p.adj < 0.05]
+write.csv(O$diffRegulation, '../Results/drAHR.csv')
 
 WT <- readMM('../Data/Preenterocytes_WT.mtx')
 rownames(WT) <- readLines('../Data/Preenterocytes_WT_genes.txt')
