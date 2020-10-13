@@ -39,5 +39,5 @@ writeMM(KO, 'KO.mtx')
 writeLines(rownames(KO), 'genesKO.txt')
 writeLines(colnames(KO), 'barcodesKO.txt')
 
-MALAT1 <- scTenifoldKnk(WT, gKO = 'Malat1')
-save(MALAT1, file = 'betaMALATko.RData')
+# MALAT1 <- scTenifoldKnk(WT, gKO = 'Malat1')
+# save(MALAT1, file = 'betaMALATko.RData')

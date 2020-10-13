@@ -37,7 +37,7 @@ ALL <- RunPCA(ALL, verbose = FALSE)
 ALL <- RunHarmony(ALL, group.by.vars = 'orig.ident')
 ALL <- RunUMAP(ALL, reduction = 'harmony', dims = 1:50, verbose = FALSE)
 png('umapMalat1.png', width = 1500, height = 1200, res = 300)
-UMAPPlot(ALL) + theme_bw() + xlab('UMAP 1') + ylab('UMAP 1')
+UMAPPlot(ALL) + theme_bw() + xlab('UMAP 1') + ylab('UMAP 2')
 dev.off()
 
 

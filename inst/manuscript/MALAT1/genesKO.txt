@@ -2960,7 +2960,6 @@ Cops6
 Mcm7
 Ap4m1
 Taf6
-Cnpy4
 Lamtor4
 Map11
 6330418K02Rik
@@ -3611,7 +3610,6 @@ Cd3eap
 Ercc2
 Klc3
 Mark4
-Bloc1s3
 Trappc6a
 Ppp1r37
 Gemin7
@@ -5550,7 +5548,6 @@ Rps15
 2310011J03Rik
 Pcsk4
 Reep6
-Mex3d
 Mbd3
 Uqcr11
 Tcf3
@@ -8136,7 +8133,6 @@ Dgkg
 Tbccd1
 Dnajb11
 Eif4a2
-Rfc4
 St6gal1
 Sst
 Lpp
