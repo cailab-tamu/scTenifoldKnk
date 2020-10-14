@@ -6,6 +6,7 @@ library(harmony)
 library(OrderedList)
 library(igraph)
 library(enrichR)
+library(ggrepel)
 library(ggplot2)
 source('https://raw.githubusercontent.com/dosorio/utilities/master/singleCell/plotKO.R')
 
@@ -43,24 +44,26 @@ dev.off()
 
 
 #### Volcano ####
+load('betaMALATko.RData')
 DE <- FindMarkers(ALL, ident.1 = 'KO', ident.2 = 'WT', test.use = 'MAST', logfc.threshold = 0)
 
 library(ggrepel)
 DF <- data.frame(FC = DE$avg_logFC, P = -log10(DE$p_val_adj), G = rownames(DE))
 DF$G[DE$p_val_adj >= 0.05] <- NA
-DF$G[abs(DF$FC) < 0.29] <- NA
+DF$G[abs(DF$FC) < 0.25] <- NA
+#DF$G[!DF$G %in% MALAT1$diffRegulation$gene[MALAT1$diffRegulation$p.adj < 0.05]] <- NA
 gCol <- densCols(DF[,1:2])
 gCol[!is.na(DF$G)] <- 'red'
+
 png('volcanoMalat1.png', width = 1200, height = 1200, res = 300)
 ggplot(DF, aes(FC,P, label = G)) + 
   geom_point(col = gCol) + 
-  xlim(c(-1,0.75)) + 
-  geom_text_repel() +
+  xlim(c(-1,1)) + 
+  geom_text_repel(size = 3, segment.alpha = 0.2, force = 10, segment.size = 0.1) +
   theme_bw() + 
   xlab(expression(log[2]~(Fold-Change))) +
   ylab(expression(-log[10]~(P-value)))
 dev.off()
-
 
 
 FC <- DE$avg_logFC #* -log10(DE$p_val_adj)
