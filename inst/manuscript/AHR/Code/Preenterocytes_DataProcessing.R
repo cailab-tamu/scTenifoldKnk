@@ -76,6 +76,8 @@ REACTOME <- gmtPathways('https://amp.pharm.mssm.edu/Enrichr/geneSetLibrary?mode=
 set.seed(1)
 drE <- fgsea(REACTOME, drZ, 1e6)
 drE$leadingEdge <- unlist(lapply(drE$leadingEdge, function(X){paste0(X,collapse = ';')}))
+drE <- drE[drE$padj < 0.05 & drE$NES > 0,]
+drE <- drE[order(drE$NES),]
 write.csv(drE, '../Results/drEnrichmentAHR.csv')
 set.seed(1)
 deE <- fgsea(REACTOME, deZ, 1e6)
