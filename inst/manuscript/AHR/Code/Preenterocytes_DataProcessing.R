@@ -33,7 +33,7 @@ ALL <- RunUMAP(ALL, reduction = 'harmony', dims = 1:50)
 UMAPPlot(ALL)
 
 DE <- FindMarkers(ALL, ident.1 = 'KO', ident.2 = 'WT', test.use = 'MAST', logfc.threshold = 0)
-DE <- DE[order(abs(DE$avg_logFC), decreasing = TRUE),]
+write.csv(DE, file = '../Results/deAHR.csv')
 deList <- rownames(DE)
 deZ <- abs(DE$avg_logFC)
 names(deZ) <- toupper(rownames(DE))
@@ -73,8 +73,15 @@ drList <- drList[drList %in% deList]
 library(fgsea)
 KEGG <- gmtPathways('https://amp.pharm.mssm.edu/Enrichr/geneSetLibrary?mode=text&libraryName=KEGG_2019_Mouse')
 REACTOME <- gmtPathways('https://amp.pharm.mssm.edu/Enrichr/geneSetLibrary?mode=text&libraryName=Reactome_2016')
+set.seed(1)
 drE <- fgsea(REACTOME, drZ, 1e6)
+drE$leadingEdge <- unlist(lapply(drE$leadingEdge, function(X){paste0(X,collapse = ';')}))
+write.csv(drE, '../Results/drEnrichmentAHR.csv')
+set.seed(1)
 deE <- fgsea(REACTOME, deZ, 1e6)
+deE$leadingEdge <- unlist(lapply(deE$leadingEdge, function(X){paste0(X,collapse = ';')}))
+write.csv(deE, '../Results/deEnrichmentAHR.csv')
+
 
 library(UpSetR)
 png('fgsea3.png', width = 600, height = 600, res = 300)
