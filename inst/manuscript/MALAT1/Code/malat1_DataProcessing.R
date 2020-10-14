@@ -103,7 +103,15 @@ set.seed(1)
 eDE <- fgseaMultilevel(mmuKEGG, FC)
 
 eDR <- eDR[eDR$NES > 0 & eDR$padj < 0.05,]
+eDR <- eDR[order(eDR$NES, decreasing = TRUE),]
+eDR$leadingEdge <- unlist(lapply(eDR$leadingEdge, function(X){paste0(X,collapse = ';')}))
+write.csv(eDR, 'drEnrichment.csv')
 eDE <- eDE[eDE$NES > 0 & eDE$padj < 0.05,]
+eDE <- eDE[order(eDE$NES, decreasing = TRUE),]
+eDE$leadingEdge <- unlist(lapply(eDE$leadingEdge, function(X){paste0(X,collapse = ';')}))
+write.csv(eDE, 'deEnrichment.csv')
+
+
 
 png('upset.png', width = 900, height = 900, res = 300, pointsize = 1.2)
 upset(fromList(list(DE=eDE$pathway, DR=eDR$pathway)),mb.ratio = c(0.8, 0.2))

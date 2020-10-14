@@ -77,11 +77,13 @@ set.seed(1)
 drE <- fgsea(REACTOME, drZ, 1e6)
 drE$leadingEdge <- unlist(lapply(drE$leadingEdge, function(X){paste0(X,collapse = ';')}))
 drE <- drE[drE$padj < 0.05 & drE$NES > 0,]
-drE <- drE[order(drE$NES),]
+drE <- drE[order(drE$NES, decreasing = TRUE),]
 write.csv(drE, '../Results/drEnrichmentAHR.csv')
 set.seed(1)
 deE <- fgsea(REACTOME, deZ, 1e6)
 deE$leadingEdge <- unlist(lapply(deE$leadingEdge, function(X){paste0(X,collapse = ';')}))
+deE <- deE[deE$padj < 0.05 & deE$NES > 0,]
+deE <- deE[order(deE$NES, decreasing = TRUE),]
 write.csv(deE, '../Results/deEnrichmentAHR.csv')
 
 
