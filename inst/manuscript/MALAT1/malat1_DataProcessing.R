@@ -70,7 +70,13 @@ dev.off()
 #### DR ####
 load('betaMALATko.RData')
 write.csv(MALAT1$diffRegulation, 'drMALAT1.csv')
-MALAT1$diffRegulation$gene[MALAT1$diffRegulation$p.adj < 0.05]
+DR <- MALAT1$diffRegulation
+
+# totalGenes <- length(unique(c(rownames(DE), rownames(DR))))
+# deGenes <- sum(DE$p_val_adj < 0.05 & abs(DE$avg_logFC) > 0.1)
+# drGenes <- sum(DR$p.adj < 0.05)
+# sGenes <- length(intersect(rownames(DE)[DE$p_val_adj < 0.05 & abs(DE$avg_logFC) > 0.1], DR$gene[DR$p.adj < 0.05]))
+# nrow(DR)
 
 #### EGO PLOT #####
 png('egoMalat1.png', width = 6500,height = 5000, res = 300, pointsize = 20, bg = NA)
@@ -78,7 +84,7 @@ plotKO(MALAT1, 'Malat1')
 dev.off()
 
 #### Comparison ####
-DR <- MALAT1$diffRegulation
+
 Z <- DR$Z
 names(Z) <- toupper(DR$gene)
 writeLines(DR$gene[DR$p.adj < 0.05])
