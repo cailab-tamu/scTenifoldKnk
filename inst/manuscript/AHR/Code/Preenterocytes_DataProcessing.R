@@ -5,6 +5,7 @@ library(ggplot2)
 library(ggrepel)
 
 load('../Results/Preenterocytes.RData')
+DR <- O$diffRegulation
 drGenes  <- O$diffRegulation$gene[O$diffRegulation$p.adj < 0.05]
 write.csv(O$diffRegulation, '../Results/drAHR.csv')
 
@@ -39,20 +40,14 @@ names(deZ) <- toupper(rownames(DE))
 
 dF <- data.frame(FC=DE$avg_logFC, P=-log10(DE$p_val), G = rownames(DE))
 dF <- as.data.frame.array(dF)
-dF$O <- seq_len(nrow(dF))
-dF <- dF[order(abs(dF$FC)),]
-dF$O[!is.na(dF$G)] <- 1e6
-dF <- dF[order(dF$O, decreasing = FALSE),]
+dF$G[abs(DE$avg_logFC) < 0.2] <- NA
+dF$G[DE$p_val_adj > 0.05] <- NA
 dF$COL <- densCols(dF[,1:2])
-dF$COL[dF$G %in% DR$gene[DR$p.adj < 0.05]] <- 'red'
-dF$G[!dF$G %in% DR$gene[DR$p.adj < 0.05]] <- NA
-gT <- ifelse(is.na(dF$G),0.2,1)
-BG <- rownames(DE)[DE$p_val_adj < 0.05 & abs(DE$avg_logFC) > 0.1]
-BG <- intersect(dF$G, BG)
-FF <- ifelse(dF$G %in% BG, 2, 1)
+dF$COL[!is.na(dF$G)] <- 'red'
+FF <- ifelse(dF$G %in% drGenes,2,1)
 
 png('VLN3.png', width = 1500, height = 1500, res=300)
-ggplot(dF, aes(FC, P, label = G)) + geom_point(color = dF$COL, alpha = gT) + xlim(c(-0.55,0.55)) + theme_bw() + xlab(log[2]~'Fold-Change') + ylab(-log[10]~'P-value') + geom_text_repel(box.padding = 0.15, segment.size = 0.05, aes(fontface= FF))
+ggplot(dF, aes(FC, P, label = G)) + geom_point(color = dF$COL) + xlim(c(-0.55,0.55)) + theme_bw() + xlab(log[2]~'Fold-Change') + ylab(-log[10]~'P-value') + geom_text_repel(box.padding = 0.15, segment.size = 0.05, aes(fontface= FF))
 dev.off()
 
 
