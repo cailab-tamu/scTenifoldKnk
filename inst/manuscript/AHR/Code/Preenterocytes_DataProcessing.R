@@ -38,6 +38,10 @@ deList <- rownames(DE)
 deZ <- abs(DE$avg_logFC)
 names(deZ) <- toupper(rownames(DE))
 
+fDE <- DE[abs(DE$avg_logFC) > 0.2 & DE$p_val_adj < 0.05, ]
+write.csv(rownames(fDE)[fDE$avg_logFC < 0], '../Results/down_AhR.txt')
+write.csv(rownames(fDE)[fDE$avg_logFC > 0], '../Results/up_AhR.txt')
+
 dF <- data.frame(FC=DE$avg_logFC, P=-log10(DE$p_val), G = rownames(DE))
 dF <- as.data.frame.array(dF)
 dF$G[abs(DE$avg_logFC) < 0.2] <- NA
@@ -85,6 +89,8 @@ deE$leadingEdge <- unlist(lapply(deE$leadingEdge, function(X){paste0(X,collapse 
 deE <- deE[deE$padj < 0.05 & deE$NES > 0,]
 deE <- deE[order(deE$NES, decreasing = TRUE),]
 write.csv(deE, '../Results/deEnrichmentAHR.csv')
+
+
 
 
 library(UpSetR)
@@ -208,13 +214,22 @@ names(CT) <- ctNames
 
 # CM <- gmtPathways('../Data/CannonicalMarkers.txt')
 # CM <- lapply(CM, toupper)
+
 library(ggplot2)
 png('DE_gseaMarkers.png', width = 1000, height = 1000, res = 300)
+set.seed(1)
 E <- fgseaMultilevel(CT, deZ)
-plotEnrichment(CT$Enterocyte, deZ) + xlab('Gene rank') + ylab('Enrichment Score') + labs(title = 'Enterocytes', subtitle = paste0('MAST\nFDR = ', formatC(E$padj[E$pathway == 'Enterocyte'], 2, format = 'e'))) + theme_bw() + theme(plot.title = element_text(size=20))
+E$leadingEdge <- unlist(lapply(E$leadingEdge, function(X){paste0(X, collapse = ';')}))
+E <- E[order(E$NES, decreasing = TRUE),]
+write.csv(E, '../Results/deCT_AHR.csv')
+plotEnrichment(CT$Enterocyte, deZ) + xlab('Gene rank') + ylab('Enrichment Score') + labs(title = 'Enterocytes', subtitle = paste0('MAST\nFDR = ', formatC(E$padj[E$pathway == 'Enterocyte'], 2, format = 'e'))) + theme_bw() + theme(plot.title = element_text(size=25, face = 2))
 dev.off()
 
 png('DR_gseaMarkers.png', width = 1000, height = 1000, res = 300)
+set.seed(1)
 E <- fgseaMultilevel(CT, drZ)
-plotEnrichment(CT$Enterocyte, drZ) + xlab('Gene rank') + ylab('Enrichment Score') + labs(title = 'Enterocytes', subtitle = paste0('scTenifoldKnk\nFDR = ', formatC(E$padj[E$pathway == 'Enterocyte'], 2, format = 'e'))) + theme_bw() + theme(plot.title = element_text(size=20))
+E$leadingEdge <- unlist(lapply(E$leadingEdge, function(X){paste0(X, collapse = ';')}))
+E <- E[order(E$NES, decreasing = TRUE),]
+write.csv(E, '../Results/drCT_AHR.csv')
+plotEnrichment(CT$Enterocyte, drZ) + xlab('Gene rank') + ylab('Enrichment Score') + labs(title = 'Enterocytes', subtitle = paste0('scTenifoldKnk\nFDR = ', formatC(E$padj[E$pathway == 'Enterocyte'], 2, format = 'e'))) + theme_bw() + theme(plot.title = element_text(size=25, face = 2))
 dev.off()
