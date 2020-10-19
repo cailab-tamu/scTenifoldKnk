@@ -199,6 +199,9 @@ O$diffRegulation <- DR
 drZ <- DR$Z
 names(drZ) <- toupper(DR$gene)
 
+
+writeLines(intersect(rownames(fDE), DR$gene[DR$p.adj < 0.05]), sep = ', ')
+
 # drZ <- DR$Z
 # names(drZ) <- toupper(DR$gene)
 # CT <- read.table('PanglaoDB_markers_27_Mar_2020.tsv.gz', sep = '\t', header = TRUE)
