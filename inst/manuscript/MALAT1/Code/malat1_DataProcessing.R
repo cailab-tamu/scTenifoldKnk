@@ -17,14 +17,14 @@ goBP <- gmtPathways('https://maayanlab.cloud/Enrichr/geneSetLibrary?mode=text&li
 WP <- gmtPathways('https://maayanlab.cloud/Enrichr/geneSetLibrary?mode=text&libraryName=WikiPathways_2019_Human')
 
 #### DE ####
-WT <- readMM('WT.mtx')
-rownames(WT) <- readLines('genesWT.txt')
-colnames(WT) <- readLines('barcodesWT.txt')
+WT <- readMM('../Data/WT.mtx')
+rownames(WT) <- readLines('../Data/genesWT.txt')
+colnames(WT) <- readLines('../Data/barcodesWT.txt')
 #WT <- WT[!rownames(WT) %in% 'Malat1',]
 
-KO <- readMM('KO.mtx')
-rownames(KO) <- readLines('genesKO.txt')
-colnames(KO) <- readLines('barcodesKO.txt')
+KO <- readMM('../Data/KO.mtx')
+rownames(KO) <- readLines('../Data/genesKO.txt')
+colnames(KO) <- readLines('../Data/barcodesKO.txt')
 #KO <- KO[!rownames(KO) %in% 'Malat1',]
 
 WT <- CreateSeuratObject(WT, project = 'WT')
@@ -44,7 +44,7 @@ dev.off()
 
 
 #### Volcano ####
-load('betaMALATko.RData')
+load('../Results/MALAT1.RData')
 DE <- FindMarkers(ALL, ident.1 = 'KO', ident.2 = 'WT', test.use = 'MAST', logfc.threshold = 0)
 drGenes <- MALAT1$diffRegulation$gene[MALAT1$diffRegulation$p.adj < 0.05]
 
@@ -62,7 +62,7 @@ ggplot(DF, aes(FC,P, label = G)) +
   xlim(c(-1,1)) + 
   geom_text_repel(size = 3, segment.alpha = 0.2, force = 10, segment.size = 0.1, aes(fontface = ifelse(DF$G %in% drGenes, 2, 1))) +
   theme_bw() + 
-  xlab(expression(log[2]~(Fold-Change))) +
+  xlab(expression(log~(Fold-Change))) +
   ylab(expression(-log[10]~(P-value)))
 dev.off()
 

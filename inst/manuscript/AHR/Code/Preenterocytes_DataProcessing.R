@@ -51,7 +51,7 @@ dF$COL[!is.na(dF$G)] <- 'red'
 FF <- ifelse(dF$G %in% drGenes,2,1)
 
 png('VLN3.png', width = 1500, height = 1500, res=300)
-ggplot(dF, aes(FC, P, label = G)) + geom_point(color = dF$COL) + xlim(c(-0.55,0.55)) + theme_bw() + xlab(log[2]~'Fold-Change') + ylab(-log[10]~'P-value') + geom_text_repel(box.padding = 0.15, segment.size = 0.05, aes(fontface= FF))
+ggplot(dF, aes(FC, P, label = G)) + geom_point(color = dF$COL) + xlim(c(-0.55,0.55)) + theme_bw() + xlab(log~('Fold-Change')) + ylab(-log[10]~'P-value') + geom_text_repel(box.padding = 0.15, segment.size = 0.05, aes(fontface= FF))
 dev.off()
 
 
