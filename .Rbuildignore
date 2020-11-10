@@ -2,3 +2,4 @@
 ^\.Rproj\.user$
 inst/manuscript/*
 inst/benchmark/*
+MATLAB/*

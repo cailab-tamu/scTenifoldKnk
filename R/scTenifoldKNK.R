@@ -1,7 +1,7 @@
 #' @export scTenifoldKnk
 #' @importFrom Matrix Matrix rowMeans rowSums
 #' @importFrom RSpectra svds
-#' @importFrom scTenifoldNet makeNetworks tensorDecomposition manifoldAlignment dRegulation
+#' @importFrom scTenifoldNet makeNetworks tensorDecomposition manifoldAlignment
 #' @author Daniel Osorio <dcosorioh@tamu.edu>
 #' @title scTenifoldKNK
 #' @description Predict gene perturbations
@@ -15,7 +15,7 @@
 #' @param nc_symmetric A boolean value (TRUE/FALSE), if TRUE, the weights matrix returned will be symmetric.
 #' @param nc_scaleScores A boolean value (TRUE/FALSE), if TRUE, the weights will be normalized such that the maximum absolute value is 1.
 #' @param nc_q A decimal value between 0 and 1. Defines the cut-off threshold of top q\% relationships to be returned.
-#' @param td_K An integer value. Defines the number of rank-one tensors used to approximate the data using CANDECOMP/PARAFAC (CP) Tensor Decomposition. 
+#' @param td_K An integer value. Defines the number of rank-one tensors used to approximate the data using CANDECOMP/PARAFAC (CP) Tensor Decomposition.
 #' @param td_maxIter An integer value. Defines the maximum number of iterations if error stay above \code{td_maxError}.
 #' @param td_maxError A decimal value between 0 and 1. Defines the relative Frobenius norm error tolerance.
 #' @param ma_nDim An integer value. Defines the number of dimensions of the low-dimensional feature space to be returned from the non-linear manifold alignment.
@@ -24,7 +24,6 @@ scTenifoldKnk <- function(countMatrix, gKO = NULL, qc_mtThreshold = 0.1, qc_minL
                           nc_scaleScores = TRUE, nc_symmetric = FALSE, nc_q = 0.9, td_K = 3, td_maxIter = 1000,
                           td_maxError = 1e-05, ma_nDim = 2){
   countMatrix <- scQC(countMatrix, mtThreshold = qc_mtThreshold, minLSize = qc_minLSize)
-  countMatrix <- Matrix(vstNorm(countMatrix))
   if(ncol(countMatrix) > 500){
     countMatrix <- countMatrix[rowMeans(countMatrix != 0) >= 0.05,]
   } else {
@@ -43,9 +42,9 @@ scTenifoldKnk <- function(countMatrix, gKO = NULL, qc_mtThreshold = 0.1, qc_minL
   set.seed(1)
   DR <- dRegulation(MA, gKO)
   outputList <- list()
-  outputList$WT <- Matrix(WT)
-  outputList$KO <- Matrix(KO)
-  outputList$MA <- MA
+  outputList$tensorNetworks$WT <- Matrix(WT)
+  outputList$tensorNetworks$KO <- Matrix(KO)
+  outputList$manifoldAlignment <- MA
   outputList$diffRegulation <- DR
   return(outputList)
 }
