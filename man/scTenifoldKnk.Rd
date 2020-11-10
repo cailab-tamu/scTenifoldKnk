@@ -53,6 +53,11 @@ scTenifoldKnk(
 \description{
 Predict gene perturbations
 }
+\examples{
+scRNAseq <- system.file("single-cell/example.csv",package="scTenifoldKnk")
+scRNAseq <- read.csv(scRNAseq, row.names = 1)
+scTenifoldKnk(countMatrix = scRNAseq, gKO = 'G100', qc_minLSize = 0)
+}
 \author{
 Daniel Osorio <dcosorioh@tamu.edu>
 }

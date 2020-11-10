@@ -19,6 +19,10 @@
 #' @param td_maxIter An integer value. Defines the maximum number of iterations if error stay above \code{td_maxError}.
 #' @param td_maxError A decimal value between 0 and 1. Defines the relative Frobenius norm error tolerance.
 #' @param ma_nDim An integer value. Defines the number of dimensions of the low-dimensional feature space to be returned from the non-linear manifold alignment.
+#' @examples
+#' scRNAseq <- system.file("single-cell/example.csv",package="scTenifoldKnk")
+#' scRNAseq <- read.csv(scRNAseq, row.names = 1)
+#' scTenifoldKnk(countMatrix = scRNAseq, gKO = 'G100', qc_minLSize = 0)
 
 scTenifoldKnk <- function(countMatrix, gKO = NULL, qc_mtThreshold = 0.1, qc_minLSize = 1000, nc_nNet = 10, nc_nCells = 500, nc_nComp = 3,
                           nc_scaleScores = TRUE, nc_symmetric = FALSE, nc_q = 0.9, td_K = 3, td_maxIter = 1000,
