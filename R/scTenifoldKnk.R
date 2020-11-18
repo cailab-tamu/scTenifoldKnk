@@ -20,8 +20,11 @@
 #' @param td_maxError A decimal value between 0 and 1. Defines the relative Frobenius norm error tolerance.
 #' @param ma_nDim An integer value. Defines the number of dimensions of the low-dimensional feature space to be returned from the non-linear manifold alignment.
 #' @examples
+#' # Loading single-cell data
 #' scRNAseq <- system.file("single-cell/example.csv",package="scTenifoldKnk")
 #' scRNAseq <- read.csv(scRNAseq, row.names = 1)
+#'
+#' # Running scTenifoldKnk
 #' scTenifoldKnk(countMatrix = scRNAseq, gKO = 'G100', qc_minLSize = 0)
 
 scTenifoldKnk <- function(countMatrix, gKO = NULL, qc_mtThreshold = 0.1, qc_minLSize = 1000, nc_nNet = 10, nc_nCells = 500, nc_nComp = 3,
@@ -33,7 +36,7 @@ scTenifoldKnk <- function(countMatrix, gKO = NULL, qc_mtThreshold = 0.1, qc_minL
   } else {
     countMatrix[rowSums(countMatrix != 0) >= 25,]
   }
-  set.seed(1)
+  #set.seed(1)
   WT <- scTenifoldNet::makeNetworks(X = countMatrix, q = nc_q, nNet = nc_nNet, nCells = nc_nCells, scaleScores = nc_scaleScores, symmetric = nc_symmetric, nComp = nc_nComp)
   set.seed(1)
   WT <- scTenifoldNet::tensorDecomposition(xList = WT, K = td_K, maxError = td_maxError, maxIter = td_maxIter)
@@ -41,9 +44,9 @@ scTenifoldKnk <- function(countMatrix, gKO = NULL, qc_mtThreshold = 0.1, qc_minL
   WT <- t(WT)
   KO <- WT
   KO[gKO,] <- 0
-  set.seed(1)
+  #set.seed(1)
   MA <- manifoldAlignment(WT, KO, d = ma_nDim)
-  set.seed(1)
+  #set.seed(1)
   DR <- dRegulation(MA, gKO)
   outputList <- list()
   outputList$tensorNetworks$WT <- Matrix(WT)
