@@ -38,7 +38,7 @@ scTenifoldKnk <- function(countMatrix, gKO = NULL, qc_mtThreshold = 0.1, qc_minL
   }
   #set.seed(1)
   WT <- scTenifoldNet::makeNetworks(X = countMatrix, q = nc_q, nNet = nc_nNet, nCells = nc_nCells, scaleScores = nc_scaleScores, symmetric = nc_symmetric, nComp = nc_nComp)
-  set.seed(1)
+  #set.seed(1)
   WT <- scTenifoldNet::tensorDecomposition(xList = WT, K = td_K, maxError = td_maxError, maxIter = td_maxIter)
   WT <- as.matrix(WT$X)
   WT <- t(WT)
