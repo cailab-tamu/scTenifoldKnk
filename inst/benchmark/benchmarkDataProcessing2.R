@@ -85,11 +85,11 @@ dev.off()
 countMatrix <- SERGIO
 set.seed(1)
 X <- scTenifoldNet::makeNetworks(countMatrix, q = 0.9)
-X <- scTenifoldNet::tensorDecomposition(X)
-X <- t(X$X)
+X <- scTenifoldNet::tensorDecomposition(X)$X
+X <- t(X)
 for(i in seq_len(ncol(X))){
   for(j in seq_len(ncol(X))){
-    if(j != i){
+    if(j > i){
       if(abs(X[i,j]) > abs(X[j,i])){
         X[j,i] <- 0
       } else {
@@ -132,4 +132,3 @@ C <- plotKO(100)
 png('fig2_dirBenchmarkA.png', width = 2000, height = 2500, res = 300)
 A/B/C
 dev.off()
-
