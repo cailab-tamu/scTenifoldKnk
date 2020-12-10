@@ -96,12 +96,12 @@ plotKO(GSE130626, gKO = 'Trem2')
 
 dGenes <- GSE130626$diffRegulation$gene[GSE130626$diffRegulation$p.adj < 0.05]
 
-png('../dirResults/colGSE130626.png', width = 2000, height = 2000, res = 300)
+png('../dirResults/coltransposeGSE130626.png', width = 2000, height = 2000, res = 300)
 plotDR(GSE130626)
 dev.off()
 
-png('../dirResults/ego_colGSE130626.png', width = 3000, height = 3000, res = 300, bg = NA)
-plotKO(GSE130626, gKO = 'Trem2', nCategories = 4)
+png('../dirResults/ego_coltransposeGSE130626.png', width = 3000, height = 3000, res = 300, bg = NA)
+plotKO(GSE130626, gKO = 'Trem2')
 dev.off()
 
 
@@ -112,7 +112,7 @@ MGI <- gmtPathways('https://amp.pharm.mssm.edu/Enrichr/geneSetLibrary?mode=text&
 set.seed(1)
 E <- fgseaMultilevel(MGI, zGSE130626)
 
-png('../dirResults/gsea1_colGSE130626.png', width = 1000, height = 1000, res = 300)
+png('../dirResults/gsea1_coltransposeGSE130626.png', width = 1000, height = 1000, res = 300)
 gSet <- 'Cholesterol metabolism'
 plotEnrichment(MGI[[gSet]], zGSE130626) +
   labs(
@@ -122,7 +122,7 @@ plotEnrichment(MGI[[gSet]], zGSE130626) +
   ylab('Enrichment Score') + theme(plot.title = element_text(face = 2, size = 25))
 dev.off()
 
-png('../dirResults/gsea2_colGSE130626.png', width = 1000, height = 1000, res = 300)
+png('../dirResults/gsea2_coltransposeGSE130626.png', width = 1000, height = 1000, res = 300)
 gSet <- 'Alzheimer disease'
 plotEnrichment(MGI[[gSet]], zGSE130626) +
   labs(
@@ -132,7 +132,7 @@ plotEnrichment(MGI[[gSet]], zGSE130626) +
   ylab('Enrichment Score') + theme(plot.title = element_text(face = 2, size = 25))
 dev.off()
 
-png('../dirResults/gsea3_colGSE130626.png', width = 1000, height = 1000, res = 300)
+png('../dirResults/gsea3_coltransposeGSE130626.png', width = 1000, height = 1000, res = 300)
 gSet <- 'Lysosome'
 plotEnrichment(MGI[[gSet]], zGSE130626) +
   labs(
