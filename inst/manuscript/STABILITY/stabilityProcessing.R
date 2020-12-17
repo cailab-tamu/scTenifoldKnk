@@ -31,32 +31,34 @@ KEGG <- gmtPathways('https://maayanlab.cloud/Enrichr/geneSetLibrary?mode=text&li
 rownames(allZ) <- toupper(rownames(allZ))
 
 # E <- apply(allZ, 2, function(X){fgseaMultilevel(KEGG,X)})
-# 
+#
 # cmP <- vector()
 # for(i in 1:10){
 #   cmP[i] <- E[[3]]$padj[E[[3]]$pathway %in% 'Cholesterol metabolism']
 # }
-# 
+#
 # allE <- lapply(E, function(X){
 #   X$pathway[X$padj < 0.05]
 # })
-# 
+#
 # jaccardValues <- sapply(allE, function(i){
 #   lapply(allE, function(j){
 #     mean(table(c(i,j)) == 2)
 #   })
 # })
-# 
+#
 # mean(unlist(jaccardValues[lower.tri(jaccardValues)]))
 # sd(unlist(jaccardValues[lower.tri(jaccardValues)]))
-# 
-# 
+#
+#
 # rownames(allZ) <- toupper(rownames(allZ))
 E <- gsva(allZ, KEGG, method='ssgsea', min.sz=2)
 
 library(ComplexHeatmap)
-png('trem2enrichmentHeatmap.png', height = 2000)
-Heatmap(E)
+png('trem2enrichmentHeatmap.png', height = 1000, width = 1000, res = 300)
+gSet <- which(rownames(E) %in% c('Oxidative phosphorylation', 'Alzheimer disease', 'Cholesterol metabolism', 'Phagosome','Lysosome'))
+Heatmap(E, show_row_dend = FALSE, show_column_dend = FALSE, show_row_names = FALSE, name = 'ES') + rowAnnotation(link = anno_mark(at = gSet,                                                                                                                                  labels = rownames(E)[gSet],
+                                                                                                                                  labels_gp = gpar(fontsize = 10), padding = unit(1, "mm")))
 dev.off()
 
 R <- sapply(1:100, function(X){
@@ -83,7 +85,7 @@ ggplot(R, aes(S2)) + geom_density() + geom_vline(xintercept = E['Cholesterol met
 # #   G <- fileContent$gene[fileContent$p.adj < 0.05]
 # #   return(G)
 # # })
-# # 
+# #
 # # for(i in seq_along(allG)){
 # #   for(j in seq_along(allG)){
 # #     gList <- c(allG[[i]], allG[[j]])
