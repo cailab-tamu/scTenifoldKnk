@@ -45,9 +45,9 @@ source('https://raw.githubusercontent.com/dosorio/utilities/master/singleCell/pl
 source('https://raw.githubusercontent.com/dosorio/utilities/master/idConvert/hsa2mmu_SYMBOL.R')
 source('https://raw.githubusercontent.com/dosorio/utilities/master/graphs/strictDirection.R')
 
-
-WT <- WT[unique(unlist(ENCODE)),]
-#W <- pcNet(as.matrix(WT))
+# ENCODE <- gmtPathways('https://maayanlab.cloud/Enrichr/geneSetLibrary?mode=text&libraryName=ENCODE_TF_ChIP-seq_2015')
+# WT <- WT[unique(unlist(ENCODE)),]
+# W <- pcNet(as.matrix(WT))
 load('W.RData')
 
 
@@ -92,7 +92,7 @@ sapply(c(0, 0.25, 0.5, 0.75, 1), function(lambda){
     xlab('IQR(TF-Targets Weight)') +
     labs(color = 'Direction', title = parse(text = paste0('lambda==',lambda)), subtitle = parse(text = paste0('One-side~K-S~test~O>I~P-value == ',formatC(T2$p.value, digits = 3)))))
   dev.off()
-  png(paste0('tf-targetTOP500lambda',lambda,'.png'), width = 2000, height = 1500, res = 300)
+  png(paste0('tf-targetTOP500lambda',lambda,'.png'), width = 1500, height = 1500, res = 300)
   print(ggplot(dW[1:500,], aes(W, color = D)) +
           stat_ecdf() + theme_bw() +
           ylab('Empirical Cumulative Density Function (ECDF)') +
