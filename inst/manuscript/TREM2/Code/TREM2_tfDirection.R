@@ -45,9 +45,9 @@ source('https://raw.githubusercontent.com/dosorio/utilities/master/singleCell/pl
 source('https://raw.githubusercontent.com/dosorio/utilities/master/idConvert/hsa2mmu_SYMBOL.R')
 source('https://raw.githubusercontent.com/dosorio/utilities/master/graphs/strictDirection.R')
 
-# ENCODE <- gmtPathways('https://maayanlab.cloud/Enrichr/geneSetLibrary?mode=text&libraryName=ENCODE_TF_ChIP-seq_2015')
-# WT <- WT[unique(unlist(ENCODE)),]
-# W <- pcNet(as.matrix(WT))
+ENCODE <- gmtPathways('https://maayanlab.cloud/Enrichr/geneSetLibrary?mode=text&libraryName=ENCODE_TF_ChIP-seq_2015')
+WT <- WT[unique(unlist(ENCODE)),]
+W <- pcNet(as.matrix(WT))
 load('W.RData')
 
 

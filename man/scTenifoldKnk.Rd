@@ -9,6 +9,7 @@ scTenifoldKnk(
   gKO = NULL,
   qc_mtThreshold = 0.1,
   qc_minLSize = 1000,
+  nc_lambda = 0,
   nc_nNet = 10,
   nc_nCells = 500,
   nc_nComp = 3,
@@ -18,6 +19,7 @@ scTenifoldKnk(
   td_K = 3,
   td_maxIter = 1000,
   td_maxError = 1e-05,
+  td_nDecimal = 3,
   ma_nDim = 2
 )
 }
@@ -29,6 +31,8 @@ scTenifoldKnk(
 \item{qc_mtThreshold}{A decimal value between 0 and 1. Defines the maximum ratio of mitochondrial reads (mithocondrial reads / library size) present in a cell to be included in the analysis. It's computed using the symbol genes starting with 'MT-' non-case sensitive.}
 
 \item{qc_minLSize}{An integer value. Defines the minimum library size required for a cell to be included in the analysis.}
+
+\item{nc_lambda}{A continuous value between 0 and 1. Defines the multiplicative value (1-lambda) to be applied over the weaker edge connecting two genes to maximize the adjacency matrix directionality.}
 
 \item{nc_nNet}{An integer value. The number of networks based on principal components regression to generate.}
 
@@ -47,6 +51,8 @@ scTenifoldKnk(
 \item{td_maxIter}{An integer value. Defines the maximum number of iterations if error stay above \code{td_maxError}.}
 
 \item{td_maxError}{A decimal value between 0 and 1. Defines the relative Frobenius norm error tolerance.}
+
+\item{td_nDecimal}{An integer value indicating the number of decimal places to be used.}
 
 \item{ma_nDim}{An integer value. Defines the number of dimensions of the low-dimensional feature space to be returned from the non-linear manifold alignment.}
 }
