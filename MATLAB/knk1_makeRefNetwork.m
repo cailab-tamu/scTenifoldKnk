@@ -1,4 +1,4 @@
-function [A,outfile]=s1_makeRefNetwork(X,genelist)
+function [A,outfile]=knk1_makeRefNetwork(X,genelist)
 A=sc_pcnetdenoised(X);
 if nargout>1
     tstr=matlab.lang.makeValidName(datestr(datetime));
