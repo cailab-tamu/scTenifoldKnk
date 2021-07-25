@@ -47,4 +47,4 @@ mean(c(NKX21, TREM2, HNF4AG, CFTR, DMD, MECP2r1, MECP2r2))
 # 2475.125
 sd(c(NKX21, TREM2, HNF4AG, CFTR, DMD, MECP2r1, MECP2r2))
 # Standard deviation of the degree for the reported knockouts
-# 2475.125
+# 2823.621
