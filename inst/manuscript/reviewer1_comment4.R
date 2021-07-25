@@ -5,9 +5,9 @@ library(Matrix)
 library(enrichR)
 
 enrichmentComparison <- function(X,Y){
-  eX <- enrichr(X, databases = 'KEGG_2019_Mouse')[[1]]
+  eX <- do.call(rbind.data.frame, enrichr(X, databases = c("BioPlanet_2019", "KEGG_2019_Mouse", "Reactome_2016","GO_Biological_Process_2018", "GO_Molecular_Function_2018", "GO_Cellular_Component_2018")))
   eX <- eX$Term[eX$Adjusted.P.value < 0.05]
-  eY <- enrichr(Y, databases = 'KEGG_2019_Mouse')[[1]]
+  eY <- do.call(rbind.data.frame, enrichr(Y,  databases = c("BioPlanet_2019", "KEGG_2019_Mouse", "Reactome_2016","GO_Biological_Process_2018", "GO_Molecular_Function_2018", "GO_Cellular_Component_2018")))
   eY <- eY$Term[eY$Adjusted.P.value < 0.05]
   TP = sum(eX %in% eY)
   FP = sum(!eY %in% eX)
@@ -46,7 +46,7 @@ length(intersect(genesDE, genesDR))/length(genesDE)
 
 enrichmentComparison(genesDE, genesDR)
 # Shared DROnly DEONly 
-#   3     16      3 
+#   23    175    122 
 
 # NKX2-1
 WT <- readMM('NKX2-1/Data/GSM3716703_Nkx2-1_control_scRNAseq_matrix.mtx.gz')
@@ -77,7 +77,7 @@ length(intersect(genesDE, genesDR))/length(genesDE)
 
 enrichmentComparison(genesDE, genesDR)
 # Shared DROnly DEONly 
-#    1      4     16
+#   17     71     66
 
 # HNF4AG
 WT <- Read10X_h5('HNF4A-HNF4G/Data/GSM3477499_WT_ScRNAseq_filtered_gene_bc_matrices.h5')
@@ -103,4 +103,4 @@ length(intersect(genesDE, genesDR))/length(genesDE)
 
 enrichmentComparison(genesDE, genesDR)
 # Shared DROnly DEONly 
-#   13     24     15 
+#   103    156    110 
