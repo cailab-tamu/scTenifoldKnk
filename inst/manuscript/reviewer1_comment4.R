@@ -7,7 +7,7 @@ library(enrichR)
 enrichmentComparison <- function(X,Y){
   eX <- do.call(rbind.data.frame, enrichr(X, databases = c("BioPlanet_2019", "KEGG_2019_Mouse", "Reactome_2016","GO_Biological_Process_2018", "GO_Molecular_Function_2018", "GO_Cellular_Component_2018")))
   eX <- eX$Term[eX$Adjusted.P.value < 0.05]
-  eY <- do.call(rbind.data.frame, enrichr(Y,  databases = c("BioPlanet_2019", "KEGG_2019_Mouse", "Reactome_2016","GO_Biological_Process_2018", "GO_Molecular_Function_2018", "GO_Cellular_Component_2018")))
+  eY <- do.call(rbind.data.frame, enrichr(Y, databases = c("BioPlanet_2019", "KEGG_2019_Mouse", "Reactome_2016","GO_Biological_Process_2018", "GO_Molecular_Function_2018", "GO_Cellular_Component_2018")))
   eY <- eY$Term[eY$Adjusted.P.value < 0.05]
   TP = sum(eX %in% eY)
   FP = sum(!eY %in% eX)
@@ -15,7 +15,7 @@ enrichmentComparison <- function(X,Y){
   c(Shared=TP, DROnly = FP, DEONly=FN)
 }
 
-# TREM2 
+# TREM2
 CM <- read.csv('TREM2/Data/GSE130626_umi_counts.csv.gz')
 MD <- read.csv('TREM2/Data/GSE130626_cell_info.csv.gz')
 GD <- read.csv('TREM2/Data/GSE130626_gene_info.csv.gz')
@@ -45,8 +45,42 @@ length(intersect(genesDE, genesDR))/length(genesDE)
 # 0.8
 
 enrichmentComparison(genesDE, genesDR)
-# Shared DROnly DEONly 
-#   23    175    122 
+# Shared DROnly DEONly
+#   23    175    122
+
+FC <- DE$avg_log2FC
+names(FC) <- rownames(DE)
+
+t.test(FC[names(FC) %in% genesDR], FC[!names(FC) %in% genesDR], alternative = 'greater')
+# Welch Two Sample t-test
+#
+# data:  FC[names(FC) %in% genesDR] and FC[!names(FC) %in% genesDR]
+# t = 3.3214, df = 39.453, p-value = 0.0009688
+# alternative hypothesis: true difference in means is greater than 0
+# 95 percent confidence interval:
+#   0.2143344       Inf
+# sample estimates:
+#   mean of x mean of y
+# 0.5386503 0.1037793
+
+wilcox.test(FC[names(FC) %in% genesDR], FC[!names(FC) %in% genesDR])
+# Wilcoxon rank sum test with continuity correction
+#
+# data:  FC[names(FC) %in% genesDR] and FC[!names(FC) %in% genesDR]
+# W = 1687, p-value = 0.0008137
+# alternative hypothesis: true location shift is not equal to 0
+
+plotData <- data.frame(G =names(FC), FC = FC, DR = factor(ifelse(names(FC) %in% genesDR, 'Yes', 'No'), levels = c('Yes', 'No')))
+png('TREM2/Results/drde_Trem2.png', width = 500, height = 1000, res = 300)
+ggplot(plotData, aes(DR, FC)) +
+  geom_boxplot(outlier.color = NA) +
+  theme_bw() +
+  geom_jitter(alpha = .5, pch = 16) +
+  xlab('scTenifoldKnk\nDifferentially Regulated') +
+  ylab(parse(text = 'log[2]~(Fold-Change)~by~MAST')) +
+  labs(title = 'Trem2') +
+  theme(plot.title = element_text(face = 2))
+dev.off()
 
 # NKX2-1
 WT <- readMM('NKX2-1/Data/GSM3716703_Nkx2-1_control_scRNAseq_matrix.mtx.gz')
@@ -76,7 +110,7 @@ length(intersect(genesDE, genesDR))/length(genesDE)
 # 0.3809524
 
 enrichmentComparison(genesDE, genesDR)
-# Shared DROnly DEONly 
+# Shared DROnly DEONly
 #   17     71     66
 
 # HNF4AG
@@ -97,10 +131,10 @@ genesDR <- DR$gene[DR$p.adj < 0.05]
 # Ace2, Anpep, Apoa1, Apoa4, Apob, Apoc3, Atf3, Atp5e, Atp5j2, Atp5k, Atp5l, Atpif1, Cd36, Cd74, Cox17, Cox5b, Cyp4v3, Dgat1, Dnase1, Eef1a1, Eef2, Fau, Ggt1, Gng5, Gpx1, Guca2b, H2-Aa, H2-Ab1, H2-Q1, H2-Q2, Hnf4a, Hnf4g, Hsp90ab1, Hspa8, Itm2b, Krt19, Lct, Mdh1, Mrpl12, Muc13, Myl6, Myo15b, Ndufa12, Ndufa7, Ndufs6, Ndufv3, Neat1, Oaz1, Pls1, Ppia, Scp2, Sectm1b, Sepp1, Slc5a1, Smim24, Tceb2, Tmsb10, Tomm7, Tpt1, Ubl5, Uqcr10, Uqcr11, Uqcrb, Uqcrq, Vil1
 genesDE <- rownames(DE)[abs(DE$avg_log2FC) > 1 & DE$p_val_adj < 0.05]
 # 2010106E10Rik, Abcc2, Adh6a, Agr2, Akr1b8, Aldh1a1, Aldoa, Aldob, Angptl4, Anxa2, Anxa4, Anxa5, Apoa1, Apoa4, Apob, Apoc3, B2m, Calml4, Capg, Carhsp1, Ccl25, Ccl5, Cd7, Cdhr2, Ces1f, Ces2e, Cgref1, Ckb, Clec2h, Crip1, Cyb5r3, Cycs, Cyp27a1, Cyp2b10, Cyp2d26, Cyp3a11, Cyp3a25, Cystm1, Dgat2, Dmbt1, Dstn, Eps8l3, Espn, Ethe1, Exoc3l4, Fabp1, Fam101b, Fam162a, Fkbp5, Flnb, Fth1, Gale, Ggt1, Gjb1, Gna11, Gp1bb, Gpx4, Gsdmd, Gsta4, Gstk1, Gstm1, Gstm3, Guca2a, Guca2b, Gzma, Gzmb, H2-K1, H2-Q1, H2-Q2, H2-T3, Hadh, Hmgcs2, Hsd17b11, Hspa8, Ifi27l2b, Khk, Krt18, Krt19, Krt7, Krt8, Lct, Lgals2, Lgals4, Lmna, Ly6d, Malat1, Maoa, Mat2a, Mgst1, Mgst3, Mmp15, Mt1, Mt2, Mttp, Muc13, Muc3, Myl7, Myo15b, Naprt, Ndrg1, Npc1l1, P4hb, Papss2, Pcyt2, Pepd, Pigr, Plac8, Plin2, Pls1, Plscr1, Prdx1, Qsox1, Rbp2, Reep6, Reg1, Rfk, Ripk3, Rpsa, S100a10, S100a11, S100a6, Scp2, Sepp1, Serpinb1a, Serpinb6a, Sfn, Sgk1, Sh3bgrl3, Sis, Slc26a6, Slc27a4, Slc35c2, Slc51a, Slc5a1, Slc6a19, Slc6a20a, Slc6a6, Slc9a3r1, Sod1, Spink4, Sult1b1, Sult1d1, Sult2b1, Tcn2, Tkfc, Tm4sf20, Tm4sf4, Tm4sf5, Tmem120a, Tmsb10, Treh, Tspan8, Xdh
-length(intersect(genesDE, genesDR))/length(genesDE)  
+length(intersect(genesDE, genesDR))/length(genesDE)
 # % Overlap between DR and DE
 # 0.1176471
 
 enrichmentComparison(genesDE, genesDR)
-# Shared DROnly DEONly 
-#   103    156    110 
+# Shared DROnly DEONly
+#   103    156    110
