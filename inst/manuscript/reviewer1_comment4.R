@@ -71,7 +71,7 @@ wilcox.test(FC[names(FC) %in% genesDR], FC[!names(FC) %in% genesDR])
 # alternative hypothesis: true location shift is not equal to 0
 
 plotData <- data.frame(G =names(FC), FC = FC, DR = factor(ifelse(names(FC) %in% genesDR, 'Yes', 'No'), levels = c('Yes', 'No')))
-png('TREM2/Results/drde_Trem2.png', width = 500, height = 1000, res = 300)
+png('TREM2/Results/drde_Trem2.png', width = 800, height = 1000, res = 300)
 ggplot(plotData, aes(DR, FC)) +
   geom_boxplot(outlier.color = NA) +
   theme_bw() +
@@ -112,6 +112,42 @@ length(intersect(genesDE, genesDR))/length(genesDE)
 enrichmentComparison(genesDE, genesDR)
 # Shared DROnly DEONly
 #   17     71     66
+
+FC <- abs(DE$avg_log2FC)
+names(FC) <- rownames(DE)
+
+t.test(FC[names(FC) %in% genesDR], FC[!names(FC) %in% genesDR], alternative = 'greater')
+# Welch Two Sample t-test
+#
+# data:  FC[names(FC) %in% genesDR] and FC[!names(FC) %in% genesDR]
+# t = 6.3243, df = 106.19, p-value = 3.072e-09
+# alternative hypothesis: true difference in means is greater than 0
+# 95 percent confidence interval:
+#   0.265479      Inf
+# sample estimates:
+#   mean of x mean of y
+# 0.8105251 0.4506148
+
+
+wilcox.test(FC[names(FC) %in% genesDR], FC[!names(FC) %in% genesDR])
+# Wilcoxon rank sum test with continuity correction
+#
+# data:  FC[names(FC) %in% genesDR] and FC[!names(FC) %in% genesDR]
+# W = 82215, p-value < 2.2e-16
+# alternative hypothesis: true location shift is not equal to 0
+
+plotData <- data.frame(G =names(FC), FC = FC, DR = factor(ifelse(names(FC) %in% genesDR, 'Yes', 'No'), levels = c('Yes', 'No')))
+png('NKX2-1/Results/drde_Nkx2-1.png', width = 800, height = 1000, res = 300)
+ggplot(plotData, aes(DR, FC)) +
+  geom_boxplot(outlier.color = NA) +
+  theme_bw() +
+  geom_jitter(alpha = .5, pch = 16) +
+  xlab('scTenifoldKnk\nDifferentially Regulated') +
+  ylab(parse(text = 'log[2]~(Fold-Change)~by~MAST')) +
+  labs(title = 'Nkx2-1') +
+  theme(plot.title = element_text(face = 2))
+dev.off()
+
 
 # HNF4AG
 WT <- Read10X_h5('HNF4A-HNF4G/Data/GSM3477499_WT_ScRNAseq_filtered_gene_bc_matrices.h5')
