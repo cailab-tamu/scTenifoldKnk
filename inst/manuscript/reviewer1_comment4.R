@@ -4,6 +4,7 @@ library(ggrepel)
 library(Matrix)
 library(enrichR)
 library(patchwork)
+library(statsExpressions)
 
 enrichmentComparison <- function(X,Y){
   eX <- do.call(rbind.data.frame, enrichr(X, databases = c("BioPlanet_2019", "KEGG_2019_Mouse", "Reactome_2016","GO_Biological_Process_2018", "GO_Molecular_Function_2018", "GO_Cellular_Component_2018")))
@@ -79,11 +80,11 @@ png('TREM2/Results/drde_Trem2.png', width = 1200, height = 2000, res = 300)
 A <- ggplot(plotData, aes(DR, FC, label = G)) +
   geom_boxplot(outlier.color = NA) +
   theme_bw() +
-  geom_jitter(alpha = .5, pch = 16, position = pPos) +
+  geom_jitter(alpha = .3, pch = 16, position = pPos) +
   xlab('scTenifoldKnk\nDifferentially Regulated') +
   ylab(parse(text = 'log[2]~(Fold-Change)~by~MAST')) +
-  labs(title = 'Trem2') +
-  theme(plot.title = element_text(face = 2)) +
+  labs(title = 'Trem2', subtitle = two_sample_test(plotData, DR, FC, alternative = 'greater')$expression[[1]]) +
+  theme(plot.title = element_text(face = 2), plot.subtitle = element_text(size = 7)) +
   geom_abline(slope = 0, intercept = c(-1,1), lty = 2, col = 'red') +
   geom_text_repel(position = pPos, min.segment.length = 0)
 print(A)
@@ -150,11 +151,11 @@ png('NKX2-1/Results/drde_Nkx2-1.png', width = 1200, height = 2000, res = 300)
 B <- ggplot(plotData, aes(DR, FC, label = G)) +
   geom_boxplot(outlier.color = NA) +
   theme_bw() +
-  geom_jitter(alpha = .5, pch = 16, position = pPos) +
+  geom_jitter(alpha = .3, pch = 16, position = pPos) +
   xlab('scTenifoldKnk\nDifferentially Regulated') +
   ylab(parse(text = 'log[2]~(Fold-Change)~by~MAST')) +
-  labs(title = 'Nkx2-1') +
-  theme(plot.title = element_text(face = 2)) +
+  labs(title = 'Nkx2-1', subtitle = two_sample_test(plotData, DR, FC, alternative = 'greater')$expression[[1]]) +
+  theme(plot.title = element_text(face = 2), plot.subtitle = element_text(size = 7)) +
   geom_abline(slope = 0, intercept = c(-1,1), lty = 2, col = 'red') +
   geom_text_repel(position = pPos, min.segment.length = 0)
 print(B)
@@ -213,6 +214,7 @@ plotData <- data.frame(G = names(FC), FC = FC, DR = factor(ifelse(names(FC) %in%
 plotData$G[plotData$DR == 'No'] <- NA
 plotData$G[abs(plotData$FC) < 1] <- NA
 pPos <- position_jitter(seed = 2)
+
 png('HNF4A-HNF4G/Results/drde_Hnf4ag.png', width = 1200, height = 2000, res = 300)
 C <- ggplot(plotData, aes(DR, FC, label = G)) +
   geom_boxplot(outlier.color = NA) +
@@ -220,8 +222,8 @@ C <- ggplot(plotData, aes(DR, FC, label = G)) +
   geom_jitter(alpha = .3, pch = 16, position = pPos) +
   xlab('scTenifoldKnk\nDifferentially Regulated') +
   ylab(parse(text = 'log[2]~(Fold-Change)~by~MAST')) +
-  labs(title = 'Hnf4ag') +
-  theme(plot.title = element_text(face = 2)) +
+  labs(title = 'Hnf4ag', subtitle = two_sample_test(plotData, DR, FC, alternative = 'greater')$expression[[1]]) +
+  theme(plot.title = element_text(face = 2), plot.subtitle = element_text(size = 7)) +
   geom_abline(slope = 0, intercept = c(-1,1), lty = 2, col = 'red') +
   geom_text_repel(position = pPos, min.segment.length = 0)
 print(C)
