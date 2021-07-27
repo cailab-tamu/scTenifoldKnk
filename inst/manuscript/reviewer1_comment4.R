@@ -229,6 +229,9 @@ C <- ggplot(plotData, aes(DR, FC, label = G)) +
 print(C)
 dev.off()
 
+A <- A + ylim(c(-5,5.5))
+B <- B + ylim(c(-5,5.5))
+C <- C + ylim(c(-5,5.5))
 png('reviewer1_comment4.png', width = 1200*3, height = 2000, res = 300)
 A + B + C
 dev.off()
