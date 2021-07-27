@@ -3,6 +3,7 @@ library(ggplot2)
 library(ggrepel)
 library(Matrix)
 library(enrichR)
+library(patchwork)
 
 enrichmentComparison <- function(X,Y){
   eX <- do.call(rbind.data.frame, enrichr(X, databases = c("BioPlanet_2019", "KEGG_2019_Mouse", "Reactome_2016","GO_Biological_Process_2018", "GO_Molecular_Function_2018", "GO_Cellular_Component_2018")))
@@ -71,16 +72,21 @@ wilcox.test(FC[names(FC) %in% genesDR], FC[!names(FC) %in% genesDR])
 # alternative hypothesis: true location shift is not equal to 0
 
 plotData <- data.frame(G =names(FC), FC = FC, DR = factor(ifelse(names(FC) %in% genesDR, 'Yes', 'No'), levels = c('Yes', 'No')))
-png('TREM2/Results/drde_Trem2.png', width = 800, height = 1000, res = 300)
-ggplot(plotData, aes(DR, FC)) +
+plotData$G[plotData$DR == 'No'] <- NA
+plotData$G[abs(plotData$FC) < 1] <- NA
+pPos <- position_jitter(seed = 2)
+png('TREM2/Results/drde_Trem2.png', width = 1200, height = 2000, res = 300)
+A <- ggplot(plotData, aes(DR, FC, label = G)) +
   geom_boxplot(outlier.color = NA) +
   theme_bw() +
-  geom_jitter(alpha = .5, pch = 16) +
+  geom_jitter(alpha = .5, pch = 16, position = pPos) +
   xlab('scTenifoldKnk\nDifferentially Regulated') +
   ylab(parse(text = 'log[2]~(Fold-Change)~by~MAST')) +
   labs(title = 'Trem2') +
   theme(plot.title = element_text(face = 2)) +
-  geom_abline(slope = 0, intercept = c(-1,1), lty = 2, col = 'red')
+  geom_abline(slope = 0, intercept = c(-1,1), lty = 2, col = 'red') +
+  geom_text_repel(position = pPos, min.segment.length = 0)
+print(A)
 dev.off()
 
 # NKX2-1
@@ -137,16 +143,21 @@ wilcox.test(FC[names(FC) %in% genesDR], FC[!names(FC) %in% genesDR])
 # alternative hypothesis: true location shift is not equal to 0
 
 plotData <- data.frame(G =names(FC), FC = FC, DR = factor(ifelse(names(FC) %in% genesDR, 'Yes', 'No'), levels = c('Yes', 'No')))
-png('NKX2-1/Results/drde_Nkx2-1.png', width = 800, height = 1000, res = 300)
-ggplot(plotData, aes(DR, FC)) +
+plotData$G[plotData$DR == 'No'] <- NA
+plotData$G[abs(plotData$FC) < 1] <- NA
+pPos <- position_jitter(seed = 2)
+png('NKX2-1/Results/drde_Nkx2-1.png', width = 1200, height = 2000, res = 300)
+B <- ggplot(plotData, aes(DR, FC, label = G)) +
   geom_boxplot(outlier.color = NA) +
   theme_bw() +
-  geom_jitter(alpha = .5, pch = 16) +
+  geom_jitter(alpha = .5, pch = 16, position = pPos) +
   xlab('scTenifoldKnk\nDifferentially Regulated') +
   ylab(parse(text = 'log[2]~(Fold-Change)~by~MAST')) +
   labs(title = 'Nkx2-1') +
   theme(plot.title = element_text(face = 2)) +
-  geom_abline(slope = 0, intercept = c(-1,1), lty = 2, col = 'red')
+  geom_abline(slope = 0, intercept = c(-1,1), lty = 2, col = 'red') +
+  geom_text_repel(position = pPos, min.segment.length = 0)
+print(B)
 dev.off()
 
 # HNF4AG
@@ -202,8 +213,8 @@ plotData <- data.frame(G = names(FC), FC = FC, DR = factor(ifelse(names(FC) %in%
 plotData$G[plotData$DR == 'No'] <- NA
 plotData$G[abs(plotData$FC) < 1] <- NA
 pPos <- position_jitter(seed = 2)
-png('HNF4A-HNF4G/Results/drde_Hnf4ag.png', width = 1000, height = 2000, res = 300)
-ggplot(plotData, aes(DR, FC, label = G)) +
+png('HNF4A-HNF4G/Results/drde_Hnf4ag.png', width = 1200, height = 2000, res = 300)
+C <- ggplot(plotData, aes(DR, FC, label = G)) +
   geom_boxplot(outlier.color = NA) +
   theme_bw() +
   geom_jitter(alpha = .3, pch = 16, position = pPos) +
@@ -213,4 +224,9 @@ ggplot(plotData, aes(DR, FC, label = G)) +
   theme(plot.title = element_text(face = 2)) +
   geom_abline(slope = 0, intercept = c(-1,1), lty = 2, col = 'red') +
   geom_text_repel(position = pPos, min.segment.length = 0)
+print(C)
+dev.off()
+
+png('reviewer1_comment4.png', width = 1200*3, height = 2000, res = 300)
+A + B + C
 dev.off()
