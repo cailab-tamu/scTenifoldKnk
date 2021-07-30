@@ -109,6 +109,7 @@ drGenes <- names(drGenes[drGenes >= 0.8])
 
 drOutput <- lapply(1:5, function(X){
   load(paste0('reviewer1_comment6/Trem2r',X,'.RData'))
+  write.csv(O$diffRegulation, file = paste0('reviewer1_comment6/Trem2r',X,'.csv'), row.names = FALSE)
   Z <- O$diffRegulation$Z
   names(Z) <- O$diffRegulation$gene
   return(Z)
@@ -127,3 +128,4 @@ png(filename = 'reviewer1_comment6.png', width = 700, height = 2500, res = 300)
 Heatmap(allZ, show_row_names = FALSE, show_row_dend = FALSE, name = 'Z') +
   rowAnnotation(link = anno_mark(at = which(rownames(allZ)%in%drGenes), labels = rownames(allZ)[rownames(allZ)%in%drGenes]))
 dev.off()
+
