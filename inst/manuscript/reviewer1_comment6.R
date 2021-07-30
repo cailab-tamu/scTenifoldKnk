@@ -24,11 +24,12 @@
 setwd('/data/dcosorioh/TREM2/')
 library(Matrix)
 library(scTenifoldKnk)
+library(UpSetR)
 
 # TREM2
-CM <- read.csv('Data/GSE130626_umi_counts.csv.gz')
-MD <- read.csv('Data/GSE130626_cell_info.csv.gz', stringsAsFactors = FALSE)
-GD <- read.csv('Data/GSE130626_gene_info.csv.gz', stringsAsFactors = FALSE)
+CM <- read.csv('TREM2/Data/GSE130626_umi_counts.csv.gz')
+MD <- read.csv('TREM2/Data/GSE130626_cell_info.csv.gz', stringsAsFactors = FALSE)
+GD <- read.csv('TREM2/Data/GSE130626_gene_info.csv.gz', stringsAsFactors = FALSE)
 
 CM <- CM[!is.na(GD$symbol),]
 GD <- GD[!is.na(GD$symbol),]
@@ -38,6 +39,12 @@ rownames(CM) <- make.unique(GD$symbol)
 MD <- MD[((MD$treatment %in% 'cuprizone') & (MD$trem2_genotype %in% c('WT'))),]
 CM <- CM[,MD$cell_id]
 CM <- Matrix(as.matrix(CM))
+
+dim(CM)
+# 765 cells
+
+round(ncol(CM) * 0.75)
+# 574 cells selected each time
 
 # set.seed(1)
 # tCM <- CM[,sample(colnames(CM), size = 0.75 * ncol(CM))]
@@ -103,9 +110,17 @@ drGenes <- lapply(1:5, function(X){
   load(paste0('reviewer1_comment6/Trem2r',X,'.RData'))
   O$diffRegulation$gene[O$diffRegulation$p.adj < 0.05]
 })
+names(drGenes) <- paste0('R',1:5)
+png('reviewer1_comment6a.png', width = 2500, height = 1500, res = 300)
+upset(fromList(drGenes))
+dev.off()
 
 drGenes <- sort(table(unlist(drGenes)), decreasing = TRUE)/5
-drGenes <- names(drGenes[drGenes >= 0.8])
+length(drGenes)
+# 246 at least once identified diferentially regulated genes after Trem2 knockout
+drGenes <- names(drGenes[drGenes > 0.8])
+length(drGenes)
+# 34 genes identified to be diferentially regulated genes after Trem2 knockout above 80% of the time Ank, Anxa5, Aplp2, Apoe, Axl, Bola2, Capg, Ccl6, Cd52, Cd63, Cd72, Cd9, Cst7, Cstb, Ctsb, Cxcl14, Cxcl16, Cybb, Fabp5, Fth1, Fxyd5, Gm49339, Igf1, Il4i1, Itgax, Lgals3, Lpl, Lrpap1, Lyz2, Rab7b, Spp1, Tmsb10, Trem2, Vat1
 
 drOutput <- lapply(1:5, function(X){
   load(paste0('reviewer1_comment6/Trem2r',X,'.RData'))
