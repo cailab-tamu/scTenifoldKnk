@@ -8,7 +8,7 @@
 #   tWT <- WT[sGenes, sGenes]
 #   tKO <- tWT
 #   tKO['Trem2',] <- 0
-#   
+#
 #   DR <- scTenifoldKnk:::dRegulation(scTenifoldNet::manifoldAlignment(tWT, tKO, d = 2),1)
 #   return(DR)
 # })
@@ -98,3 +98,32 @@ CM <- Matrix(as.matrix(CM))
 # tCM <- tCM[rowMeans(tCM != 0) > 0.1,]
 # O <- scTenifoldKnk::scTenifoldKnk(tCM, gKO = 'Trem2')
 # save(O, file = 'Trem2r10.RData')
+
+drGenes <- lapply(1:5, function(X){
+  load(paste0('reviewer1_comment6/Trem2r',X,'.RData'))
+  O$diffRegulation$gene[O$diffRegulation$p.adj < 0.05]
+})
+
+drGenes <- sort(table(unlist(drGenes)), decreasing = TRUE)/5
+drGenes <- names(drGenes[drGenes >= 0.8])
+
+drOutput <- lapply(1:5, function(X){
+  load(paste0('reviewer1_comment6/Trem2r',X,'.RData'))
+  Z <- O$diffRegulation$Z
+  names(Z) <- O$diffRegulation$gene
+  return(Z)
+})
+
+allGenes <- unique(unlist(lapply(drOutput, names)))
+
+allZ <- t(do.call(rbind.data.frame,lapply(drOutput, function(X){X[allGenes]})))
+rownames(allZ) <- allGenes
+allZ <- allZ[complete.cases(allZ),]
+allZ <- allZ[order(apply(apply(allZ,2,rank),1,mean), decreasing = TRUE),]
+colnames(allZ) <- paste0('R', 1:5)
+
+library(ComplexHeatmap)
+png(filename = 'reviewer1_comment6.png', width = 700, height = 2500, res = 300)
+Heatmap(allZ, show_row_names = FALSE, show_row_dend = FALSE, name = 'Z') +
+  rowAnnotation(link = anno_mark(at = which(rownames(allZ)%in%drGenes), labels = rownames(allZ)[rownames(allZ)%in%drGenes]))
+dev.off()
