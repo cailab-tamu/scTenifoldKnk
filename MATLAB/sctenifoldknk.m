@@ -15,14 +15,14 @@ function T=sctenifoldknk(X,genelist,kogene,varargin)
         end
     end
    p = inputParser;
-   addOptional(p,'qqplot',false,@islogical);
+   addOptional(p,'sorttable',false,@islogical);
    addOptional(p,'smplmethod',"Jackknife",@(x) (isstring(x)|ischar(x))&ismember(lower(string(x)),["jackknife","bootstrap"]));
    addOptional(p,'tdmethod',"CP",@(x) (isstring(x)|ischar(x))&ismember(upper(string(x)),["CP","TUCKER"]));
    addOptional(p,'nsubsmpl',10,@(x) fix(x)==x & x>0);
    addOptional(p,'csubsmpl',500,@(x) fix(x)==x & x>0);
    addOptional(p,'savegrn',false,@islogical);   
    parse(p,varargin{:});
-   doqqplot=p.Results.qqplot;
+   dosort=p.Results.sorttable;
    tdmethod=p.Results.tdmethod;
    nsubsmpl=p.Results.nsubsmpl;
    csubsmpl=p.Results.csubsmpl;
@@ -69,5 +69,5 @@ function T=sctenifoldknk(X,genelist,kogene,varargin)
     A1=A0;
     A1(idx,:)=0;
     [aln0,aln1]=i_ma(A0,A1);
-    T=i_dr(aln0,aln1,genelist,doqqplot);
+    T=i_dr(aln0,aln1,genelist,dosort);
 end
