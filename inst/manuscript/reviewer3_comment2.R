@@ -56,6 +56,7 @@ sd(cor(allZ, method = 'sp'))
 alwaysDR <- names(allDR[allDR >= 10])
 at <- which(rownames(allZ) %in% alwaysDR)
 label <- rownames(allZ)[at]
+png('reviewer3_comment2.png', width = 1000, height = 2000, res = 300)
 Heatmap(allZ, show_row_names = FALSE, show_row_dend = FALSE, name = 'Z') + 
   rowAnnotation(link = anno_mark(at = at, labels = label))
-
+dev.off()
