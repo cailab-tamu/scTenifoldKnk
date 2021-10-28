@@ -6,6 +6,7 @@
 \usage{
 scTenifoldKnk(
   countMatrix,
+  qc = TRUE,
   gKO = NULL,
   qc_mtThreshold = 0.1,
   qc_minLSize = 1000,
@@ -20,11 +21,14 @@ scTenifoldKnk(
   td_maxIter = 1000,
   td_maxError = 1e-05,
   td_nDecimal = 3,
-  ma_nDim = 2
+  ma_nDim = 2,
+  nCores = parallel::detectCores()
 )
 }
 \arguments{
 \item{countMatrix}{countMatrix}
+
+\item{qc}{A boolean value (TRUE/FALSE), if TRUE, a quality control is applied over the data.}
 
 \item{gKO}{gKO}
 
@@ -55,6 +59,8 @@ scTenifoldKnk(
 \item{td_nDecimal}{An integer value indicating the number of decimal places to be used.}
 
 \item{ma_nDim}{An integer value. Defines the number of dimensions of the low-dimensional feature space to be returned from the non-linear manifold alignment.}
+
+\item{nCores}{An integer value. Defines the number of cores to be used.}
 }
 \description{
 Predict gene perturbations
