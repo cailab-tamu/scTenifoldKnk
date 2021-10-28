@@ -32,7 +32,7 @@ dRegulation <- function(manifoldOutput, gKO){
   ### BOX-COX
   lambdaValues <- seq(-2,2,length.out = 1000)
   lambdaValues <- lambdaValues[lambdaValues != 0]
-  BC <- try(MASS::boxcox(dMetric~1, plot=FALSE, lambda = lambdaValues), silent = TRUE)
+  BC <- try(MASS::boxcox(dMetric[dMetric > 0]~1, plot=FALSE, lambda = lambdaValues), silent = TRUE)
   if(class(BC) == 'try-error'){
     nD <- dMetric
   } else {
