@@ -21,36 +21,37 @@
 # O <- O[order(O$n.tested.Freq, decreasing = TRUE),]
 # writeLines(as.vector(O$n.tested.Var1)[O$n.tested.Freq > 0.8])
 
-setwd('/data/dcosorioh/TREM2/')
+
 library(Matrix)
 library(scTenifoldKnk)
-library(UpSetR)
+library(parallel)
+library(pbapply)
 
 # TREM2
-CM <- read.csv('TREM2/Data/GSE130626_umi_counts.csv.gz')
-MD <- read.csv('TREM2/Data/GSE130626_cell_info.csv.gz', stringsAsFactors = FALSE)
-GD <- read.csv('TREM2/Data/GSE130626_gene_info.csv.gz', stringsAsFactors = FALSE)
+cl <- makeCluster(getOption("cl.cores", 10))
+ignore <- clusterEvalQ(cl, expr = library(scTenifoldKnk))
+ignore <- clusterEvalQ(cl, expr = library(Matrix))
 
-CM <- CM[!is.na(GD$symbol),]
-GD <- GD[!is.na(GD$symbol),]
+pbsapply(X = 1:100, cl = cl, FUN =  function(X){
+  CM <- read.csv('GSE130626_umi_counts.csv.gz')
+  MD <- read.csv('GSE130626_cell_info.csv.gz', stringsAsFactors = FALSE)
+  GD <- read.csv('GSE130626_gene_info.csv.gz', stringsAsFactors = FALSE)
 
-rownames(CM) <- make.unique(GD$symbol)
+  CM <- CM[!is.na(GD$symbol),]
+  GD <- GD[!is.na(GD$symbol),]
 
-MD <- MD[((MD$treatment %in% 'cuprizone') & (MD$trem2_genotype %in% c('WT'))),]
-CM <- CM[,MD$cell_id]
-CM <- Matrix(as.matrix(CM))
+  rownames(CM) <- make.unique(GD$symbol)
 
-dim(CM)
-# 765 cells
-
-round(ncol(CM) * 0.75)
-# 574 cells selected each time
-
-# set.seed(1)
-# tCM <- CM[,sample(colnames(CM), size = 0.75 * ncol(CM))]
-# tCM <- tCM[rowMeans(tCM != 0) > 0.1,]
-# O <- scTenifoldKnk::scTenifoldKnk(tCM, gKO = 'Trem2')
-# save(O, file = 'Trem2r1.RData')
+  MD <- MD[((MD$treatment %in% 'cuprizone') & (MD$trem2_genotype %in% c('WT'))),]
+  CM <- CM[,MD$cell_id]
+  CM <- Matrix(as.matrix(CM))
+  set.seed(X)
+  selCells <- sample(colnames(CM), size = round(0.75 * ncol(CM)))
+  tCM <- CM[,selCells]
+  tCM <- tCM[rowMeans(tCM != 0) > 0.1,,drop = FALSE]
+  O <- scTenifoldKnk::scTenifoldKnk(tCM, gKO = 'Trem2')
+  save(O, file = paste0('Trem2_r',X,'.RData'))
+})
 
 # set.seed(2)
 # tCM <- CM[,sample(colnames(CM), size = 0.75 * ncol(CM))]
