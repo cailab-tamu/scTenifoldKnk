@@ -93,7 +93,7 @@ png('stabilityResults.png', width = 1500, height = 750, res = 300)
 ggplot(corValues, aes(x = rho, y = KO)) +
   geom_density_ridges(jittered_points = TRUE,
                       quantile_lines = TRUE,
-                      scale = 0.6, vline_size = 1, vline_color = "red", alpha = 0.5, pch = 16,
+                      scale = 0.6, vline_size = 1, vline_color = "red", alpha = 0.5,
   position = position_raincloud(adjust_vlines = TRUE)
 ) + theme_ridges() + ylab('Knockout') + xlab(parse(text = 'rho'))
 dev.off()
