@@ -97,3 +97,9 @@ ggplot(corValues, aes(x = rho, y = KO)) +
   position = position_raincloud(adjust_vlines = TRUE)
 ) + theme_ridges() + ylab('Knockout') + xlab(parse(text = 'rho'))
 dev.off()
+
+
+corValues <- split(corValues, corValues$KO)
+paste0(round(unlist(lapply(corValues, function(X){mean(X[,2])})),2), ' +/- ',
+round(unlist(lapply(corValues, function(X){sd(X[,2])})),2))
+
