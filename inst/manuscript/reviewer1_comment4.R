@@ -37,6 +37,24 @@ D <- ScaleData(D)
 DE <- FindMarkers(D, ident.1 = 'WT', ident.2 = 'KO', test.use = 'MAST')
 DR <- read.csv('TREM2/Results/drTREM2.csv', row.names = 1)
 
+DE$G <- rownames(DE)
+DE$p_val_adj[DE$p_val_adj == 0] <- min(DE$p_val[DE$p_val_adj != 0])
+DE$G[!DE$G %in% DR$gene[DR$p.adj < 0.05]] <- NA
+DE$C <- 'YES'
+DE$C[is.na(DE$G)] <- 'NO'
+DE$G[abs(DE$avg_log2FC) < 1] <- NA
+DE$L <- -log10(DE$p_val_adj)
+
+pPos <- position_jitter(seed = 2, width = 0.25)
+FDR1 <- ggplot(DE, aes(C, -log10(p_val_adj), label = G)) +
+  geom_boxplot(outlier.colour = NA) +
+  geom_jitter(alpha = .3, pch = 16, position = pPos) +
+  geom_text_repel(position = pPos, min.segment.length = 0) +
+  theme_bw() + ylab(parse(text = '-log[10]~(FDR)')) +
+  xlab('scTenifoldKnk\nDifferentially Regulated') +
+  labs(title = 'Trem2', subtitle = two_sample_test(DE, C, L, alternative = 'less')$expression[[1]]) +
+  theme(plot.title = element_text(face = 2), plot.subtitle = element_text(size = 7))
+
 genesDE <- rownames(DE)[((DE$p_val_adj < 0.05) & (abs(DE$avg_log2FC) > 1))]
 # Cd52, Lpl, Spp1, Trem2, Ttr
 genesDR <- DR$gene[DR$p.adj < 0.05]
@@ -108,6 +126,24 @@ NKX21 <- ScaleData(NKX21)
 DE <- FindMarkers(NKX21, ident.1 = 'WT', ident.2 = 'KO', test.use = 'MAST')
 DR <- read.csv('NKX2-1/Results/dr_GSM3716703.csv', row.names = 1)
 
+DE$G <- rownames(DE)
+DE$p_val_adj[DE$p_val_adj == 0] <- min(DE$p_val[DE$p_val_adj != 0])
+DE$G[!DE$G %in% DR$gene[DR$p.adj < 0.05]] <- NA
+DE$C <- 'YES'
+DE$C[is.na(DE$G)] <- 'NO'
+DE$G[abs(DE$avg_log2FC) < 1] <- NA
+DE$L <- -log10(DE$p_val_adj)
+
+pPos <- position_jitter(seed = 2, width = 0.25)
+FDR2 <- ggplot(DE, aes(C, -log10(p_val_adj), label = G)) +
+  geom_boxplot(outlier.colour = NA) +
+  geom_jitter(alpha = .3, pch = 16, position = pPos) +
+  geom_text_repel(position = pPos, min.segment.length = 0) +
+  theme_bw() + ylab(parse(text = '-log[10]~(FDR)')) +
+  xlab('scTenifoldKnk\nDifferentially Regulated') +
+  labs(title = 'Nkx2-1', subtitle = two_sample_test(DE, C, L, alternative = 'less')$expression[[1]]) +
+  theme(plot.title = element_text(face = 2), plot.subtitle = element_text(size = 7))
+
 genesDE <- rownames(DE)[(abs(DE$avg_log2FC) > 1 & (DE$p_val_adj < 0.05))]
 # 2200002D01Rik, Ager, Apoc1, Apoe, Aqp5, Arl4c, Bex2, Cbr2, Ccnd2, Cd24a, Cd2ap, Cd74, Chil1, Clu, Cxcl15, Cym, Cystm1, Foxq1, Fxyd3, Gm42418, Gsta4, Gsto1, H2-Aa, H2-Ab1, Hist1h1e, Igfbp2, Jun, Krt18, Krt19, Krt8, Lamp3, Lgals3, Lgi3, Lpcat1, Lurap1l, Lyz1, Lyz2, Mal, Msln, Napsa, Nkx2-1, Pdzk1ip1, Ppp1r14c, Retnla, Rnase4, S100a11, S100a6, S100g, Sfta2, Sftpa1, Sftpb, Sftpc, Slc34a2, Spp1, Sprr1a, Sprr2a3, Tff1, Tff2, Tgfbi, Thbs1, Tmsb4x, Tnfrsf12a, Trf
 genesDR <- DR$gene[DR$p.adj < 0.05]
@@ -175,6 +211,24 @@ HNF4AG <- ScaleData(HNF4AG)
 DE <- FindMarkers(HNF4AG, ident.1 = 'WT', ident.2 = 'KO', test.use = 'MAST')
 DR <- read.csv('HNF4A-HNF4G/Results/drHNF4AG.csv', row.names = 1)
 
+DE$G <- rownames(DE)
+DE$p_val_adj[DE$p_val_adj == 0] <- min(DE$p_val[DE$p_val_adj != 0])
+DE$G[!DE$G %in% DR$gene[DR$p.adj < 0.05]] <- NA
+DE$C <- 'YES'
+DE$C[is.na(DE$G)] <- 'NO'
+DE$G[abs(DE$avg_log2FC) < 1] <- NA
+DE$L <- -log10(DE$p_val_adj)
+
+pPos <- position_jitter(seed = 2, width = 0.25)
+FDR3 <- ggplot(DE, aes(C, -log10(p_val_adj), label = G)) +
+  geom_boxplot(outlier.colour = NA) +
+  geom_jitter(alpha = .3, pch = 16, position = pPos) +
+  geom_text_repel(position = pPos, min.segment.length = 0) +
+  theme_bw() + ylab(parse(text = '-log[10]~(FDR)')) +
+  xlab('scTenifoldKnk\nDifferentially Regulated') +
+  labs(title = 'Hnf4ag', subtitle = two_sample_test(DE, C, L, alternative = 'less')$expression[[1]]) +
+  theme(plot.title = element_text(face = 2), plot.subtitle = element_text(size = 7))
+
 genesDR <- DR$gene[DR$p.adj < 0.05]
 # Ace2, Anpep, Apoa1, Apoa4, Apob, Apoc3, Atf3, Atp5e, Atp5j2, Atp5k, Atp5l, Atpif1, Cd36, Cd74, Cox17, Cox5b, Cyp4v3, Dgat1, Dnase1, Eef1a1, Eef2, Fau, Ggt1, Gng5, Gpx1, Guca2b, H2-Aa, H2-Ab1, H2-Q1, H2-Q2, Hnf4a, Hnf4g, Hsp90ab1, Hspa8, Itm2b, Krt19, Lct, Mdh1, Mrpl12, Muc13, Myl6, Myo15b, Ndufa12, Ndufa7, Ndufs6, Ndufv3, Neat1, Oaz1, Pls1, Ppia, Scp2, Sectm1b, Sepp1, Slc5a1, Smim24, Tceb2, Tmsb10, Tomm7, Tpt1, Ubl5, Uqcr10, Uqcr11, Uqcrb, Uqcrq, Vil1
 genesDE <- rownames(DE)[abs(DE$avg_log2FC) > 1 & DE$p_val_adj < 0.05]
@@ -234,4 +288,8 @@ B <- B + ylim(c(-5,5.5))
 C <- C + ylim(c(-5,5.5))
 png('reviewer1_comment4.png', width = 1200*3, height = 2000, res = 300)
 A + B + C
+dev.off()
+
+png('reviewer1_comment4_FDR.png', width = 1200*3, height = 2000, res = 300)
+FDR1 + FDR2 + FDR3
 dev.off()
