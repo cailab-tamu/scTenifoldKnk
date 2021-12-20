@@ -125,17 +125,35 @@ NKX21 <- ScaleData(NKX21)
 
 DE <- FindMarkers(NKX21, ident.1 = 'WT', ident.2 = 'KO', test.use = 'MAST')
 DR <- read.csv('NKX2-1/Results/dr_GSM3716703.csv', row.names = 1)
+#write.csv(DE, 'NKX2-1/Results/DE_GSM3716703_issue15.csv')
+traj_DE_c1 <- read.table(file="NKX2-1/Results/EarlyDown.txt")
+traj_DE_c2 <- read.table(file="NKX2-1/Results/LateDown.txt")
+traj_DE_c3 <- read.table(file="NKX2-1/Results/Biphasic.txt")
+traj_DE_c4 <- read.table(file="NKX2-1/Results/EarlyUp.txt")
+traj_DE_c5 <- read.table(file="NKX2-1/Results/LateUp.txt")
 
-DE$G <- rownames(DE)
+DE <- read.csv('NKX2-1/Results/DE_GSM3716703_issue15.csv')
+DE$G <- DE$X
 DE$p_val_adj[DE$p_val_adj == 0] <- min(DE$p_val[DE$p_val_adj != 0])
+#DE$G[!DE$G %in% DR$gene[DR$p.adj < 0.05]] <- NA
+DE <- DE[DE$G %in% c(traj_DE_c1$V1,traj_DE_c2$V1,traj_DE_c3$V1,traj_DE_c4$V1,traj_DE_c5$V1),]
 DE$G[!DE$G %in% DR$gene[DR$p.adj < 0.05]] <- NA
 DE$C <- 'YES'
 DE$C[is.na(DE$G)] <- 'NO'
 DE$G[abs(DE$avg_log2FC) < 1] <- NA
 DE$L <- -log10(DE$p_val_adj)
 
+DE$stage <- NA
+DE$stage[DE$X %in% c(traj_DE_c1$V1)] <- 'Early Down'
+DE$stage[DE$X %in% c(traj_DE_c2$V1)] <- 'Late Down'
+DE$stage[DE$X %in% c(traj_DE_c3$V1)] <- 'Biphasic'
+DE$stage[DE$X %in% c(traj_DE_c4$V1)] <- 'Early Up'
+DE$stage[DE$X %in% c(traj_DE_c5$V1)] <- 'Late Up'
+table(DE$stage)
+DE$stage <- factor(DE$stage , levels=c("Early Down", "Late Down", "Biphasic", "Early Up",'Late Up'))
+
 pPos <- position_jitter(seed = 2, width = 0.25)
-FDR2 <- ggplot(DE, aes(C, -log10(p_val_adj), label = G)) +
+FDR2 <- ggplot(DE, aes(stage, avg_log2FC, label = G,color = C)) +
   geom_boxplot(outlier.colour = NA) +
   geom_jitter(alpha = .3, pch = 16, position = pPos) +
   geom_text_repel(position = pPos, min.segment.length = 0) +
@@ -143,6 +161,19 @@ FDR2 <- ggplot(DE, aes(C, -log10(p_val_adj), label = G)) +
   xlab('scTenifoldKnk\nDifferentially Regulated') +
   labs(title = 'Nkx2-1', subtitle = two_sample_test(DE, C, L, alternative = 'less')$expression[[1]]) +
   theme(plot.title = element_text(face = 2), plot.subtitle = element_text(size = 7))
+
+Compare_trajectory<-  ggplot(DE, aes(x = stage, y = avg_log2FC, color = C)) + 
+  geom_boxplot(outlier.colour = NA)+
+  geom_jitter(alpha = .3, pch = 16,position=position_jitterdodge()) +
+  theme_bw() + ylab(parse(text = 'log[2]~(FC)')) +
+  xlab('Stage') +
+  labs(title = 'Nkx2-1') +
+  theme(plot.title = element_text(face = 2), plot.subtitle = element_text(size = 7))+ 
+  labs(color = "Detected as DR") + ylim(-350,350)
+
+png('NKX2-1/Results/Compare_trajectory.png',res = 250,height = 1000,width = 2000)
+Compare_trajectory
+dev.off()
 
 genesDE <- rownames(DE)[(abs(DE$avg_log2FC) > 1 & (DE$p_val_adj < 0.05))]
 # 2200002D01Rik, Ager, Apoc1, Apoe, Aqp5, Arl4c, Bex2, Cbr2, Ccnd2, Cd24a, Cd2ap, Cd74, Chil1, Clu, Cxcl15, Cym, Cystm1, Foxq1, Fxyd3, Gm42418, Gsta4, Gsto1, H2-Aa, H2-Ab1, Hist1h1e, Igfbp2, Jun, Krt18, Krt19, Krt8, Lamp3, Lgals3, Lgi3, Lpcat1, Lurap1l, Lyz1, Lyz2, Mal, Msln, Napsa, Nkx2-1, Pdzk1ip1, Ppp1r14c, Retnla, Rnase4, S100a11, S100a6, S100g, Sfta2, Sftpa1, Sftpb, Sftpc, Slc34a2, Spp1, Sprr1a, Sprr2a3, Tff1, Tff2, Tgfbi, Thbs1, Tmsb4x, Tnfrsf12a, Trf
