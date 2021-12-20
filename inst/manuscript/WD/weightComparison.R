@@ -25,13 +25,13 @@ plotComparison <- function(X, gene, nLabels = 15){
   nLabels <- ifelse(nLabels < sum(X$diffRegulation$p.adj < 0.05), nLabels, sum(X$diffRegulation$p.adj < 0.05))
   DF$C[DF$G %in% X$diffRegulation$gene[X$diffRegulation$p.adj < 0.05]] <- 'red'
   DF$G[!DF$G %in% X$diffRegulation$gene[seq_len(nLabels)]] <- NA
-  P <- ggplot(DF, aes(D,W, label = G)) + 
-    geom_point(col = DF$C, pch = DF$P) + 
-    geom_text_repel(segment.size = 0.2, segment.alpha = 0.5, max.iter = 1e4, force = 10, nudge_x = 0.7) + 
-    theme_bw() + 
+  P <- ggplot(DF, aes(D,W, label = G)) +
+    geom_point(col = DF$C, pch = DF$P) +
+    geom_text_repel(segment.size = 0.2, segment.alpha = 0.5, max.iter = 1e4, force = 10, nudge_x = 0.7) +
+    theme_bw() +
     xlab(Z-score~(Distance)) +
     ylab(Edge~weight) +
-    labs(title = paste0(gene, collapse = ' - '), subtitle = statsExpressions::expr_corr_test(DF, W, D, type = 'nonparametric')) +
+    labs(title = paste0(gene, collapse = ' - '), subtitle = statsExpressions::corr_test(DF, W, D, type = 'nonparametric')$expression[[1]]) +
     theme(plot.title = element_text(face = 2), plot.subtitle = element_text(size = 8))
   return(P)
 }
@@ -108,13 +108,13 @@ plotComparison <- function(X, gene, nLabels = 15){
   nLabels <- ifelse(nLabels < sum(X$diffRegulation$p.adj < 0.05), nLabels, sum(X$diffRegulation$p.adj < 0.05))
   DF$C[DF$G %in% X$diffRegulation$gene[X$diffRegulation$p.adj < 0.05]] <- 'red'
   DF$G[!DF$G %in% X$diffRegulation$gene[seq_len(nLabels)]] <- NA
-  P <- ggplot(DF, aes(D,W, label = G)) + 
-    geom_point(col = DF$C, pch = DF$P) + 
-    geom_text_repel(segment.size = 0.2, segment.alpha = 0.5, max.iter = 1e3, force = 15, nudge_x = 0.7) + 
-    theme_bw() + 
-    xlab(Z-score~(Distance)) + 
-    ylab(Abs~(Edge~weight)) + 
-    labs(title = paste0(gene, collapse = ' - '), subtitle = statsExpressions::expr_corr_test(DF, W, D, type = 'nonparametric')) +
+  P <- ggplot(DF, aes(D,W, label = G)) +
+    geom_point(col = DF$C, pch = DF$P) +
+    geom_text_repel(segment.size = 0.2, segment.alpha = 0.5, max.iter = 1e3, force = 15, nudge_x = 0.7) +
+    theme_bw() +
+    xlab(Z-score~(Distance)) +
+    ylab(Abs~(Edge~weight)) +
+    labs(title = paste0(gene, collapse = ' - '), subtitle = statsExpressions::corr_test(DF, W, D, type = 'nonparametric')$expression[[1]]) +
     theme(plot.title = element_text(face = 2), plot.subtitle = element_text(size = 8))
   return(P)
 }
@@ -122,7 +122,8 @@ plotComparison <- function(X, gene, nLabels = 15){
 # DMD
 load('../DMD/Results/GSM4116571.RData')
 png('absDMD.png', width = 1500, height = 1500, res = 300)
-plotComparison(GSM4116571, gene = 'Dmd') + xlim(c(0,2.5))
+DMDPlot <- plotComparison(GSM4116571, gene = 'Dmd') + xlim(c(0,2.5))
+print(DMDPlot)
 dev.off()
 
 # AHR
@@ -160,7 +161,8 @@ dev.off()
 # TREM2
 png('absTREM2.png', width = 1500, height = 1500, res = 300)
 load('../TREM2/Results/GSE130626.RData')
-plotComparison(GSE130626, gene = 'Trem2')
+TREM2Plot <- plotComparison(GSE130626, gene = 'Trem2')
+print(TREM2Plot)
 dev.off()
 
 # HNF4AG
