@@ -114,7 +114,7 @@ plotComparison <- function(X, gene, nLabels = 15){
     theme_bw() +
     xlab(Z-score~(Distance)) +
     ylab(Abs~(Edge~weight)) +
-    labs(title = paste0(gene, collapse = ' - '), subtitle = statsExpressions::corr_test(DF, W, D, type = 'nonparametric')$expression[[1]]) +
+    labs(title = paste0(gene, collapse = ' - ')) +
     theme(plot.title = element_text(face = 2), plot.subtitle = element_text(size = 8))
   return(P)
 }
@@ -172,3 +172,7 @@ plotComparison(GSM3477499, gene = c('Hnf4a', 'Hnf4g')) + xlim(c(-1.5,4))
 dev.off()
 
 
+library(patchwork)
+pdf(file = 'Abs_Trem2+Dmd.pdf', width = 10, height = 5)
+TREM2Plot + DMDPlot
+dev.off()
