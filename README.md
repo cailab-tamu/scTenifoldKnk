@@ -22,7 +22,7 @@ Available functions:
 
 Input:
 --------
-The required input for **scTenifoldKnk** is an expression matrix with genes in the rows and cells (barcodes) in the columns. Data is expected to be _not normalized_.
+The required input for **scTenifoldKnk** is an expression matrix with genes in the rows and cells (barcodes) in the columns. Data is expected to be previously normalized or _not normalized_ if `QC = TRUE`.
 
 Running time:
 --------
