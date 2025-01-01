@@ -4,11 +4,12 @@ scTenifoldKnk
 A R/MATLAB/Python package to perform virtual knockout experiments on single-cell gene regulatory networks. **scTenifoldKnk** is a machine learning workflow that performs virtual knockout experiments using single-cell RNA sequencing (scRNAseq) data from wild-type (WT) control samples as input. Constructs a single-cell gene regulatory network (scGRN) and knocks out a target gene from the adjacency matrix of the WT scGRN by setting the gene’s outdegree edges to zero. **scTenifoldKnk** then compares the knocked out scGRN with the WT scGRN to identify differentially regulated genes, called virtual-knockout perturbed genes, which are used to assess the impact of the gene knockout and reveal the gene’s function in the analyzed cells.
 
 Python version of scTenifoldKnk is available at: https://github.com/qwerty239qwe/scTenifoldpy
+
 MATLAB version is available at: https://github.com/jamesjcai/scGEAToolbox
 
 Install:
 -------
-This package is under active development, you can install **scTenifoldKnk**, using the following command:
+You can install **scTenifoldKnk/R** using the following command:
 
 ```{R}
 library(remotes)
