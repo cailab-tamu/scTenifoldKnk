@@ -59,4 +59,8 @@ The output of **scTenifoldKnk** is a list with 3 slots as follows:
     * **p.value**: A numeric vector of the p-values associated to the fold-changes, probabilities are asigned as P[X > x] using the Chi-square distribution with one degree of freedom.
     * **p.adj**: A numeric vector of adjusted p-values using Benjamini & Hochberg (1995) FDR correction.
 
+---
+The function to plot the egocentric KO, the code is available at [https://github.com/dosorio/utilities/blob/master/singleCell/plotKO.R](https://github.com/dosorio/utilities/blob/master/singleCell/plotKO.R), it requires: The object out of Knk (as X), the gene to knockout (gKO).
+
+
 ©️ The Texas A & M University System. All rights reserved.
