@@ -10,6 +10,7 @@ scTenifoldKnk(
   gKO = NULL,
   qc_mtThreshold = 0.1,
   qc_minLSize = 1000,
+  qc_minCells = 25,
   nc_lambda = 0,
   nc_nNet = 10,
   nc_nCells = 500,
@@ -35,6 +36,8 @@ scTenifoldKnk(
 \item{qc_mtThreshold}{A decimal value between 0 and 1. Defines the maximum ratio of mitochondrial reads (mithocondrial reads / library size) present in a cell to be included in the analysis. It's computed using the symbol genes starting with 'MT-' non-case sensitive.}
 
 \item{qc_minLSize}{An integer value. Defines the minimum library size required for a cell to be included in the analysis.}
+
+\item{qc_minCells}{An integer value. Defines the minimum number of cells a gene should be expressed in to be included in the analysis. By default, it's set to 25.}
 
 \item{nc_lambda}{A continuous value between 0 and 1. Defines the multiplicative value (1-lambda) to be applied over the weaker edge connecting two genes to maximize the adjacency matrix directionality.}
 
@@ -67,11 +70,11 @@ Predict gene perturbations
 }
 \examples{
 # Loading single-cell data
-scRNAseq <- system.file("single-cell/example.csv",package="scTenifoldKnk")
+scRNAseq <- system.file("single-cell/example.csv", package = "scTenifoldKnk")
 scRNAseq <- read.csv(scRNAseq, row.names = 1)
 
 # Running scTenifoldKnk
-scTenifoldKnk(countMatrix = scRNAseq, gKO = 'G100', qc_minLSize = 0)
+scTenifoldKnk(countMatrix = scRNAseq, gKO = "G100", qc_minLSize = 0)
 }
 \author{
 Daniel Osorio <dcosorioh@tamu.edu>
