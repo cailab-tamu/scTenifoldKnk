@@ -50,4 +50,4 @@ Providing a proper directional perturbation estimate — for example, by modelin
 ## References
 
 - Osorio et al. (2022). *scTenifoldKnk: An efficient virtual knockout tool for gene function predictions via single-cell gene regulatory network perturbation.* [Patterns.](https://doi.org/10.1016/j.patter.2022.100434)
-- Cai et al. (2020). *Single-Cell Expression Variability Implies Cell Function.* [Cells.](https://www.mdpi.com/2073-4409/9/1/14)
+- Osorio et al. (2020). *Single-Cell Expression Variability Implies Cell Function.* [Cells.](https://www.mdpi.com/2073-4409/9/1/14)
