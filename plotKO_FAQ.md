@@ -19,7 +19,7 @@ Here, `W` is the edge weight drawn from the WT adjacency matrix (`X$tensorNetwor
 - **Red edge (W > 0)** — positive co-expression between the KO gene and its neighbor in the WT scGRN.
 - **Blue edge (W < 0)** — negative co-expression between the KO gene and its neighbor in the WT scGRN.
 
-This interpretation is consistent with the PC regression framework used to construct the tensor network, where edge weights reflect the sign of the correlation between genes (see Figure 4 in [Cai et al. (2020), *Cells*](https://www.mdpi.com/2073-4409/9/1/14)).
+This interpretation is consistent with the PC regression framework used to construct the tensor network, where edge weights reflect the sign of the correlation between genes (see Figure 4 in [Osorio et al. (2020), *Cells*](https://www.mdpi.com/2073-4409/9/1/14)).
 
 ---
 
@@ -31,7 +31,7 @@ The fold-change (`FC`) values reported in the `diffRegulation` output are derive
 
 The reason directional prediction is not currently possible is that **a gene typically has more than one regulator**. Because scTenifoldKnk perturbs only one gene at a time, there is no way to infer the net expected change in expression of a downstream gene whose response depends on the balance of multiple regulators.
 
-> **Empirical note:** The original scTenifoldKnk paper (Patterns, 2022) reports that significantly DR genes tend to be *downregulated* in real knockout experiments. This is an empirical observation, not a direct output of the tool, and may reflect the general effect of removing a positive regulator.
+> **Empirical note:** The original scTenifoldKnk paper [Patterns, 2022](https://doi.org/10.1016/j.patter.2022.100434) reports that significantly DR genes tend to be *downregulated* in real knockout experiments. This is an empirical observation, not a direct output of the tool, and may reflect the general effect of removing a positive regulator.
 
 ---
 
