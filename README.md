@@ -63,4 +63,6 @@ The output of **scTenifoldKnk** is a list with 3 slots as follows:
 The function to plot the egocentric KO, the code is available at [https://github.com/dosorio/utilities/blob/master/singleCell/plotKO.R](https://github.com/dosorio/utilities/blob/master/singleCell/plotKO.R), it requires: The object out of Knk (as X), the gene to knockout (gKO).
 
 
+[plotKO() — Frequently Asked Questions](plotKO_FAQ.html)
+
 ©️ The Texas A&M University System. All rights reserved.
