@@ -20,16 +20,15 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.3.3
 biocViews:
-Imports: pbapply,
-        Matrix,
+Imports: Matrix,
         methods,
         stats,
-        utils,
         MASS,
         scTenifoldNet,
         cli,
         enrichR,
         igraph,
-        reshape2
+        reshape2,
+        grDevices
 Suggests:
         testthat (>= 2.1.0)

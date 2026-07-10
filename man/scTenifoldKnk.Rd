@@ -6,11 +6,12 @@
 \usage{
 scTenifoldKnk(
   countMatrix,
-  qc = TRUE,
   gKO = NULL,
-  qc_mtThreshold = 0.1,
-  qc_minLSize = 1000,
-  qc_minCells = 25,
+  qc = TRUE,
+  qc_minLibSize = 1000,
+  qc_removeOutlierCells = TRUE,
+  qc_minPCT = 0.05,
+  qc_maxMTratio = 0.1,
   nc_lambda = 0,
   nc_nNet = 10,
   nc_nCells = 500,
@@ -18,6 +19,7 @@ scTenifoldKnk(
   nc_scaleScores = TRUE,
   nc_symmetric = FALSE,
   nc_q = 0.9,
+  nc_priorNetwork = NULL,
   td_K = 3,
   td_maxIter = 1000,
   td_maxError = 1e-05,
@@ -27,17 +29,19 @@ scTenifoldKnk(
 )
 }
 \arguments{
-\item{countMatrix}{countMatrix}
+\item{countMatrix}{Raw counts matrix with cells as columns and genes (symbols) as rows.}
+
+\item{gKO}{Character. Gene symbol of the gene to knock out.}
 
 \item{qc}{A boolean value (TRUE/FALSE), if TRUE, a quality control is applied over the data.}
 
-\item{gKO}{gKO}
+\item{qc_minLibSize}{An integer value. Defines the minimum library size required for a cell to be included in the analysis.}
 
-\item{qc_mtThreshold}{A decimal value between 0 and 1. Defines the maximum ratio of mitochondrial reads (mithocondrial reads / library size) present in a cell to be included in the analysis. It's computed using the symbol genes starting with 'MT-' non-case sensitive.}
+\item{qc_removeOutlierCells}{A boolean value (TRUE/FALSE), if TRUE, cells with library size identified as outliers are removed. For further details see: \code{?boxplot.stats}}
 
-\item{qc_minLSize}{An integer value. Defines the minimum library size required for a cell to be included in the analysis.}
+\item{qc_minPCT}{A decimal value between 0 and 1. Defines the minimum fraction of cells where the gene needs to be expressed to be included in the analysis.}
 
-\item{qc_minCells}{An integer value. Defines the minimum number of cells a gene should be expressed in to be included in the analysis. By default, it's set to 25.}
+\item{qc_maxMTratio}{A decimal value between 0 and 1. Defines the maximum ratio of mitochondrial reads (mitochondrial reads / library size) present in a cell to be included in the analysis. It's computed using the symbol genes starting with 'MT-' non-case sensitive.}
 
 \item{nc_lambda}{A continuous value between 0 and 1. Defines the multiplicative value (1-lambda) to be applied over the weaker edge connecting two genes to maximize the adjacency matrix directionality.}
 
@@ -53,6 +57,8 @@ scTenifoldKnk(
 
 \item{nc_q}{A decimal value between 0 and 1. Defines the cut-off threshold of top q\% relationships to be returned.}
 
+\item{nc_priorNetwork}{A data.frame containing a prior gene regulatory network. The data.frame must have two columns: `regulators` and `targets`. Default: NULL.}
+
 \item{td_K}{An integer value. Defines the number of rank-one tensors used to approximate the data using CANDECOMP/PARAFAC (CP) Tensor Decomposition.}
 
 \item{td_maxIter}{An integer value. Defines the maximum number of iterations if error stay above \code{td_maxError}.}
@@ -65,16 +71,57 @@ scTenifoldKnk(
 
 \item{nCores}{An integer value. Defines the number of cores to be used.}
 }
+\value{
+A list with 3 slots as follows:
+\itemize{
+\item{tensorNetworks:} The WT and KO weight-averaged denoised gene regulatory networks.
+\item{manifoldAlignment:} The generated low-dimensional features result of the non-linear manifold alignment.
+\item{diffRegulation:} The results of the differential regulation analysis.
+}
+}
 \description{
-Predict gene perturbations
+Predict gene perturbations using in-silico knockout experiments
+  from single-cell gene regulatory networks.
 }
 \examples{
-# Loading single-cell data
-scRNAseq <- system.file("single-cell/example.csv", package = "scTenifoldKnk")
-scRNAseq <- read.csv(scRNAseq, row.names = 1)
+library(scTenifoldKnk)
 
-# Running scTenifoldKnk
-scTenifoldKnk(countMatrix = scRNAseq, gKO = "G100", qc_minLSize = 0)
+# Simulating a dataset following a negative binomial distribution with high sparsity (~67\%)
+nCells = 2000
+nGenes = 100
+set.seed(1)
+X <- rnbinom(n = nGenes * nCells, size = 20, prob = 0.98)
+X <- round(X)
+X <- matrix(X, ncol = nCells)
+rownames(X) <- c(paste0('ng', 1:90), paste0('mt-', 1:10))
+
+\dontrun{
+# Running scTenifoldKnk — simulating knockout of gene ng10
+output <- scTenifoldKnk(
+  countMatrix = X,
+  gKO = "ng10",
+  nc_nNet = 10,
+  nc_nCells = 500,
+  td_K = 3,
+  qc_minLibSize = 30
+)
+
+# Structure of the output
+str(output)
+
+# Accessing the WT and KO gene regulatory networks
+dim(output$tensorNetworks$WT)
+dim(output$tensorNetworks$KO)
+
+# Accessing the manifold alignment result
+head(output$manifoldAlignment)
+
+# Differential regulation results — top perturbed genes
+head(output$diffRegulation, n = 10)
+
+# Plotting the KO-centered subnetwork
+plotKO(output, gKO = "ng10")
+}
 }
 \author{
 Daniel Osorio <dcosorioh@tamu.edu>

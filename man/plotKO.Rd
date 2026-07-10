@@ -14,41 +14,50 @@ plotKO(
 )
 }
 \arguments{
-\item{X}{List. Output from `scTenifoldKnk` function.}
+\item{X}{A list. Output from \code{\link{scTenifoldKnk}}.}
 
-\item{gKO}{Character. Gene symbol of simulated knockout gene.}
+\item{gKO}{Character. Gene symbol of the simulated knockout gene.}
 
-\item{q}{Numeric. Edge-weight quantile used to threshold weak edges (default
-0.99).}
+\item{q}{Numeric. Edge-weight quantile used to threshold weak edges.
+Default: 0.99.}
 
-\item{annotate}{Logical. If TRUE, perform enrichment annotation and display
-pies on nodes (default TRUE).}
+\item{annotate}{Logical. If \code{TRUE}, query enrichment databases and
+overlay category pies on enriched nodes. Default: \code{TRUE}.}
 
 \item{nCategories}{Integer. Maximum number of enrichment categories to show
-in the legend when annotation is requested (default 20).}
+in the legend. Default: 20.}
 
 \item{fdrThreshold}{Numeric. Adjusted p-value cutoff (FDR) for reporting
-enriched terms (default 0.05).}
+enriched terms. Default: 0.05.}
 }
 \value{
-Invisibly returns NULL. The primary purpose is plotting the network
- as a side effect.
+Invisibly returns \code{NULL}. Called for the side effect of
+  plotting the network.
 }
 \description{
 Generate and plot a KO-centered subnetwork from the output of
-`scTenifoldKnk`. The function selects genes with significant differential
-regulation, extracts their interactions from the reconstructed WT network,
-filters edges by weight quantile, and displays the network. When
-`annotate = TRUE` the function queries enrichment databases and overlays
-category pies on nodes and a legend of significant terms.
-}
-\details{
-Plot a KO-centered subnetwork and (optionally) annotate with enrichment
+  \code{scTenifoldKnk}. The function selects genes with significant
+  differential regulation (FDR < 0.05), extracts their interactions from the
+  reconstructed WT network, filters edges by weight quantile, and displays
+  the network using \code{igraph}. When \code{annotate = TRUE} the function
+  queries enrichment databases via \code{enrichR} and overlays category pies
+  on nodes with a legend of significant terms.
 }
 \examples{
 \dontrun{
-res <- scTenifoldKnk(countMatrix, gKO = "G100")
-plotKO(res, gKO = "G100")
-}
+library(scTenifoldKnk)
 
+# Load example data
+scRNAseq <- system.file("single-cell/example.csv", package = "scTenifoldKnk")
+scRNAseq <- read.csv(scRNAseq, row.names = 1)
+
+# Run scTenifoldKnk
+output <- scTenifoldKnk(countMatrix = scRNAseq, gKO = "G100", qc_minLibSize = 0)
+
+# Plot the KO-centered subnetwork with enrichment annotation
+plotKO(output, gKO = "G100")
+
+# Plot without enrichment annotation
+plotKO(output, gKO = "G100", annotate = FALSE)
+}
 }
