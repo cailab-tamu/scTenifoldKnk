@@ -1,68 +1,156 @@
-scTenifoldKnk
-=============
+# scTenifoldKnk
 
-A R/MATLAB/Python package to perform virtual knockout experiments on single-cell gene regulatory networks. **scTenifoldKnk** is a machine learning workflow that performs virtual knockout experiments using single-cell RNA sequencing (scRNAseq) data from wild-type (WT) control samples as input. Constructs a single-cell gene regulatory network (scGRN) and knocks out a target gene from the adjacency matrix of the WT scGRN by setting the gene’s outdegree edges to zero. **scTenifoldKnk** then compares the knocked out scGRN with the WT scGRN to identify differentially regulated genes, called virtual-knockout perturbed genes, which are used to assess the impact of the gene knockout and reveal the gene’s function in the analyzed cells.
+[![CRAN](https://www.r-pkg.org/badges/version/scTenifoldKnk)](https://CRAN.R-project.org/package=scTenifoldKnk)
+[![License: GPL (>=2)](https://img.shields.io/badge/License-GPL%20%28%3E%3D2%29-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
 
-Python version of scTenifoldKnk is available at: https://github.com/qwerty239qwe/scTenifoldpy
+**scTenifoldKnk** is an R package for performing virtual knockout experiments on single-cell gene regulatory networks (scGRNs). It uses single-cell RNA-seq (scRNA-seq) data from wild-type (WT) control samples to construct a scGRN, then simulates a gene knockout by zeroing the target gene's outdegree edges in the adjacency matrix. The resulting knocked-out scGRN is compared with the WT scGRN to identify differentially regulated genes, or virtual-knockout perturbed genes, which reveal the functional impact of the knocked-out gene in the analyzed cell population.
 
-MATLAB version is available at: https://github.com/jamesjcai/scGEAToolbox
+Implementations in other languages are also available:
 
-Install:
--------
-You can install **scTenifoldKnk/R** using the following command:
+- **Python**: [scTenifoldpy](https://github.com/qwerty239qwe/scTenifoldpy)
+- **MATLAB**: [scGEAToolbox](https://github.com/jamesjcai/scGEAToolbox)
 
-```{R}
-library(remotes)
-install_github('cailab-tamu/scTenifoldKnk')
-library(scTenifoldKnk)
+## Installation
+
+**scTenifoldKnk** is available on CRAN:
+
+```r
+install.packages("scTenifoldKnk")
 ```
 
-Available functions:
---------------------
+To install the development version from GitHub:
 
-|Code| Function |
-|:-|:-|
-|scTenifoldKnk|Perform virtual knockout experiments on single-cell gene regulatory networks|
+```r
+# install.packages("remotes")
+remotes::install_github("cailab-tamu/scTenifoldKnk")
+```
 
-Input:
---------
-The required input for **scTenifoldKnk** is an expression matrix with genes in the rows and cells (barcodes) in the columns. Data is expected to be previously normalized or _not normalized_ if `QC = TRUE`.
+## Pipeline Overview
 
-Running time:
---------
-The running time of scTenifoldKnk is largely dependent on how long it takes to construct scGRNs from subsampled expression matrices. Time increases proportional to the number of cells and genes in the dataset used as input. Below is a table of running times under different scenarios:
+The `scTenifoldKnk()` function orchestrates a virtual knockout pipeline built on top of the **scTenifoldNet** framework. Each step reports progress to the console via the [cli](https://cli.r-lib.org/) package.
 
-| Number of Cells | Number of Genes | Running Time |
-|-----------------|-----------------|--------------|
-| 300             | 1000            | 3.45 min     |
-| 1000            | 1000            | 4.25 min     |
-| 1000            | 5000            | 171.88 min (2 h 51.6 min) |
-| 2500            | 5000            | 175.29 min (2 h 55.3 min) |
-| 5000            | 5000            | 188.88 min (3 h 8.9 min) |
-| 5000            | 7500            | 189.51 min (3 h 9.5 min)  |
-| 7500            | 5000            | 615.45 min (10 h 15.5 min) |
-| 7500            | 7500            | 616.12 min (10 h 16.1 min)  |
+| Step | Function | Description |
+|:----:|:---------|:------------|
+| 1 | `scQC` | Quality control — filters cells by library size, outlier detection, minimum gene expression fraction, and mitochondrial read ratio |
+| 2 | `cpmNormalization` | Counts-per-million (CPM) normalization |
+| 3 | `makeNetworks` | Constructs gene regulatory networks from subsampled cells using principal component regression (`pcNet`) for both WT and KO conditions |
+| 4 | `tensorDecomposition` | CANDECOMP/PARAFAC (CP) tensor decomposition for network denoising |
+| 5 | `manifoldAlignment` | Non-linear manifold alignment of the WT and KO denoised networks |
+| 6 | `dRegulation` | Differential regulation testing via Box-Cox transformation and chi-square statistics |
 
+Individual functions are exported and fully documented, allowing users to run or modify any step independently.
 
-Output:
---------
-The output of **scTenifoldKnk** is a list with 3 slots as follows: 
-  * **tensorNetworks**: The computed weight-averaged denoised gene regulatory networks after CANDECOMP/PARAFAC (CP) tensor decomposition. It includes two slots with:
-    * **X**: The constructed network for the _X_ sample.
-    * **Y**: The constructed network for the _Y_ sample.
-  * **manifoldAlignment**: The generated low-dimensional features result of the non-linear manifold alignment. It is a data frame with _2 times the number of genes_ in the rows and _d_ (default= 2) dimensions in the columns
-  * **diffRegulation**: The results of the differential regulation analysis. It is a data frame with 6 columns as follows:
-    * **gene**: A character vector with the gene id identified from the manifoldAlignment output.
-    * **distance**: A numeric vector of the Euclidean distance computed between the coordinates of the same gene in both conditions.
-    * **Z**: A numeric vector of the Z-scores computed after Box-Cox power transformation.
-    * **FC**: A numeric vector of the FC computed with respect to the expectation.
-    * **p.value**: A numeric vector of the p-values associated to the fold-changes, probabilities are asigned as P[X > x] using the Chi-square distribution with one degree of freedom.
-    * **p.adj**: A numeric vector of adjusted p-values using Benjamini & Hochberg (1995) FDR correction.
+## Input
+
+The required input is a **raw counts matrix** with genes as rows and cells (barcodes) as columns. Data should be *unnormalized* when `qc = TRUE` (the default). The modular design allows users to substitute custom preprocessing at any step.
+
+## Output
+
+`scTenifoldKnk()` returns a list with three elements:
+
+- **`tensorNetworks`** — Weight-averaged denoised gene regulatory networks after CP tensor decomposition, containing:
+  - `WT`: The network for the wild-type condition (sparse matrix of class `dgCMatrix`).
+  - `KO`: The network for the knocked-out condition (sparse matrix of class `dgCMatrix`).
+- **`manifoldAlignment`** — A data frame of low-dimensional features from the non-linear manifold alignment, with 2 × *n* genes rows and *d* columns (default *d* = 2).
+- **`diffRegulation`** — A data frame with six columns:
+  - `gene`: Gene identifier.
+  - `distance`: Euclidean distance between the gene's coordinates in the two conditions.
+  - `Z`: Z-score after Box-Cox power transformation.
+  - `FC`: Fold change with respect to the expectation.
+  - `p.value`: P-value from the chi-square distribution with one degree of freedom.
+  - `p.adj`: Adjusted p-value (Benjamini & Hochberg FDR correction).
+
+## Running Time
+
+Running time is largely determined by the network construction step and scales with the number of cells and genes. Representative benchmarks:
+
+| Cells | Genes | Time |
+|------:|------:|-----:|
+| 300 | 1,000 | 3.45 min |
+| 1,000 | 1,000 | 4.25 min |
+| 1,000 | 5,000 | 2 h 51.6 min |
+| 2,500 | 5,000 | 2 h 55.3 min |
+| 5,000 | 5,000 | 3 h 8.9 min |
+| 5,000 | 7,500 | 3 h 9.5 min |
+| 7,500 | 5,000 | 10 h 15.5 min |
+| 7,500 | 7,500 | 10 h 16.1 min |
+
+## Example
+
+### Simulating a dataset
+
+We create a sparse count matrix of 2,000 cells and 100 genes drawn from a negative binomial distribution (~67 % zeros). The last ten genes are prefixed with `mt-` to simulate mitochondrial genes.
+
+```r
+library(scTenifoldKnk)
+
+nCells <- 2000
+nGenes <- 100
+set.seed(1)
+X <- rnbinom(n = nGenes * nCells, size = 20, prob = 0.98)
+X <- round(X)
+X <- matrix(X, ncol = nCells)
+rownames(X) <- c(paste0('ng', 1:90), paste0('mt-', 1:10))
+```
+
+### Running the virtual knockout
+
+```r
+output <- scTenifoldKnk(
+  countMatrix   = X,
+  gKO           = "ng10",
+  nc_nNet       = 10,
+  nc_nCells     = 500,
+  td_K          = 3,
+  qc_minLibSize = 30
+)
+```
+
+### Exploring the output
+
+```r
+# Structure of the output
+str(output)
+
+# Accessing the WT and KO gene regulatory networks
+dim(output$tensorNetworks$WT)
+dim(output$tensorNetworks$KO)
+
+# Accessing the manifold alignment result
+head(output$manifoldAlignment)
+
+# Differential regulation results — top perturbed genes
+head(output$diffRegulation, n = 10)
+
+# Plotting the KO-centered subnetwork
+plotKO(output, gKO = "ng10")
+```
+
+See also: [plotKO() — Frequently Asked Questions](plotKO_FAQ.md)
+
+## Citation
+
+Osorio, D., Zhong, Y., Li, G., Xu, Q., Yang, Y., Tian, Y., Chapkin, R., Huang, J. Z., & Cai, J. J. (2022). scTenifoldKnk: An Efficient Virtual Knockout Tool for Gene Function Predictions via Single-Cell Gene Regulatory Network Perturbation. *Patterns*, **3**(3), 100434. [doi:10.1016/j.patter.2022.100434](https://doi.org/10.1016/j.patter.2022.100434)
+
+BibTeX:
+
+```bibtex
+@Article{osorio2022sctenifoldknk,
+  title   = {scTenifoldKnk: An Efficient Virtual Knockout Tool for Gene Function
+             Predictions via Single-Cell Gene Regulatory Network Perturbation},
+  author  = {Daniel Osorio and Yan Zhong and Guanxun Li and Qian Xu and
+             Yongjian Yang and Yanan Tian and Robert Chapkin and
+             Jianhua Z. Huang and James J. Cai},
+  journal = {Patterns},
+  year    = {2022},
+  volume  = {3},
+  number  = {3},
+  pages   = {100434},
+  issn    = {2666-3899},
+  doi     = {10.1016/j.patter.2022.100434},
+}
+```
 
 ---
-The function to plot the egocentric KO, the code is available at [https://github.com/dosorio/utilities/blob/master/singleCell/plotKO.R](https://github.com/dosorio/utilities/blob/master/singleCell/plotKO.R), it requires: The object out of Knk (as X), the gene to knockout (gKO).
 
-
-[plotKO() — Frequently Asked Questions](plotKO_FAQ.md)
-
-©️ The Texas A&M University System. All rights reserved.
+&copy; The Texas A&M University System. All rights reserved.
