@@ -3,12 +3,13 @@
 #' @importFrom cli cli_h1 cli_alert_info cli_alert_success
 #' @importFrom Matrix Matrix
 #' @importFrom scTenifoldNet makeNetworks tensorDecomposition manifoldAlignment cpmNormalization
-#' @author Daniel Osorio <dcosorioh@tamu.edu>
+#' @author Daniel Osorio <dcosorioh@gmail.com>
 #' @title scTenifoldKNK
 #' @description Predict gene perturbations using in-silico knockout experiments
 #'   from single-cell gene regulatory networks.
 #' @param countMatrix Raw counts matrix with cells as columns and genes (symbols) as rows.
-#' @param gKO Character. Gene symbol of the gene to knock out.
+#' @param gKO Character. In single knockout mode, the gene symbol of the gene to knock out. In transcriptome-wide mode (\code{transcriptomeWide = TRUE}), an optional character vector defining the subset of genes to perturb; if \code{NULL}, every gene in the WT network is perturbed.
+#' @param transcriptomeWide A boolean value (TRUE/FALSE). If TRUE, the WT network is built once and each target gene is knocked out in turn, returning the manifold-alignment distances for every perturbation. Default: FALSE.
 #' @param qc A boolean value (TRUE/FALSE), if TRUE, a quality control is applied over the data.
 #' @param qc_minLibSize An integer value. Defines the minimum library size required for a cell to be included in the analysis.
 #' @param qc_removeOutlierCells A boolean value (TRUE/FALSE), if TRUE, cells with library size identified as outliers are removed. For further details see: \code{?boxplot.stats}
@@ -27,12 +28,18 @@
 #' @param td_maxError A decimal value between 0 and 1. Defines the relative Frobenius norm error tolerance.
 #' @param td_nDecimal An integer value indicating the number of decimal places to be used.
 #' @param ma_nDim An integer value. Defines the number of dimensions of the low-dimensional feature space to be returned from the non-linear manifold alignment.
+#' @param dr_empiricalNull A boolean value (TRUE/FALSE). If TRUE, the differential regulation p-values are assigned using Efron's empirical null (estimated with \code{locfdr}) instead of the theoretical chi-square null. Requires the \code{locfdr} package. Default: FALSE.
 #' @param nCores An integer value. Defines the number of cores to be used.
-#' @return A list with 3 slots as follows:
+#' @return In single knockout mode (\code{transcriptomeWide = FALSE}), a list with 3 slots as follows:
 #' \itemize{
 #' \item{tensorNetworks:} The WT and KO weight-averaged denoised gene regulatory networks.
 #' \item{manifoldAlignment:} The generated low-dimensional features result of the non-linear manifold alignment.
 #' \item{diffRegulation:} The results of the differential regulation analysis.
+#' }
+#' In transcriptome-wide mode (\code{transcriptomeWide = TRUE}), a list with 2 slots as follows:
+#' \itemize{
+#' \item{tensorNetworks:} A list with the WT weight-averaged denoised gene regulatory network.
+#' \item{perturbationDistances:} A numeric matrix of manifold-alignment distances with the perturbed genes as rows and all genes in the WT network as columns.
 #' }
 #' @examples
 #' library(scTenifoldKnk)
@@ -72,8 +79,23 @@
 #'
 #' # Plotting the KO-centered subnetwork
 #' plotKO(output, gKO = "ng10")
+#'
+#' # Transcriptome-wide perturbation — knock out every gene in the WT network
+#' twOutput <- scTenifoldKnk(
+#'   countMatrix = X,
+#'   transcriptomeWide = TRUE,
+#'   nc_nNet = 10,
+#'   nc_nCells = 500,
+#'   td_K = 3,
+#'   qc_minLibSize = 30
+#' )
+#'
+#' # Matrix of distances: perturbed genes (rows) by all genes (columns)
+#' dim(twOutput$perturbationDistances)
+#' twOutput$perturbationDistances[1:5, 1:5]
 #' }
-scTenifoldKnk <- function(countMatrix, gKO = NULL, qc = TRUE,
+scTenifoldKnk <- function(countMatrix, gKO = NULL, transcriptomeWide = FALSE,
+                          qc = TRUE,
                           qc_minLibSize = 1000, qc_removeOutlierCells = TRUE,
                           qc_minPCT = 0.05, qc_maxMTratio = 0.1,
                           nc_lambda = 0, nc_nNet = 10, nc_nCells = 500,
@@ -82,18 +104,33 @@ scTenifoldKnk <- function(countMatrix, gKO = NULL, qc = TRUE,
                           nc_priorNetwork = NULL, td_K = 3,
                           td_maxIter = 1000, td_maxError = 1e-05,
                           td_nDecimal = 3, ma_nDim = 2,
+                          dr_empiricalNull = FALSE,
                           nCores = parallel::detectCores()) {
 
   cli::cli_h1("scTenifoldKnk Pipeline")
 
-  # A single gene symbol to knock out must be provided
-  if (is.null(gKO) || length(gKO) != 1 || is.na(gKO)) {
-    stop("A single gene symbol must be provided in 'gKO' to perform the knockout")
-  }
+  if (isTRUE(transcriptomeWide)) {
+    # A subset is optional; when provided it must be present in the input matrix
+    if (!is.null(gKO)) {
+      if (!is.character(gKO) || anyNA(gKO)) {
+        stop("'gKO' must be a character vector of gene symbols to perturb")
+      }
+      missingGenes <- gKO[!gKO %in% rownames(countMatrix)]
+      if (length(missingGenes) > 0) {
+        stop("The following genes are not present in the count matrix used as input: ",
+             paste(missingGenes, collapse = ", "))
+      }
+    }
+  } else {
+    # A single gene symbol to knock out must be provided
+    if (is.null(gKO) || length(gKO) != 1 || is.na(gKO)) {
+      stop("A single gene symbol must be provided in 'gKO' to perform the knockout")
+    }
 
-  # Check that the requested gene to knock out is present in the input matrix
-  if (!gKO %in% rownames(countMatrix)) {
-    stop(gKO, " is not present in the count matrix used as input")
+    # Check that the requested gene to knock out is present in the input matrix
+    if (!gKO %in% rownames(countMatrix)) {
+      stop(gKO, " is not present in the count matrix used as input")
+    }
   }
 
   # Step 1: Quality Control
@@ -104,8 +141,16 @@ scTenifoldKnk <- function(countMatrix, gKO = NULL, qc = TRUE,
                         minPCT = qc_minPCT, maxMTratio = qc_maxMTratio)
   }
 
-  # Re-check presence of the KO gene after filtering
-  if (!gKO %in% rownames(countMatrix)) {
+  # Re-check presence of the KO gene(s) after filtering
+  if (isTRUE(transcriptomeWide)) {
+    if (!is.null(gKO)) {
+      missingGenes <- gKO[!gKO %in% rownames(countMatrix)]
+      if (length(missingGenes) > 0) {
+        stop("The following genes are not present in the count matrix after quality control: ",
+             paste(missingGenes, collapse = ", "))
+      }
+    }
+  } else if (!gKO %in% rownames(countMatrix)) {
     stop(gKO, " is not present in the count matrix after quality control")
   }
 
@@ -135,6 +180,47 @@ scTenifoldKnk <- function(countMatrix, gKO = NULL, qc = TRUE,
   diag(WT) <- 0
   WT <- t(WT)
 
+  if (isTRUE(transcriptomeWide)) {
+    # Transcriptome-wide mode: perturb each target gene in the WT network
+    geneList <- rownames(WT)
+    targetGenes <- if (is.null(gKO)) geneList else gKO
+
+    # Some subset genes may be dropped during network construction
+    missingGenes <- targetGenes[!targetGenes %in% geneList]
+    if (length(missingGenes) > 0) {
+      stop("The following genes are not present in the WT network: ",
+           paste(missingGenes, collapse = ", "))
+    }
+
+    cli::cli_alert_info(
+      "Step 5/5: Perturbing {length(targetGenes)} gene{?s} transcriptome-wide"
+    )
+
+    perturbationDistances <- matrix(
+      NA_real_, nrow = length(targetGenes), ncol = length(geneList),
+      dimnames = list(targetGenes, geneList)
+    )
+
+    cli::cli_progress_bar("Perturbing genes", total = length(targetGenes))
+    for (g in targetGenes) {
+      KO <- WT
+      KO[g, ] <- 0
+      set.seed(1)
+      MA <- manifoldAlignment(WT, KO, d = ma_nDim, nCores = nCores)
+      DR <- dRegulation(MA, empiricalNull = dr_empiricalNull)
+      perturbationDistances[g, DR$gene] <- DR$distance
+      cli::cli_progress_update()
+    }
+    cli::cli_progress_done()
+
+    outputList <- list()
+    outputList$tensorNetworks$WT <- Matrix(WT)
+    outputList$perturbationDistances <- perturbationDistances
+
+    cli::cli_alert_success("scTenifoldKnk pipeline complete")
+    return(outputList)
+  }
+
   # Step 5: Simulate knockout by zeroing outgoing edges from the KO gene
   cli::cli_alert_info("Step 5/7: Simulating {gKO} knockout")
   KO <- WT
@@ -147,7 +233,7 @@ scTenifoldKnk <- function(countMatrix, gKO = NULL, qc = TRUE,
 
   # Step 7: Differential regulation analysis
   cli::cli_alert_info("Step 7/7: Differential regulation analysis")
-  DR <- dRegulation(MA)
+  DR <- dRegulation(MA, empiricalNull = dr_empiricalNull)
 
   outputList <- list()
   outputList$tensorNetworks$WT <- Matrix(WT)

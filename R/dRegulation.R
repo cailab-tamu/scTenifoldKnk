@@ -1,7 +1,7 @@
 #' @export dRegulation
-#' @importFrom stats dist pchisq p.adjust qqnorm
+#' @importFrom stats dist pchisq pnorm p.adjust qqnorm
 #' @importFrom MASS boxcox
-#' @importFrom cli cli_alert_info cli_alert_success
+#' @importFrom cli cli_alert_info cli_alert_success cli_alert_warning
 #' @title Evaluates gene differential regulation based on manifold alignment
 #'   distances.
 #' @description Using the output of the non-linear manifold alignment, this
@@ -10,11 +10,17 @@
 #'   using Box-Cox power transformation, and standardized to ensure normality.
 #'   P-values are assigned following the chi-square distribution over the
 #'   fold-change of the squared distance computed with respect to the
-#'   expectation.
+#'   expectation, or, when \code{empiricalNull = TRUE}, using Efron's
+#'   empirical null estimated from the Z-scores with \code{locfdr}.
 #' @param manifoldOutput A matrix. The output of the non-linear manifold
 #'   alignment, a labeled matrix with two times the number of shared genes as
 #'   rows (X_ genes followed by Y_ genes in the same order) and \code{d} number
 #'   of columns.
+#' @param empiricalNull A boolean value (TRUE/FALSE). If TRUE, p-values are
+#'   assigned using Efron's empirical null: the null distribution of the
+#'   Z-scores is estimated from the bulk of the data with \code{locfdr::locfdr}
+#'   instead of assuming the theoretical chi-square null. Requires the
+#'   \code{locfdr} package. Default: FALSE.
 #' @return A data frame with 6 columns as follows: \itemize{
 #' \item \code{gene} A character vector with the gene id identified from the
 #'   \code{manifoldAlignment} output.
@@ -84,7 +90,7 @@
 #' qqline(drOutput$Z)
 #' }
 
-dRegulation <- function(manifoldOutput) {
+dRegulation <- function(manifoldOutput, empiricalNull = FALSE) {
 
   geneList <- rownames(manifoldOutput)
   geneList <- geneList[grepl('^X_', geneList)]
@@ -132,7 +138,30 @@ dRegulation <- function(manifoldOutput) {
   Z <- scale(nD)
   E <- mean(dMetric^2)
   FC <- dMetric^2 / E
-  pValues <- pchisq(q = FC, df = 1, lower.tail = FALSE)
+
+  if (isTRUE(empiricalNull)) {
+    if (!requireNamespace('locfdr', quietly = TRUE)) {
+      stop("Package 'locfdr' is required when 'empiricalNull = TRUE'. ",
+           "Install it with install.packages('locfdr').")
+    }
+    zScores <- as.numeric(Z)
+    eNull <- try(locfdr::locfdr(zScores, plot = 0), silent = TRUE)
+    if (inherits(eNull, 'try-error')) {
+      cli::cli_alert_warning(
+        "Empirical null estimation failed; falling back to the theoretical null"
+      )
+      pValues <- pchisq(q = FC, df = 1, lower.tail = FALSE)
+    } else {
+      delta0 <- eNull$fp0['mlest', 'delta']
+      sigma0 <- eNull$fp0['mlest', 'sigma']
+      cli::cli_alert_info(
+        "Efron empirical null: mean = {round(delta0, 3)}, sd = {round(sigma0, 3)}"
+      )
+      pValues <- pnorm((zScores - delta0) / sigma0, lower.tail = FALSE)
+    }
+  } else {
+    pValues <- pchisq(q = FC, df = 1, lower.tail = FALSE)
+  }
   pAdjusted <- p.adjust(pValues, method = 'fdr')
 
   dOut <- data.frame(

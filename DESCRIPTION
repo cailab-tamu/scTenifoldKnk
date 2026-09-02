@@ -31,4 +31,5 @@ Imports: Matrix,
         reshape2,
         grDevices
 Suggests:
-        testthat (>= 2.1.0)
+        testthat (>= 2.1.0),
+        locfdr

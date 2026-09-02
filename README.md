@@ -33,10 +33,11 @@ The `scTenifoldKnk()` function orchestrates a virtual knockout pipeline built on
 |:----:|:---------|:------------|
 | 1 | `scQC` | Quality control — filters cells by library size, outlier detection, minimum gene expression fraction, and mitochondrial read ratio |
 | 2 | `cpmNormalization` | Counts-per-million (CPM) normalization |
-| 3 | `makeNetworks` | Constructs gene regulatory networks from subsampled cells using principal component regression (`pcNet`) for both WT and KO conditions |
+| 3 | `makeNetworks` | Constructs gene regulatory networks from subsampled cells using principal component regression (`pcNet`) |
 | 4 | `tensorDecomposition` | CANDECOMP/PARAFAC (CP) tensor decomposition for network denoising |
-| 5 | `manifoldAlignment` | Non-linear manifold alignment of the WT and KO denoised networks |
-| 6 | `dRegulation` | Differential regulation testing via Box-Cox transformation and chi-square statistics |
+| 5 | `strictDirection` | Enforces directionality of the reconstructed adjacency matrix |
+| 6 | `manifoldAlignment` | Non-linear manifold alignment of the WT and KO denoised networks |
+| 7 | `dRegulation` | Differential regulation testing via Box-Cox transformation and chi-square statistics |
 
 Individual functions are exported and fully documented, allowing users to run or modify any step independently.
 
@@ -44,21 +45,94 @@ Individual functions are exported and fully documented, allowing users to run or
 
 The required input is a **raw counts matrix** with genes as rows and cells (barcodes) as columns. Data should be *unnormalized* when `qc = TRUE` (the default). The modular design allows users to substitute custom preprocessing at any step.
 
+## Operating Modes
+
+`scTenifoldKnk()` supports two modes, selected with the `transcriptomeWide` argument:
+
+- **Single knockout** (`transcriptomeWide = FALSE`, default) — Knocks out one target gene (`gKO`) and returns the WT/KO networks, the manifold alignment, and the differential regulation table.
+- **Transcriptome-wide perturbation** (`transcriptomeWide = TRUE`) — Builds the WT network **once**, then knocks out every gene in the network (or a user-supplied subset passed through `gKO`), running the manifold alignment and distance calculation for each. It returns a matrix of perturbation distances instead of a single differential regulation table. Because it performs one alignment per perturbed gene, running time scales with the number of genes.
+
+## Function Reference
+
+All functions below are exported and individually documented (`?functionName`).
+
+### `scTenifoldKnk()`
+
+Main entry point running the full virtual knockout pipeline.
+
+| Argument | Default | Description |
+|:---------|:--------|:------------|
+| `countMatrix` | — | Raw counts matrix, genes (symbols) as rows, cells as columns. |
+| `gKO` | `NULL` | Single knockout mode: gene symbol to knock out. Transcriptome-wide mode: optional character vector of genes to perturb; `NULL` perturbs every gene in the WT network. |
+| `transcriptomeWide` | `FALSE` | If `TRUE`, perturb each target gene in turn and return a distance matrix. |
+| `qc` | `TRUE` | Apply quality control (`scQC`) to the input matrix. |
+| `qc_minLibSize` | `1000` | Minimum library size for a cell to be retained. |
+| `qc_removeOutlierCells` | `TRUE` | Remove cells whose library size is an outlier. |
+| `qc_minPCT` | `0.05` | Minimum fraction of cells in which a gene must be expressed. |
+| `qc_maxMTratio` | `0.1` | Maximum mitochondrial read ratio per cell (genes matching `^MT-`, case-insensitive). |
+| `nc_lambda` | `0` | Directionality weighting applied to the weaker edge between two genes. |
+| `nc_nNet` | `10` | Number of PC-regression networks to generate. |
+| `nc_nCells` | `500` | Number of cells subsampled per network. |
+| `nc_nComp` | `3` | Number of principal components used to build networks. |
+| `nc_scaleScores` | `TRUE` | Normalize weights so the maximum absolute value is 1. |
+| `nc_symmetric` | `FALSE` | Return a symmetric weights matrix. |
+| `nc_q` | `0.9` | Cut-off quantile of top relationships to keep. |
+| `nc_priorNetwork` | `NULL` | Optional prior network (`data.frame` with `regulators`/`targets`). |
+| `td_K` | `3` | Number of rank-one tensors for CP tensor decomposition. |
+| `td_maxIter` | `1000` | Maximum tensor-decomposition iterations. |
+| `td_maxError` | `1e-05` | Relative Frobenius-norm error tolerance. |
+| `td_nDecimal` | `3` | Number of decimal places retained. |
+| `ma_nDim` | `2` | Number of manifold-alignment dimensions. |
+| `dr_empiricalNull` | `FALSE` | Assign differential regulation p-values using Efron's empirical null (via `locfdr`) instead of the theoretical chi-square null. |
+| `nCores` | `parallel::detectCores()` | Number of cores to use. |
+
+### `scQC()`
+
+Standalone single-cell quality control. Arguments: `X` (raw counts matrix), `minLibSize`, `removeOutlierCells`, `minPCT`, `maxMTratio`, and an optional `label` for progress messages. Returns a `dgCMatrix` containing the cells and genes that pass the filters.
+
+### `dRegulation()`
+
+Differential regulation testing from a manifold alignment. Arguments: `manifoldOutput` (the labeled `manifoldAlignment` matrix, `X_` genes followed by `Y_` genes in the same order) and `empiricalNull` (if `TRUE`, estimate the null distribution of the Z-scores with Efron's empirical null via the `locfdr` package instead of the theoretical chi-square null). Returns the six-column differential regulation table described under [Output](#output).
+
+### `plotKO()`
+
+Plots the KO-centered subnetwork from a `scTenifoldKnk()` result.
+
+| Argument | Default | Description |
+|:---------|:--------|:------------|
+| `X` | — | Output list from `scTenifoldKnk()`. |
+| `gKO` | — | Gene symbol of the simulated knockout gene. |
+| `q` | `0.99` | Edge-weight quantile used to threshold weak edges. |
+| `annotate` | `TRUE` | Query enrichment databases (`enrichR`) and overlay category pies on nodes. |
+| `nCategories` | `20` | Maximum number of enrichment categories shown in the legend. |
+| `fdrThreshold` | `0.05` | Adjusted p-value cutoff for reporting enriched terms. |
+
+See also: [plotKO() — Frequently Asked Questions](plotKO_FAQ.md)
+
 ## Output
+
+### Single knockout mode (`transcriptomeWide = FALSE`)
 
 `scTenifoldKnk()` returns a list with three elements:
 
 - **`tensorNetworks`** — Weight-averaged denoised gene regulatory networks after CP tensor decomposition, containing:
-  - `WT`: The network for the wild-type condition (sparse matrix of class `dgCMatrix`).
-  - `KO`: The network for the knocked-out condition (sparse matrix of class `dgCMatrix`).
+  - `WT`: The network for the wild-type condition (a `Matrix` object).
+  - `KO`: The network for the knocked-out condition (a `Matrix` object).
 - **`manifoldAlignment`** — A data frame of low-dimensional features from the non-linear manifold alignment, with 2 × *n* genes rows and *d* columns (default *d* = 2).
 - **`diffRegulation`** — A data frame with six columns:
   - `gene`: Gene identifier.
   - `distance`: Euclidean distance between the gene's coordinates in the two conditions.
   - `Z`: Z-score after Box-Cox power transformation.
   - `FC`: Fold change with respect to the expectation.
-  - `p.value`: P-value from the chi-square distribution with one degree of freedom.
+  - `p.value`: P-value from the chi-square distribution with one degree of freedom, or from Efron's empirical null when `dr_empiricalNull = TRUE`.
   - `p.adj`: Adjusted p-value (Benjamini & Hochberg FDR correction).
+
+### Transcriptome-wide mode (`transcriptomeWide = TRUE`)
+
+`scTenifoldKnk()` returns a list with two elements:
+
+- **`tensorNetworks`** — A list with the WT weight-averaged denoised gene regulatory network (`WT`).
+- **`perturbationDistances`** — A numeric matrix of manifold-alignment distances. Rows are the perturbed genes, columns are all genes in the WT network, and each entry is the distance of a gene under the corresponding knockout.
 
 ## Running Time
 
@@ -126,7 +200,35 @@ head(output$diffRegulation, n = 10)
 plotKO(output, gKO = "ng10")
 ```
 
-See also: [plotKO() — Frequently Asked Questions](plotKO_FAQ.md)
+### Transcriptome-wide perturbation
+
+Knock out every gene in the WT network and collect the manifold-alignment distances for each perturbation:
+
+```r
+twOutput <- scTenifoldKnk(
+  countMatrix       = X,
+  transcriptomeWide = TRUE,
+  nc_nNet           = 10,
+  nc_nCells         = 500,
+  td_K              = 3,
+  qc_minLibSize     = 30
+)
+
+# Distance matrix: perturbed genes (rows) by all genes (columns)
+dim(twOutput$perturbationDistances)
+twOutput$perturbationDistances[1:5, 1:5]
+```
+
+To restrict the perturbation to a subset of genes, pass them through `gKO`:
+
+```r
+subset <- scTenifoldKnk(
+  countMatrix       = X,
+  gKO               = c("ng10", "ng20"),
+  transcriptomeWide = TRUE,
+  qc_minLibSize     = 30
+)
+```
 
 ## Citation
 

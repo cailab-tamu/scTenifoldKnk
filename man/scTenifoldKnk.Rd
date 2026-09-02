@@ -7,6 +7,7 @@
 scTenifoldKnk(
   countMatrix,
   gKO = NULL,
+  transcriptomeWide = FALSE,
   qc = TRUE,
   qc_minLibSize = 1000,
   qc_removeOutlierCells = TRUE,
@@ -25,13 +26,16 @@ scTenifoldKnk(
   td_maxError = 1e-05,
   td_nDecimal = 3,
   ma_nDim = 2,
+  dr_empiricalNull = FALSE,
   nCores = parallel::detectCores()
 )
 }
 \arguments{
 \item{countMatrix}{Raw counts matrix with cells as columns and genes (symbols) as rows.}
 
-\item{gKO}{Character. Gene symbol of the gene to knock out.}
+\item{gKO}{Character. In single knockout mode, the gene symbol of the gene to knock out. In transcriptome-wide mode (\code{transcriptomeWide = TRUE}), an optional character vector defining the subset of genes to perturb; if \code{NULL}, every gene in the WT network is perturbed.}
+
+\item{transcriptomeWide}{A boolean value (TRUE/FALSE). If TRUE, the WT network is built once and each target gene is knocked out in turn, returning the manifold-alignment distances for every perturbation. Default: FALSE.}
 
 \item{qc}{A boolean value (TRUE/FALSE), if TRUE, a quality control is applied over the data.}
 
@@ -69,14 +73,21 @@ scTenifoldKnk(
 
 \item{ma_nDim}{An integer value. Defines the number of dimensions of the low-dimensional feature space to be returned from the non-linear manifold alignment.}
 
+\item{dr_empiricalNull}{A boolean value (TRUE/FALSE). If TRUE, the differential regulation p-values are assigned using Efron's empirical null (estimated with \code{locfdr}) instead of the theoretical chi-square null. Requires the \code{locfdr} package. Default: FALSE.}
+
 \item{nCores}{An integer value. Defines the number of cores to be used.}
 }
 \value{
-A list with 3 slots as follows:
+In single knockout mode (\code{transcriptomeWide = FALSE}), a list with 3 slots as follows:
 \itemize{
 \item{tensorNetworks:} The WT and KO weight-averaged denoised gene regulatory networks.
 \item{manifoldAlignment:} The generated low-dimensional features result of the non-linear manifold alignment.
 \item{diffRegulation:} The results of the differential regulation analysis.
+}
+In transcriptome-wide mode (\code{transcriptomeWide = TRUE}), a list with 2 slots as follows:
+\itemize{
+\item{tensorNetworks:} A list with the WT weight-averaged denoised gene regulatory network.
+\item{perturbationDistances:} A numeric matrix of manifold-alignment distances with the perturbed genes as rows and all genes in the WT network as columns.
 }
 }
 \description{
@@ -121,8 +132,22 @@ head(output$diffRegulation, n = 10)
 
 # Plotting the KO-centered subnetwork
 plotKO(output, gKO = "ng10")
+
+# Transcriptome-wide perturbation — knock out every gene in the WT network
+twOutput <- scTenifoldKnk(
+  countMatrix = X,
+  transcriptomeWide = TRUE,
+  nc_nNet = 10,
+  nc_nCells = 500,
+  td_K = 3,
+  qc_minLibSize = 30
+)
+
+# Matrix of distances: perturbed genes (rows) by all genes (columns)
+dim(twOutput$perturbationDistances)
+twOutput$perturbationDistances[1:5, 1:5]
 }
 }
 \author{
-Daniel Osorio <dcosorioh@tamu.edu>
+Daniel Osorio <dcosorioh@gmail.com>
 }

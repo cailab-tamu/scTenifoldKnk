@@ -5,13 +5,19 @@
 \title{Evaluates gene differential regulation based on manifold alignment
   distances.}
 \usage{
-dRegulation(manifoldOutput)
+dRegulation(manifoldOutput, empiricalNull = FALSE)
 }
 \arguments{
 \item{manifoldOutput}{A matrix. The output of the non-linear manifold
 alignment, a labeled matrix with two times the number of shared genes as
 rows (X_ genes followed by Y_ genes in the same order) and \code{d} number
 of columns.}
+
+\item{empiricalNull}{A boolean value (TRUE/FALSE). If TRUE, p-values are
+assigned using Efron's empirical null: the null distribution of the
+Z-scores is estimated from the bulk of the data with \code{locfdr::locfdr}
+instead of assuming the theoretical chi-square null. Requires the
+\code{locfdr} package. Default: FALSE.}
 }
 \value{
 A data frame with 6 columns as follows: \itemize{
@@ -37,7 +43,8 @@ Using the output of the non-linear manifold alignment, this
   using Box-Cox power transformation, and standardized to ensure normality.
   P-values are assigned following the chi-square distribution over the
   fold-change of the squared distance computed with respect to the
-  expectation.
+  expectation, or, when \code{empiricalNull = TRUE}, using Efron's
+  empirical null estimated from the Z-scores with \code{locfdr}.
 }
 \examples{
 library(scTenifoldKnk)

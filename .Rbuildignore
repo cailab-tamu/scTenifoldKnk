@@ -4,4 +4,5 @@ inst/manuscript/*
 inst/benchmark/*
 MATLAB/*
 PYTHON/*
-*\.md
+README.md
+plotKO_FAQ*
