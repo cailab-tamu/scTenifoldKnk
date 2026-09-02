@@ -86,6 +86,11 @@ scTenifoldKnk <- function(countMatrix, gKO = NULL, qc = TRUE,
 
   cli::cli_h1("scTenifoldKnk Pipeline")
 
+  # A single gene symbol to knock out must be provided
+  if (is.null(gKO) || length(gKO) != 1 || is.na(gKO)) {
+    stop("A single gene symbol must be provided in 'gKO' to perform the knockout")
+  }
+
   # Check that the requested gene to knock out is present in the input matrix
   if (!gKO %in% rownames(countMatrix)) {
     stop(gKO, " is not present in the count matrix used as input")
