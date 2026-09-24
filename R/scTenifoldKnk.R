@@ -2,7 +2,7 @@
 #' @importFrom methods as
 #' @importFrom cli cli_h1 cli_alert_info cli_alert_success
 #' @importFrom Matrix Matrix
-#' @importFrom scTenifoldNet makeNetworks tensorDecomposition manifoldAlignment cpmNormalization
+#' @importFrom scTenifoldNet makeNetworks tensorDecomposition manifoldAlignment cpmNormalization checkMemory
 #' @author Daniel Osorio <dcosorioh@gmail.com>
 #' @title scTenifoldKNK
 #' @description Predict gene perturbations using in-silico knockout experiments
@@ -164,6 +164,9 @@ scTenifoldKnk <- function(countMatrix, gKO = NULL, transcriptomeWide = FALSE,
     stop("The following genes are not present in the count matrix after quality control: ",
          paste(missingGenes, collapse = ", "))
   }
+
+  # Warn early when the networks will not fit in the available memory
+  checkMemory(nrow(countMatrix), nNet = nc_nNet, nConditions = 1)
 
   # Step 2: CPM Normalization
   cli::cli_alert_info("Step 2/7: CPM normalization")

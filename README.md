@@ -144,15 +144,31 @@ See also: [plotKO() — Frequently Asked Questions](plotKO_FAQ.md)
 
 ## Running Time
 
-Running time grows mainly with the number of genes. The number of cells matters little, because each network is built from a fixed-size subsample of cells (`nc_nCells`). Single knockout benchmarks with the default parameters (10 networks of 500 cells) on simulated counts, measured on an Apple M2 Pro (16 GB RAM) with R 4.5 and its reference BLAS. Memory is peak resident memory.
+Running time grows mainly with the number of genes. The number of cells matters little, because each network is built from a fixed-size subsample of cells (`nc_nCells`). Single knockout benchmarks with the default parameters (10 networks of 500 cells) on simulated counts, measured on an Apple M2 Pro (16 GB RAM) with R 4.5 and its reference BLAS:
 
-| Cells | Genes | Time | Memory |
-|------:|------:|-----:|-------:|
-| 300 | 1,000 | 17 s | 1.6 GB |
-| 1,000 | 1,000 | 17 s | 1.7 GB |
-| 1,000 | 5,000 | 4.0 min | 7.0 GB |
-| 2,500 | 5,000 | 3.5 min | 6.4 GB |
-| 5,000 | 5,000 | 3.7 min | 5.0 GB |
+| Cells | Genes | Time |
+|------:|------:|-----:|
+| 300 | 1,000 | 17 s |
+| 1,000 | 1,000 | 17 s |
+| 1,000 | 5,000 | 4.0 min |
+| 2,500 | 5,000 | 3.5 min |
+| 5,000 | 5,000 | 3.7 min |
+
+Before version 1.1.1 (scTenifoldNet 1.4.1), networks were built by fitting one SVD per gene, and the earlier benchmarks in this README (measured on a different machine) reported about 3 hours for 5,000 genes.
+
+### Memory
+
+Peak memory grows with the square of the number of genes, because the networks are stacked into a tensor of genes x genes x `nc_nNet` entries. Estimated peak memory with 10 networks:
+
+| Genes | Peak memory |
+|------:|------------:|
+| 1,000 | 0.5 GB |
+| 2,000 | 1.5 GB |
+| 5,000 | 8.6 GB |
+| 10,000 | 34 GB |
+| 15,000 | 76 GB |
+
+`scTenifoldKnk()` compares this estimate with the memory available after quality control and warns, before building the networks, when it does not fit, reporting the largest number of genes that does. The estimate can also be checked beforehand with `scTenifoldNet::checkMemory(nGenes, nNet = 10, nConditions = 1)`.
 
 ## Example
 
