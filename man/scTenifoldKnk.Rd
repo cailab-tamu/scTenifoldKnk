@@ -34,7 +34,7 @@ scTenifoldKnk(
 \arguments{
 \item{countMatrix}{Raw counts matrix with cells as columns and genes (symbols) as rows.}
 
-\item{gKO}{Character. In single knockout mode, the gene symbol of the gene to knock out. In transcriptome-wide mode (\code{transcriptomeWide = TRUE}), an optional character vector defining the subset of genes to perturb; if \code{NULL}, every gene in the WT network is perturbed.}
+\item{gKO}{Character. In knockout mode (\code{transcriptomeWide = FALSE}), the gene symbol of the gene to knock out, or a character vector of several genes to knock out together in a single simulated experiment (e.g. \code{c("Hnf4a", "Hnf4g")}). In transcriptome-wide mode (\code{transcriptomeWide = TRUE}), an optional character vector defining the subset of genes to perturb, each one knocked out separately; if \code{NULL}, every gene in the WT network is perturbed.}
 
 \item{transcriptomeWide}{A boolean value (TRUE/FALSE). If TRUE, the WT network is built once and each target gene is knocked out in turn, returning the manifold-alignment distances for every perturbation. Default: FALSE.}
 
@@ -135,6 +135,18 @@ head(output$diffRegulation, n = 10)
 
 # Plotting the KO-centered subnetwork
 plotKO(output, gKO = "ng10")
+
+# Multi-gene knockout — ng10 and ng20 knocked out together
+dkoOutput <- scTenifoldKnk(
+  countMatrix = X,
+  gKO = c("ng10", "ng20"),
+  nc_nNet = 10,
+  nc_nCells = 500,
+  td_K = 3,
+  qc_minLibSize = 30
+)
+head(dkoOutput$diffRegulation, n = 10)
+plotKO(dkoOutput, gKO = c("ng10", "ng20"))
 
 # Transcriptome-wide perturbation — knock out every gene in the WT network
 twOutput <- scTenifoldKnk(

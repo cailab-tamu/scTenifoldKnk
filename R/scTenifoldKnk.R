@@ -8,7 +8,7 @@
 #' @description Predict gene perturbations using in-silico knockout experiments
 #'   from single-cell gene regulatory networks.
 #' @param countMatrix Raw counts matrix with cells as columns and genes (symbols) as rows.
-#' @param gKO Character. In single knockout mode, the gene symbol of the gene to knock out. In transcriptome-wide mode (\code{transcriptomeWide = TRUE}), an optional character vector defining the subset of genes to perturb; if \code{NULL}, every gene in the WT network is perturbed.
+#' @param gKO Character. In knockout mode (\code{transcriptomeWide = FALSE}), the gene symbol of the gene to knock out, or a character vector of several genes to knock out together in a single simulated experiment (e.g. \code{c("Hnf4a", "Hnf4g")}). In transcriptome-wide mode (\code{transcriptomeWide = TRUE}), an optional character vector defining the subset of genes to perturb, each one knocked out separately; if \code{NULL}, every gene in the WT network is perturbed.
 #' @param transcriptomeWide A boolean value (TRUE/FALSE). If TRUE, the WT network is built once and each target gene is knocked out in turn, returning the manifold-alignment distances for every perturbation. Default: FALSE.
 #' @param qc A boolean value (TRUE/FALSE), if TRUE, a quality control is applied over the data.
 #' @param qc_minLibSize An integer value. Defines the minimum library size required for a cell to be included in the analysis.
@@ -81,6 +81,18 @@
 #' # Plotting the KO-centered subnetwork
 #' plotKO(output, gKO = "ng10")
 #'
+#' # Multi-gene knockout — ng10 and ng20 knocked out together
+#' dkoOutput <- scTenifoldKnk(
+#'   countMatrix = X,
+#'   gKO = c("ng10", "ng20"),
+#'   nc_nNet = 10,
+#'   nc_nCells = 500,
+#'   td_K = 3,
+#'   qc_minLibSize = 30
+#' )
+#' head(dkoOutput$diffRegulation, n = 10)
+#' plotKO(dkoOutput, gKO = c("ng10", "ng20"))
+#'
 #' # Transcriptome-wide perturbation — knock out every gene in the WT network
 #' twOutput <- scTenifoldKnk(
 #'   countMatrix = X,
@@ -116,28 +128,21 @@ scTenifoldKnk <- function(countMatrix, gKO = NULL, transcriptomeWide = FALSE,
     on.exit(restoreSeed(oldSeed), add = TRUE)
   }
 
-  if (isTRUE(transcriptomeWide)) {
-    # A subset is optional; when provided it must be present in the input matrix
-    if (!is.null(gKO)) {
-      if (!is.character(gKO) || anyNA(gKO)) {
-        stop("'gKO' must be a character vector of gene symbols to perturb")
-      }
-      missingGenes <- gKO[!gKO %in% rownames(countMatrix)]
-      if (length(missingGenes) > 0) {
-        stop("The following genes are not present in the count matrix used as input: ",
-             paste(missingGenes, collapse = ", "))
-      }
-    }
-  } else {
-    # A single gene symbol to knock out must be provided
-    if (is.null(gKO) || length(gKO) != 1 || is.na(gKO)) {
-      stop("A single gene symbol must be provided in 'gKO' to perform the knockout")
-    }
+  # gKO is optional in transcriptome-wide mode (every gene is perturbed) and
+  # required otherwise; one or more genes are knocked out together
+  if (!is.null(gKO) && (!is.character(gKO) || length(gKO) == 0 || anyNA(gKO))) {
+    stop("'gKO' must be a character vector of gene symbols")
+  }
+  if (!isTRUE(transcriptomeWide) && is.null(gKO)) {
+    stop("At least one gene symbol must be provided in 'gKO' to perform the knockout")
+  }
+  gKO <- unique(gKO)
 
-    # Check that the requested gene to knock out is present in the input matrix
-    if (!gKO %in% rownames(countMatrix)) {
-      stop(gKO, " is not present in the count matrix used as input")
-    }
+  # Check that the requested genes are present in the input matrix
+  missingGenes <- gKO[!gKO %in% rownames(countMatrix)]
+  if (length(missingGenes) > 0) {
+    stop("The following genes are not present in the count matrix used as input: ",
+         paste(missingGenes, collapse = ", "))
   }
 
   # Step 1: Quality Control
@@ -149,16 +154,10 @@ scTenifoldKnk <- function(countMatrix, gKO = NULL, transcriptomeWide = FALSE,
   }
 
   # Re-check presence of the KO gene(s) after filtering
-  if (isTRUE(transcriptomeWide)) {
-    if (!is.null(gKO)) {
-      missingGenes <- gKO[!gKO %in% rownames(countMatrix)]
-      if (length(missingGenes) > 0) {
-        stop("The following genes are not present in the count matrix after quality control: ",
-             paste(missingGenes, collapse = ", "))
-      }
-    }
-  } else if (!gKO %in% rownames(countMatrix)) {
-    stop(gKO, " is not present in the count matrix after quality control")
+  missingGenes <- gKO[!gKO %in% rownames(countMatrix)]
+  if (length(missingGenes) > 0) {
+    stop("The following genes are not present in the count matrix after quality control: ",
+         paste(missingGenes, collapse = ", "))
   }
 
   # Step 2: CPM Normalization
@@ -229,16 +228,22 @@ scTenifoldKnk <- function(countMatrix, gKO = NULL, transcriptomeWide = FALSE,
     return(outputList)
   }
 
-  # Step 5: Simulate knockout by zeroing outgoing edges from the KO gene
+  # Step 5: Simulate knockout by zeroing outgoing edges from the KO gene(s)
   cli::cli_alert_info("Step 5/7: Simulating {gKO} knockout")
   KO <- WT
   KO[gKO, ] <- 0
 
   # A gene without outgoing edges leaves the network unchanged, so any hits are noise
-  if (all(WT[gKO, ] == 0)) {
-    warning(gKO, " has no outgoing edges in the WT network; the knockout does not ",
+  noEdges <- gKO[rowSums(WT[gKO, , drop = FALSE] != 0) == 0]
+  if (length(noEdges) == length(gKO)) {
+    warning(paste(gKO, collapse = ", "),
+            if (length(gKO) == 1) " has" else " have",
+            " no outgoing edges in the WT network; the knockout does not ",
             "change the network and the differential regulation results reflect ",
             "only numerical noise. Consider 'dr_empiricalNull = TRUE'.")
+  } else if (length(noEdges) > 0) {
+    warning("The following genes have no outgoing edges in the WT network, so ",
+            "knocking them out has no effect: ", paste(noEdges, collapse = ", "))
   }
 
   # Step 6: Manifold alignment

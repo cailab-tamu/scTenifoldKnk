@@ -16,7 +16,8 @@ plotKO(
 \arguments{
 \item{X}{A list. Output from \code{\link{scTenifoldKnk}}.}
 
-\item{gKO}{Character. Gene symbol of the simulated knockout gene.}
+\item{gKO}{Character. Gene symbol(s) of the simulated knockout gene(s), as
+passed to \code{\link{scTenifoldKnk}}.}
 
 \item{q}{Numeric. Edge-weight quantile used to threshold weak edges.
 Default: 0.99.}

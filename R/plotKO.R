@@ -7,7 +7,8 @@
 #'   queries enrichment databases via \code{enrichR} and overlays category pies
 #'   on nodes with a legend of significant terms.
 #' @param X A list. Output from \code{\link{scTenifoldKnk}}.
-#' @param gKO Character. Gene symbol of the simulated knockout gene.
+#' @param gKO Character. Gene symbol(s) of the simulated knockout gene(s), as
+#'   passed to \code{\link{scTenifoldKnk}}.
 #' @param q Numeric. Edge-weight quantile used to threshold weak edges.
 #'   Default: 0.99.
 #' @param annotate Logical. If \code{TRUE}, query enrichment databases and
@@ -61,7 +62,7 @@ plotKO <- function(X, gKO, q = 0.99, annotate = TRUE, nCategories = 20, fdrThres
     netPlot <- igraph::graph_from_data_frame(sCluster, directed = TRUE)
     dPlot <- igraph::centr_degree(netPlot)$res
     W <- rep(1,nrow(sCluster))
-    sG   <- (names(igraph::V(netPlot))[dPlot > 1])[-1]
+    sG   <- setdiff((names(igraph::V(netPlot))[dPlot > 1])[-1], gKO)
     W[sCluster$from %in% sG] <- 0.2
     W[sCluster$to %in% sG] <- 0.2
     W[sCluster$from %in% gKO] <- 1
@@ -134,7 +135,7 @@ plotKO <- function(X, gKO, q = 0.99, annotate = TRUE, nCategories = 20, fdrThres
                               vertex.pie.color=pieColors,
                               vertex.label.family="Times",
                               vertex.label.font=ifelse(eGenes,2,1),
-                              edge.color = ifelse(E(netPlot)$W > 0, 'red', 'blue'),
+                              edge.color = ifelse(igraph::E(netPlot)$W > 0, 'red', 'blue'),
                               edge.curved = ifelse(W == 0.2, 0, 0.1),
                               vertex.color = vColor,
                               vertex.frame.color = NA))
@@ -150,7 +151,7 @@ plotKO <- function(X, gKO, q = 0.99, annotate = TRUE, nCategories = 20, fdrThres
              vertex.label.color="black",
              vertex.size = 10+dPlot,
              vertex.label.family="Times",
-             edge.color = ifelse(E(netPlot)$W > 0, 'red', 'blue'),
+             edge.color = ifelse(igraph::E(netPlot)$W > 0, 'red', 'blue'),
              edge.curved = ifelse(W == 0.2, 0, 0.1),
              vertex.color = rgb(0,188/255,1,0.3),
              vertex.frame.color = NA)
@@ -163,7 +164,7 @@ plotKO <- function(X, gKO, q = 0.99, annotate = TRUE, nCategories = 20, fdrThres
            vertex.label.color="black",
            vertex.size = 10+dPlot,
            vertex.label.family="Times",
-           edge.color = ifelse(E(netPlot)$W > 0, 'red', 'blue'),
+           edge.color = ifelse(igraph::E(netPlot)$W > 0, 'red', 'blue'),
            edge.curved = ifelse(W == 0.2, 0, 0.1),
            vertex.color = rgb(0,188/255,1,0.3),
            vertex.frame.color = NA)

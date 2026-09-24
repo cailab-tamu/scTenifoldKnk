@@ -49,7 +49,7 @@ The required input is a **raw counts matrix** with genes as rows and cells (barc
 
 `scTenifoldKnk()` supports two modes, selected with the `transcriptomeWide` argument:
 
-- **Single knockout** (`transcriptomeWide = FALSE`, default) — Knocks out one target gene (`gKO`) and returns the WT/KO networks, the manifold alignment, and the differential regulation table. If the target gene has no outgoing edges in the WT network, the knockout leaves the network unchanged and a warning says the results are only numerical noise.
+- **Knockout** (`transcriptomeWide = FALSE`, default) — Knocks out one target gene, or several genes together (a character vector in `gKO`, e.g. `c("Hnf4a", "Hnf4g")`), and returns the WT/KO networks, the manifold alignment, and the differential regulation table. If none of the target genes has outgoing edges in the WT network, the knockout leaves the network unchanged and a warning says the results are only numerical noise. Target genes without outgoing edges are also reported when only some of them lack edges.
 - **Transcriptome-wide perturbation** (`transcriptomeWide = TRUE`) — Builds the WT network **once**, then knocks out every gene in the network (or a user-supplied subset passed through `gKO`), running the manifold alignment and distance calculation for each. It returns a matrix of perturbation distances instead of a single differential regulation table. Because it performs one alignment per perturbed gene, running time scales with the number of genes.
 
 ## Reproducibility
@@ -70,7 +70,7 @@ Main entry point running the full virtual knockout pipeline.
 | Argument | Default | Description |
 |:---------|:--------|:------------|
 | `countMatrix` | — | Raw counts matrix, genes (symbols) as rows, cells as columns. |
-| `gKO` | `NULL` | Single knockout mode: gene symbol to knock out. Transcriptome-wide mode: optional character vector of genes to perturb; `NULL` perturbs every gene in the WT network. |
+| `gKO` | `NULL` | Knockout mode: gene symbol to knock out, or a character vector of genes to knock out together. Transcriptome-wide mode: optional character vector of genes to perturb, each one separately; `NULL` perturbs every gene in the WT network. |
 | `transcriptomeWide` | `FALSE` | If `TRUE`, perturb each target gene in turn and return a distance matrix. |
 | `qc` | `TRUE` | Apply quality control (`scQC`) to the input matrix. |
 | `qc_minLibSize` | `1000` | Minimum library size for a cell to be retained. |
@@ -109,7 +109,7 @@ Plots the KO-centered subnetwork from a `scTenifoldKnk()` result.
 | Argument | Default | Description |
 |:---------|:--------|:------------|
 | `X` | — | Output list from `scTenifoldKnk()`. |
-| `gKO` | — | Gene symbol of the simulated knockout gene. |
+| `gKO` | — | Gene symbol(s) of the simulated knockout, as passed to `scTenifoldKnk()`. |
 | `q` | `0.99` | Edge-weight quantile used to threshold weak edges. |
 | `annotate` | `TRUE` | Query enrichment databases (`enrichR`) and overlay category pies on nodes. |
 | `nCategories` | `20` | Maximum number of enrichment categories shown in the legend. |
@@ -205,6 +205,24 @@ head(output$diffRegulation, n = 10)
 plotKO(output, gKO = "ng10")
 ```
 
+### Multi-gene knockout
+
+Pass several genes to `gKO` to knock them out together in one simulated experiment:
+
+```r
+dkoOutput <- scTenifoldKnk(
+  countMatrix   = X,
+  gKO           = c("ng10", "ng20"),
+  nc_nNet       = 10,
+  nc_nCells     = 500,
+  td_K          = 3,
+  qc_minLibSize = 30
+)
+
+head(dkoOutput$diffRegulation, n = 10)
+plotKO(dkoOutput, gKO = c("ng10", "ng20"))
+```
+
 ### Transcriptome-wide perturbation
 
 Knock out every gene in the WT network and collect the manifold-alignment distances for each perturbation:
@@ -224,7 +242,7 @@ dim(twOutput$perturbationDistances)
 twOutput$perturbationDistances[1:5, 1:5]
 ```
 
-To restrict the perturbation to a subset of genes, pass them through `gKO`:
+To restrict the perturbation to a subset of genes, pass them through `gKO`. Each gene is knocked out separately, unlike the multi-gene knockout above:
 
 ```r
 subset <- scTenifoldKnk(
