@@ -43,7 +43,7 @@ Individual functions are exported and fully documented, allowing users to run or
 
 ## Input
 
-The required input is a **raw counts matrix** with genes as rows and cells (barcodes) as columns. Data should be *unnormalized* when `qc = TRUE` (the default). The modular design allows users to substitute custom preprocessing at any step.
+The required input is a **raw counts matrix** with genes as rows and cells (barcodes) as columns, as a `matrix` or a sparse `dgCMatrix`. A data.frame is not accepted: convert it first with `as.matrix()`. Data should be *unnormalized* when `qc = TRUE` (the default). The modular design allows users to substitute custom preprocessing at any step.
 
 ## Operating Modes
 

@@ -7,7 +7,7 @@
 #' @title scTenifoldKNK
 #' @description Predict gene perturbations using in-silico knockout experiments
 #'   from single-cell gene regulatory networks.
-#' @param countMatrix Raw counts matrix with cells as columns and genes (symbols) as rows.
+#' @param countMatrix Raw counts matrix with cells as columns and genes (symbols) as rows, as a \code{matrix} or a sparse \code{dgCMatrix}. A data.frame is not accepted; convert it with \code{as.matrix()} first.
 #' @param gKO Character. In knockout mode (\code{transcriptomeWide = FALSE}), the gene symbol of the gene to knock out, or a character vector of several genes to knock out together in a single simulated experiment (e.g. \code{c("Hnf4a", "Hnf4g")}). In transcriptome-wide mode (\code{transcriptomeWide = TRUE}), an optional character vector defining the subset of genes to perturb, each one knocked out separately; if \code{NULL}, every gene in the WT network is perturbed.
 #' @param transcriptomeWide A boolean value (TRUE/FALSE). If TRUE, the WT network is built once and each target gene is knocked out in turn, returning the manifold-alignment distances for every perturbation. Default: FALSE.
 #' @param qc A boolean value (TRUE/FALSE), if TRUE, a quality control is applied over the data.
@@ -126,6 +126,11 @@ scTenifoldKnk <- function(countMatrix, gKO = NULL, transcriptomeWide = FALSE,
   if (!is.null(seed)) {
     oldSeed <- get0(".Random.seed", envir = globalenv(), inherits = FALSE)
     on.exit(restoreSeed(oldSeed), add = TRUE)
+  }
+
+  if (is.data.frame(countMatrix)) {
+    stop("'countMatrix' must be a matrix or a sparse dgCMatrix, not a data.frame. ",
+         "Convert it first with countMatrix <- as.matrix(countMatrix)")
   }
 
   # gKO is optional in transcriptome-wide mode (every gene is perturbed) and

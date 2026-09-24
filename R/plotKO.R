@@ -71,9 +71,20 @@ plotKO <- function(X, gKO, q = 0.99, annotate = TRUE, nCategories = 20, fdrThres
     layPlot <- igraph::layout_with_fr(netPlot, weights = W)
     dPlot <- (dPlot/max(dPlot))*20
     if(isTRUE(annotate)){
+      # enrichR sets its server options only when attached with library(enrichR),
+      # so set the ones enrichr() needs when the package is only loaded
+      if(is.null(getOption('enrichR.base.address'))){
+        oldOptions <- options(enrichR.base.address = 'https://maayanlab.cloud/Enrichr/',
+                              enrichR.live = TRUE, enrichR.quiet = FALSE)
+        on.exit(options(oldOptions), add = TRUE)
+      }
       enrichFunction <- function(X, fdrThreshold = fdrThreshold){
         E <- enrichr(X, c('KEGG_2019_Human', 'GO_Biological_Process_2018','GO_Cellular_Component_2018', 'GO_Molecular_Function_2018','BioPlanet_2019', 'WikiPathways_2019_Human', 'Reactome_2016'))
         E <- do.call(rbind.data.frame, E)
+        # No results (e.g. gene symbols unknown to Enrichr): plot without annotation
+        if(!NROW(E) || is.null(E$Term)){
+          return(NULL)
+        }
         E <- E[E$Adjusted.P.value < fdrThreshold,]
         E <- E[order(E$Adjusted.P.value),]
         E$Term <- unlist(lapply(strsplit(E$Term,''), function(X){

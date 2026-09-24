@@ -32,7 +32,7 @@ scTenifoldKnk(
 )
 }
 \arguments{
-\item{countMatrix}{Raw counts matrix with cells as columns and genes (symbols) as rows.}
+\item{countMatrix}{Raw counts matrix with cells as columns and genes (symbols) as rows, as a \code{matrix} or a sparse \code{dgCMatrix}. A data.frame is not accepted; convert it with \code{as.matrix()} first.}
 
 \item{gKO}{Character. In knockout mode (\code{transcriptomeWide = FALSE}), the gene symbol of the gene to knock out, or a character vector of several genes to knock out together in a single simulated experiment (e.g. \code{c("Hnf4a", "Hnf4g")}). In transcriptome-wide mode (\code{transcriptomeWide = TRUE}), an optional character vector defining the subset of genes to perturb, each one knocked out separately; if \code{NULL}, every gene in the WT network is perturbed.}
 
