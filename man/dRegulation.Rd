@@ -44,7 +44,12 @@ Using the output of the non-linear manifold alignment, this
   P-values are assigned following the chi-square distribution over the
   fold-change of the squared distance computed with respect to the
   expectation, or, when \code{empiricalNull = TRUE}, using Efron's
-  empirical null estimated from the Z-scores with \code{locfdr}.
+  empirical null estimated from the Z-scores with \code{locfdr}. Genes whose
+  distance is at the level of floating-point noise (at most
+  \code{sqrt(.Machine$double.eps)} times the largest absolute coordinate) did
+  not move between conditions and get a p-value of 1; if this applies to
+  every gene, for example when the knockout leaves the network unchanged, a
+  warning is raised.
 }
 \examples{
 library(scTenifoldKnk)

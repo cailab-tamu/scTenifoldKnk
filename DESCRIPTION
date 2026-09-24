@@ -1,7 +1,7 @@
 Package: scTenifoldKnk
 Type: Package
 Title: In-Silico Knockout Experiments from Single-Cell Gene Regulatory Networks
-Version: 1.1.3
+Version: 1.1.4
 Authors@R: c(person(given = "Daniel", family = "Osorio", email = "dcosorioh@gmail.com", role = c("aut","cre"), comment = c(ORCID = '0000-0003-4424-8422')),
               person(given = "Yan", family = "Zhong", role = c("aut","ctb")),
               person(given = "Guanxun", family = "Li", role = c("aut","ctb")),
@@ -24,7 +24,7 @@ Imports: Matrix,
         methods,
         stats,
         MASS,
-        scTenifoldNet (>= 1.4.2),
+        scTenifoldNet (>= 1.4.3),
         cli,
         enrichR,
         igraph,
