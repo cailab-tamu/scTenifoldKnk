@@ -30,6 +30,7 @@
 #' @param ma_nDim An integer value. Defines the number of dimensions of the low-dimensional feature space to be returned from the non-linear manifold alignment.
 #' @param dr_empiricalNull A boolean value (TRUE/FALSE). If TRUE, the differential regulation p-values are assigned using Efron's empirical null (estimated with \code{locfdr}) instead of the theoretical chi-square null. Requires the \code{locfdr} package. Default: FALSE.
 #' @param nCores An integer value. Defines the number of cores to be used.
+#' @param seed An integer value. The RNG is set to this seed before each random stage (network construction, tensor decomposition and manifold alignment), so results are reproducible and independent of the caller's RNG state; the caller's RNG state is restored on exit. Use different values to assess run-to-run variability. If \code{NULL}, the RNG is never reseeded and the caller's RNG state (e.g. a previous \code{set.seed()}) drives all random stages. Default: 1.
 #' @return In single knockout mode (\code{transcriptomeWide = FALSE}), a list with 3 slots as follows:
 #' \itemize{
 #' \item{tensorNetworks:} The WT and KO weight-averaged denoised gene regulatory networks.
@@ -105,9 +106,15 @@ scTenifoldKnk <- function(countMatrix, gKO = NULL, transcriptomeWide = FALSE,
                           td_maxIter = 1000, td_maxError = 1e-05,
                           td_nDecimal = 3, ma_nDim = 2,
                           dr_empiricalNull = FALSE,
-                          nCores = parallel::detectCores()) {
+                          nCores = parallel::detectCores(),
+                          seed = 1) {
 
   cli::cli_h1("scTenifoldKnk Pipeline")
+
+  if (!is.null(seed)) {
+    oldSeed <- get0(".Random.seed", envir = globalenv(), inherits = FALSE)
+    on.exit(restoreSeed(oldSeed), add = TRUE)
+  }
 
   if (isTRUE(transcriptomeWide)) {
     # A subset is optional; when provided it must be present in the input matrix
@@ -160,7 +167,7 @@ scTenifoldKnk <- function(countMatrix, gKO = NULL, transcriptomeWide = FALSE,
 
   # Step 3: Network construction
   cli::cli_alert_info("Step 3/7: Building gene regulatory networks")
-  set.seed(1)
+  if (!is.null(seed)) set.seed(seed)
   WT <- makeNetworks(X = countMatrix, q = nc_q,
                      priorNetwork = nc_priorNetwork, nNet = nc_nNet,
                      nCells = nc_nCells, scaleScores = nc_scaleScores,
@@ -169,9 +176,10 @@ scTenifoldKnk <- function(countMatrix, gKO = NULL, transcriptomeWide = FALSE,
 
   # Step 4: Tensor decomposition
   cli::cli_alert_info("Step 4/7: Tensor decomposition")
-  set.seed(1)
+  if (!is.null(seed)) set.seed(seed)
   WT <- tensorDecomposition(xList = WT, K = td_K, maxError = td_maxError,
-                            maxIter = td_maxIter, nDecimal = td_nDecimal)
+                            maxIter = td_maxIter, nDecimal = td_nDecimal,
+                            seed = seed)
 
   # Extract reconstructed network, enforce directionality
   WT <- WT$X
@@ -205,7 +213,7 @@ scTenifoldKnk <- function(countMatrix, gKO = NULL, transcriptomeWide = FALSE,
     for (g in targetGenes) {
       KO <- WT
       KO[g, ] <- 0
-      set.seed(1)
+      if (!is.null(seed)) set.seed(seed)
       MA <- manifoldAlignment(WT, KO, d = ma_nDim, nCores = nCores)
       DR <- dRegulation(MA, empiricalNull = dr_empiricalNull)
       perturbationDistances[g, DR$gene] <- DR$distance
@@ -226,9 +234,16 @@ scTenifoldKnk <- function(countMatrix, gKO = NULL, transcriptomeWide = FALSE,
   KO <- WT
   KO[gKO, ] <- 0
 
+  # A gene without outgoing edges leaves the network unchanged, so any hits are noise
+  if (all(WT[gKO, ] == 0)) {
+    warning(gKO, " has no outgoing edges in the WT network; the knockout does not ",
+            "change the network and the differential regulation results reflect ",
+            "only numerical noise. Consider 'dr_empiricalNull = TRUE'.")
+  }
+
   # Step 6: Manifold alignment
   cli::cli_alert_info("Step 6/7: Manifold alignment")
-  set.seed(1)
+  if (!is.null(seed)) set.seed(seed)
   MA <- manifoldAlignment(WT, KO, d = ma_nDim, nCores = nCores)
 
   # Step 7: Differential regulation analysis

@@ -33,7 +33,7 @@ The `scTenifoldKnk()` function orchestrates a virtual knockout pipeline built on
 |:----:|:---------|:------------|
 | 1 | `scQC` | Quality control — filters cells by library size, outlier detection, minimum gene expression fraction, and mitochondrial read ratio |
 | 2 | `cpmNormalization` | Counts-per-million (CPM) normalization |
-| 3 | `makeNetworks` | Constructs gene regulatory networks from subsampled cells using principal component regression (`pcNet`) |
+| 3 | `makeNetworks` | Constructs gene regulatory networks from subsampled cells using principal component regression (`pcNet`). All the per-gene regressions come from one eigendecomposition, which gives the same networks as fitting each gene separately |
 | 4 | `tensorDecomposition` | CANDECOMP/PARAFAC (CP) tensor decomposition for network denoising |
 | 5 | `strictDirection` | Enforces directionality of the reconstructed adjacency matrix |
 | 6 | `manifoldAlignment` | Non-linear manifold alignment of the WT and KO denoised networks |
@@ -49,8 +49,15 @@ The required input is a **raw counts matrix** with genes as rows and cells (barc
 
 `scTenifoldKnk()` supports two modes, selected with the `transcriptomeWide` argument:
 
-- **Single knockout** (`transcriptomeWide = FALSE`, default) — Knocks out one target gene (`gKO`) and returns the WT/KO networks, the manifold alignment, and the differential regulation table.
+- **Single knockout** (`transcriptomeWide = FALSE`, default) — Knocks out one target gene (`gKO`) and returns the WT/KO networks, the manifold alignment, and the differential regulation table. If the target gene has no outgoing edges in the WT network, the knockout leaves the network unchanged and a warning says the results are only numerical noise.
 - **Transcriptome-wide perturbation** (`transcriptomeWide = TRUE`) — Builds the WT network **once**, then knocks out every gene in the network (or a user-supplied subset passed through `gKO`), running the manifold alignment and distance calculation for each. It returns a matrix of perturbation distances instead of a single differential regulation table. Because it performs one alignment per perturbed gene, running time scales with the number of genes.
+
+## Reproducibility
+
+Network construction subsamples cells at random, so results depend on the random seed. The `seed` argument (default `1`) is set before each random step. The same input and parameters therefore give the same result on every run, whatever the caller's RNG state, and that state is restored when the function returns.
+
+- Use different values (`seed = 1`, `seed = 2`, ...) to see how much results vary between runs.
+- Use `seed = NULL` to let a `set.seed()` call made before `scTenifoldKnk()` control the result.
 
 ## Function Reference
 
@@ -84,7 +91,8 @@ Main entry point running the full virtual knockout pipeline.
 | `td_nDecimal` | `3` | Number of decimal places retained. |
 | `ma_nDim` | `2` | Number of manifold-alignment dimensions. |
 | `dr_empiricalNull` | `FALSE` | Assign differential regulation p-values using Efron's empirical null (via `locfdr`) instead of the theoretical chi-square null. |
-| `nCores` | `parallel::detectCores()` | Number of cores to use. |
+| `nCores` | `parallel::detectCores()` | Number of cores used by the manifold alignment. |
+| `seed` | `1` | Seed set before each random stage, so results are reproducible and do not depend on the caller's RNG state (which is restored on exit). Use different values to assess run-to-run variability, or `NULL` to use the caller's RNG state (e.g. a previous `set.seed()`). |
 
 ### `scQC()`
 
@@ -136,18 +144,15 @@ See also: [plotKO() — Frequently Asked Questions](plotKO_FAQ.md)
 
 ## Running Time
 
-Running time is largely determined by the network construction step and scales with the number of cells and genes. Representative benchmarks:
+Running time grows mainly with the number of genes. The number of cells matters little, because each network is built from a fixed-size subsample of cells (`nc_nCells`). Single knockout benchmarks with the default parameters (10 networks of 500 cells) on simulated counts, measured on an Apple M2 Pro (16 GB RAM) with R 4.5 and its reference BLAS. Memory is peak resident memory.
 
-| Cells | Genes | Time |
-|------:|------:|-----:|
-| 300 | 1,000 | 3.45 min |
-| 1,000 | 1,000 | 4.25 min |
-| 1,000 | 5,000 | 2 h 51.6 min |
-| 2,500 | 5,000 | 2 h 55.3 min |
-| 5,000 | 5,000 | 3 h 8.9 min |
-| 5,000 | 7,500 | 3 h 9.5 min |
-| 7,500 | 5,000 | 10 h 15.5 min |
-| 7,500 | 7,500 | 10 h 16.1 min |
+| Cells | Genes | Time | Memory |
+|------:|------:|-----:|-------:|
+| 300 | 1,000 | 17 s | 1.6 GB |
+| 1,000 | 1,000 | 17 s | 1.7 GB |
+| 1,000 | 5,000 | 4.0 min | 7.0 GB |
+| 2,500 | 5,000 | 3.5 min | 6.4 GB |
+| 5,000 | 5,000 | 3.7 min | 5.0 GB |
 
 ## Example
 
@@ -160,7 +165,7 @@ library(scTenifoldKnk)
 
 nCells <- 2000
 nGenes <- 100
-set.seed(1)
+set.seed(1) # seeds the simulated counts; the pipeline seed is set with `seed`
 X <- rnbinom(n = nGenes * nCells, size = 20, prob = 0.98)
 X <- round(X)
 X <- matrix(X, ncol = nCells)

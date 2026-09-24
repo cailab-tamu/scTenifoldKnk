@@ -27,7 +27,8 @@ scTenifoldKnk(
   td_nDecimal = 3,
   ma_nDim = 2,
   dr_empiricalNull = FALSE,
-  nCores = parallel::detectCores()
+  nCores = parallel::detectCores(),
+  seed = 1
 )
 }
 \arguments{
@@ -76,6 +77,8 @@ scTenifoldKnk(
 \item{dr_empiricalNull}{A boolean value (TRUE/FALSE). If TRUE, the differential regulation p-values are assigned using Efron's empirical null (estimated with \code{locfdr}) instead of the theoretical chi-square null. Requires the \code{locfdr} package. Default: FALSE.}
 
 \item{nCores}{An integer value. Defines the number of cores to be used.}
+
+\item{seed}{An integer value. The RNG is set to this seed before each random stage (network construction, tensor decomposition and manifold alignment), so results are reproducible and independent of the caller's RNG state; the caller's RNG state is restored on exit. Use different values to assess run-to-run variability. If \code{NULL}, the RNG is never reseeded and the caller's RNG state (e.g. a previous \code{set.seed()}) drives all random stages. Default: 1.}
 }
 \value{
 In single knockout mode (\code{transcriptomeWide = FALSE}), a list with 3 slots as follows:
