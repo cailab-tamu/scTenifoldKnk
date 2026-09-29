@@ -6,3 +6,4 @@ MATLAB/*
 PYTHON/*
 README.md
 plotKO_FAQ*
+^\.github$

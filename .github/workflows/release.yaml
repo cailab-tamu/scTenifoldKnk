@@ -1,0 +1,48 @@
+# Continuous delivery: on a version tag, build and check the source
+# tarball and attach it to a GitHub release.
+on:
+  push:
+    tags: ['v*', '[0-9]*']
+  workflow_dispatch:
+
+name: release
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-pandoc@v2
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::rcmdcheck, github::cailab-tamu/scTenifoldNet
+          needs: check
+
+      - name: Build source tarball
+        run: R CMD build --no-manual .
+
+      - name: Check source tarball
+        shell: Rscript {0}
+        run: |
+          tarball <- Sys.glob("*.tar.gz")
+          rcmdcheck::rcmdcheck(tarball, args = c("--no-manual", "--as-cran"),
+                               error_on = "error", check_dir = "check")
+
+      - name: Create GitHub release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" *.tar.gz \
+            --title "$GITHUB_REF_NAME" --generate-notes
