@@ -1,5 +1,5 @@
 # Continuous delivery: on a version tag, build and check the source
-# tarball and attach it to a GitHub release.
+# tarball, then attach it to a GitHub release.
 on:
   push:
     tags: ['v*', '[0-9]*']
@@ -7,12 +7,13 @@ on:
 
 name: release
 
-permissions:
-  contents: write
+permissions: read-all
 
 jobs:
-  release:
+  build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -29,6 +30,18 @@ jobs:
           extra-packages: any::rcmdcheck, github::cailab-tamu/scTenifoldNet
           needs: check
 
+      # Tags may be written as 1.2.3, v1.2.3 or v.1.2.3.
+      - name: Verify tag matches DESCRIPTION version
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          pkg_version=$(grep '^Version:' DESCRIPTION | sed 's/Version:[[:space:]]*//')
+          tag_version=${GITHUB_REF_NAME#v}
+          tag_version=${tag_version#.}
+          if [ "$tag_version" != "$pkg_version" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match DESCRIPTION version $pkg_version"
+            exit 1
+          fi
+
       - name: Build source tarball
         run: R CMD build --no-manual .
 
@@ -36,13 +49,31 @@ jobs:
         shell: Rscript {0}
         run: |
           tarball <- Sys.glob("*.tar.gz")
+          stopifnot(length(tarball) == 1)
           rcmdcheck::rcmdcheck(tarball, args = c("--no-manual", "--as-cran"),
-                               error_on = "error", check_dir = "check")
+                               error_on = "warning", check_dir = "check")
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: source-tarball
+          path: '*.tar.gz'
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: source-tarball
 
       - name: Create GitHub release
-        if: startsWith(github.ref, 'refs/tags/')
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release create "$GITHUB_REF_NAME" *.tar.gz \
+            --repo "$GITHUB_REPOSITORY" \
             --title "$GITHUB_REF_NAME" --generate-notes
