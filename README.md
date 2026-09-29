@@ -101,7 +101,7 @@ Standalone single-cell quality control. Arguments: `X` (raw counts matrix), `min
 
 ### `dRegulation()`
 
-Differential regulation testing from a manifold alignment. Arguments: `manifoldOutput` (the labeled `manifoldAlignment` matrix, `X_` genes followed by `Y_` genes in the same order) and `empiricalNull` (if `TRUE`, estimate the null distribution of the Z-scores with Efron's empirical null via the `locfdr` package instead of the theoretical chi-square null). Returns the six-column differential regulation table described under [Output](#output).
+Differential regulation testing from a manifold alignment. Arguments: `manifoldOutput` (the labeled `manifoldAlignment` matrix, `X_` genes followed by `Y_` genes in the same order), `gKO` (the knocked-out genes, left out of the expectation used for the fold-changes; `scTenifoldKnk()` passes them) and `empiricalNull` (if `TRUE`, estimate the null distribution of the Z-scores with Efron's empirical null via the `locfdr` package instead of the theoretical chi-square null). Returns the six-column differential regulation table described under [Output](#output).
 
 ### `plotKO()`
 
@@ -124,15 +124,14 @@ See also: [plotKO() — Frequently Asked Questions](plotKO_FAQ.md)
 
 `scTenifoldKnk()` returns a list with three elements:
 
-- **`tensorNetworks`** — Weight-averaged denoised gene regulatory networks after CP tensor decomposition, containing:
-  - `WT`: The network for the wild-type condition (a `Matrix` object).
-  - `KO`: The network for the knocked-out condition (a `Matrix` object).
+- **`tensorNetworks`** — Weight-averaged denoised gene regulatory network after CP tensor decomposition, containing:
+  - `WT`: The network for the wild-type condition (a `Matrix` object). The knocked-out network is the same network with the rows of `gKO` set to 0; it is not returned, which roughly halves the size of the output (rebuild it with `KO <- output$tensorNetworks$WT; KO[gKO, ] <- 0`).
 - **`manifoldAlignment`** — A data frame of low-dimensional features from the non-linear manifold alignment, with 2 × *n* genes rows and *d* columns (default *d* = 2).
 - **`diffRegulation`** — A data frame with six columns:
   - `gene`: Gene identifier.
   - `distance`: Euclidean distance between the gene's coordinates in the two conditions.
   - `Z`: Z-score after Box-Cox power transformation.
-  - `FC`: Fold change with respect to the expectation.
+  - `FC`: Fold change of the squared distance with respect to the expectation, the mean squared distance of the genes that were not knocked out.
   - `p.value`: P-value from the chi-square distribution with one degree of freedom, or from Efron's empirical null when `dr_empiricalNull = TRUE`.
   - `p.adj`: Adjusted p-value (Benjamini & Hochberg FDR correction).
 
@@ -208,9 +207,10 @@ output <- scTenifoldKnk(
 # Structure of the output
 str(output)
 
-# Accessing the WT and KO gene regulatory networks
+# Accessing the WT gene regulatory network, and rebuilding the KO network
 dim(output$tensorNetworks$WT)
-dim(output$tensorNetworks$KO)
+KO <- output$tensorNetworks$WT
+KO['ng10', ] <- 0
 
 # Accessing the manifold alignment result
 head(output$manifoldAlignment)

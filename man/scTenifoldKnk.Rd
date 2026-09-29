@@ -83,7 +83,7 @@ scTenifoldKnk(
 \value{
 In single knockout mode (\code{transcriptomeWide = FALSE}), a list with 3 slots as follows:
 \itemize{
-\item{tensorNetworks:} The WT and KO weight-averaged denoised gene regulatory networks.
+\item{tensorNetworks:} A list with the WT weight-averaged denoised gene regulatory network. The KO network is the WT network with the rows of \code{gKO} set to 0; it is not returned, which roughly halves the size of the output.
 \item{manifoldAlignment:} The generated low-dimensional features result of the non-linear manifold alignment.
 \item{diffRegulation:} The results of the differential regulation analysis.
 }
@@ -123,9 +123,10 @@ output <- scTenifoldKnk(
 # Structure of the output
 str(output)
 
-# Accessing the WT and KO gene regulatory networks
+# Accessing the WT gene regulatory network, and rebuilding the KO network
 dim(output$tensorNetworks$WT)
-dim(output$tensorNetworks$KO)
+KO <- output$tensorNetworks$WT
+KO['ng10', ] <- 0
 
 # Accessing the manifold alignment result
 head(output$manifoldAlignment)

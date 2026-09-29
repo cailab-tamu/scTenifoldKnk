@@ -10,7 +10,8 @@
 #'   using Box-Cox power transformation, and standardized to ensure normality.
 #'   P-values are assigned following the chi-square distribution over the
 #'   fold-change of the squared distance computed with respect to the
-#'   expectation, or, when \code{empiricalNull = TRUE}, using Efron's
+#'   expectation, the mean squared distance of the genes that were not knocked
+#'   out (\code{gKO}), or, when \code{empiricalNull = TRUE}, using Efron's
 #'   empirical null estimated from the Z-scores with \code{locfdr}. Genes whose
 #'   distance is at the level of floating-point noise (at most
 #'   \code{sqrt(.Machine$double.eps)} times the largest absolute coordinate) did
@@ -21,6 +22,11 @@
 #'   alignment, a labeled matrix with two times the number of shared genes as
 #'   rows (X_ genes followed by Y_ genes in the same order) and \code{d} number
 #'   of columns.
+#' @param gKO A character vector with the knocked-out genes, or \code{NULL}.
+#'   These genes are perturbed by construction, so they are left out of the
+#'   expectation used to compute the fold-changes; otherwise their large
+#'   distances inflate it and hide the other genes. They are still reported in
+#'   the output. Default: NULL, the expectation is computed from all genes.
 #' @param empiricalNull A boolean value (TRUE/FALSE). If TRUE, p-values are
 #'   assigned using Efron's empirical null: the null distribution of the
 #'   Z-scores is estimated from the bulk of the data with \code{locfdr::locfdr}
@@ -34,7 +40,7 @@
 #' \item \code{Z} A numeric vector of the Z-scores computed after Box-Cox power
 #'   transformation.
 #' \item \code{FC} A numeric vector of the FC computed with respect to the
-#'   expectation.
+#'   expectation, the mean squared distance of the genes not in \code{gKO}.
 #' \item \code{p.value} A numeric vector of the p-values associated to the
 #'   fold-changes, probabilities are assigned as \eqn{P[X > x]} using the
 #'   Chi-square distribution with one degree of freedom.
@@ -95,7 +101,7 @@
 #' qqline(drOutput$Z)
 #' }
 
-dRegulation <- function(manifoldOutput, empiricalNull = FALSE) {
+dRegulation <- function(manifoldOutput, gKO = NULL, empiricalNull = FALSE) {
 
   geneList <- rownames(manifoldOutput)
   geneList <- geneList[grepl('^X_', geneList)]
@@ -114,6 +120,19 @@ dRegulation <- function(manifoldOutput, empiricalNull = FALSE) {
   if (!all(eGeneList == geneList)) {
     stop('Genes are not ordered as expected. ',
          'X_ genes should be followed by Y_ genes in the same order')
+  }
+
+  if (!is.null(gKO) && (!is.character(gKO) || anyNA(gKO))) {
+    stop("'gKO' must be a character vector of gene symbols")
+  }
+  missingGenes <- setdiff(gKO, geneList)
+  if (length(missingGenes) > 0) {
+    stop("The following genes are not present in the manifold alignment: ",
+         paste(missingGenes, collapse = ", "))
+  }
+  isKO <- geneList %in% gKO
+  if (all(isKO)) {
+    stop("At least one gene that was not knocked out is required to compute the expectation")
   }
 
   cli::cli_alert_info("Computing distances for {nGenes} genes")
@@ -141,7 +160,9 @@ dRegulation <- function(manifoldOutput, empiricalNull = FALSE) {
   }
 
   Z <- scale(nD)
-  E <- mean(dMetric^2)
+  # The knocked-out genes are perturbed by construction; their large
+  # distances would inflate the expectation and hide the other genes
+  E <- mean(dMetric[!isKO]^2)
   FC <- dMetric^2 / E
 
   if (isTRUE(empiricalNull)) {

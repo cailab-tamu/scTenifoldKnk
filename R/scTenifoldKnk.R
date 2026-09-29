@@ -33,7 +33,7 @@
 #' @param seed An integer value. The RNG is set to this seed before each random stage (network construction, tensor decomposition and manifold alignment), so results are reproducible and independent of the caller's RNG state; the caller's RNG state is restored on exit. Use different values to assess run-to-run variability. If \code{NULL}, the RNG is never reseeded and the caller's RNG state (e.g. a previous \code{set.seed()}) drives all random stages. Default: 1.
 #' @return In single knockout mode (\code{transcriptomeWide = FALSE}), a list with 3 slots as follows:
 #' \itemize{
-#' \item{tensorNetworks:} The WT and KO weight-averaged denoised gene regulatory networks.
+#' \item{tensorNetworks:} A list with the WT weight-averaged denoised gene regulatory network. The KO network is the WT network with the rows of \code{gKO} set to 0; it is not returned, which roughly halves the size of the output.
 #' \item{manifoldAlignment:} The generated low-dimensional features result of the non-linear manifold alignment.
 #' \item{diffRegulation:} The results of the differential regulation analysis.
 #' }
@@ -68,9 +68,10 @@
 #' # Structure of the output
 #' str(output)
 #'
-#' # Accessing the WT and KO gene regulatory networks
+#' # Accessing the WT gene regulatory network, and rebuilding the KO network
 #' dim(output$tensorNetworks$WT)
-#' dim(output$tensorNetworks$KO)
+#' KO <- output$tensorNetworks$WT
+#' KO['ng10', ] <- 0
 #'
 #' # Accessing the manifold alignment result
 #' head(output$manifoldAlignment)
@@ -222,7 +223,7 @@ scTenifoldKnk <- function(countMatrix, gKO = NULL, transcriptomeWide = FALSE,
       KO[g, ] <- 0
       if (!is.null(seed)) set.seed(seed)
       MA <- manifoldAlignment(WT, KO, d = ma_nDim, nCores = nCores)
-      DR <- dRegulation(MA, empiricalNull = dr_empiricalNull)
+      DR <- dRegulation(MA, gKO = g, empiricalNull = dr_empiricalNull)
       perturbationDistances[g, DR$gene] <- DR$distance
       cli::cli_progress_update()
     }
@@ -261,11 +262,11 @@ scTenifoldKnk <- function(countMatrix, gKO = NULL, transcriptomeWide = FALSE,
 
   # Step 7: Differential regulation analysis
   cli::cli_alert_info("Step 7/7: Differential regulation analysis")
-  DR <- dRegulation(MA, empiricalNull = dr_empiricalNull)
+  DR <- dRegulation(MA, gKO = gKO, empiricalNull = dr_empiricalNull)
 
   outputList <- list()
+  # The KO network is the WT network with the gKO rows set to 0, so only WT is returned
   outputList$tensorNetworks$WT <- Matrix(WT)
-  outputList$tensorNetworks$KO <- Matrix(KO)
   outputList$manifoldAlignment <- MA
   outputList$diffRegulation <- DR
 
