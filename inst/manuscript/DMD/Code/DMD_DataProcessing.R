@@ -1,3 +1,17 @@
+# How Results/GSM4116571.RData was computed (April 2020, R < 3.6, scTenifoldNet
+# commit acc68ed). The commented code below differs from that run in three
+# steps:
+#   - the ribosomal and mitochondrial genes were removed after the manifold
+#     alignment, not before; the networks include them
+#   - manifoldAlignment() used d = 2, not the default of that time (d = 30)
+#   - dRegulation() left Dmd out of the expectation of the chi-square test
+# The other conditions of that run, which the current packages do not use
+# by default: set.seed(1) with the 'Rounding' sampler of R < 3.6, raw counts
+# (no CPM normalization), and tensorDecomposition() with K = 5 rounded to
+# 1 decimal.
+# reproduce_GSM4116571.py reproduces the WT network and the published table
+# from the raw data with scTenifoldpy >= 0.5.1.
+#
 # setwd('/data/dcosorioh/manuscript/')
 #
 # library(Matrix)
