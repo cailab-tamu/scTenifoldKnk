@@ -59,8 +59,6 @@ These recommendations come from benchmarking virtual knockouts against bulk knoc
   ```
 
   Apply the mitochondrial read filter (`qc_maxMTratio`) before removing these genes, for example by running `scQC()` first.
-- **Use about 3,000 highly variable genes** (for example selected with Seurat's `vst` method), always keeping the genes to knock out. Results are stable between 3,000 and 5,000 genes, while running time and memory grow with the square of the number of genes (see [Running Time](#running-time)).
-- **Adapt the mitochondrial filter to the data.** The default `qc_maxMTratio = 0.1` suits most data sets, but some platforms (for example 10x v3 libraries of cultured cell lines) have a higher baseline mitochondrial fraction; a per-sample cut-off such as the median plus three median absolute deviations keeps the healthy cells. Mitochondrial genes are detected by gene symbol (`^MT-`), so use gene symbols as row names.
 - **Average over seeds when ranking genes for a single knockout matters.** Rankings of the same knockout agree at a Spearman correlation of about 0.9 between seeds; averaging two or three seeds (`seed = 1, 2, 3`) smooths that variation.
 
 ## Operating Modes
