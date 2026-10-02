@@ -37,8 +37,8 @@ The `scTenifoldKnk()` function orchestrates a virtual knockout pipeline built on
 | 3 | `makeNetworks` | Constructs gene regulatory networks from subsampled cells using principal component regression (`pcNet`). All the per-gene regressions come from one eigendecomposition, which gives the same networks as fitting each gene separately |
 | 4 | `tensorDecomposition` | CANDECOMP/PARAFAC (CP) tensor decomposition for network denoising |
 | 5 | `strictDirection` | Enforces directionality of the reconstructed adjacency matrix |
-| 6 | `manifoldAlignment` | Non-linear manifold alignment of the WT and KO denoised networks |
-| 7 | `dRegulation` | Differential regulation testing via Box-Cox transformation and chi-square statistics |
+| 6 | `manifoldAlignment` or `heatManifoldAlignment` | Comparison of the WT and KO denoised networks: non-linear manifold alignment (one alignment per knockout), or heat manifold alignment (one heat kernel of the WT network, read for every knockout) |
+| 7 | `dRegulation` | Differential regulation testing via Box-Cox transformation and chi-square statistics, with the predicted direction (up/down) of each gene from `knockoutDirection` |
 
 Individual functions are exported and fully documented, allowing users to run or modify any step independently.
 
@@ -46,12 +46,43 @@ Individual functions are exported and fully documented, allowing users to run or
 
 The required input is a **raw counts matrix** with genes as rows and cells (barcodes) as columns, as a `matrix` or a sparse `dgCMatrix`. A data.frame is not accepted: convert it first with `as.matrix()`. Data should be *unnormalized* when `qc = TRUE` (the default). The modular design allows users to substitute custom preprocessing at any step.
 
+## Quality Control: Best Practices
+
+These recommendations come from benchmarking virtual knockouts against bulk knockdown/knockout RNA-seq profiles of the same cell lines (about 1,200 knockout experiments in 17 cell lines, with WT data from three single-cell atlases).
+
+- **Remove ribosomal and mitochondrial genes before building the networks.** Ribosomal protein genes (including their pseudogenes) and mitochondrial genes form dense, highly co-expressed modules that otherwise dominate the networks and crowd the top of the differential regulation table with ribosomal genes, whatever gene is knocked out. Removing them was the largest single improvement found:
+
+  ```r
+  riboMito <- grepl('^(RP[LS][0-9]|RPLP[0-9]|RPSA|MRP[LS][0-9]|MT-|MTND[0-9]|MTCO[0-9]|MTATP[0-9]|MTCYB|MTRNR2L)',
+                    toupper(rownames(X)))
+  X <- X[!riboMito, ]
+  ```
+
+  Apply the mitochondrial read filter (`qc_maxMTratio`) before removing these genes, for example by running `scQC()` first.
+- **Use about 3,000 highly variable genes** (for example selected with Seurat's `vst` method), always keeping the genes to knock out. Results are stable between 3,000 and 5,000 genes, while running time and memory grow with the square of the number of genes (see [Running Time](#running-time)).
+- **Adapt the mitochondrial filter to the data.** The default `qc_maxMTratio = 0.1` suits most data sets, but some platforms (for example 10x v3 libraries of cultured cell lines) have a higher baseline mitochondrial fraction; a per-sample cut-off such as the median plus three median absolute deviations keeps the healthy cells. Mitochondrial genes are detected by gene symbol (`^MT-`), so use gene symbols as row names.
+- **Average over seeds when ranking genes for a single knockout matters.** Rankings of the same knockout agree at a Spearman correlation of about 0.9 between seeds; averaging two or three seeds (`seed = 1, 2, 3`) smooths that variation.
+
 ## Operating Modes
 
 `scTenifoldKnk()` supports two modes, selected with the `transcriptomeWide` argument:
 
 - **Knockout** (`transcriptomeWide = FALSE`, default) — Knocks out one target gene, or several genes together (a character vector in `gKO`, e.g. `c("Hnf4a", "Hnf4g")`), and returns the WT/KO networks, the manifold alignment, and the differential regulation table. If none of the target genes has outgoing edges in the WT network, the knockout leaves the network unchanged and a warning says the results are only numerical noise. Target genes without outgoing edges are also reported when only some of them lack edges.
-- **Transcriptome-wide perturbation** (`transcriptomeWide = TRUE`) — Builds the WT network **once**, then knocks out every gene in the network (or a user-supplied subset passed through `gKO`), running the manifold alignment and distance calculation for each. It returns a matrix of perturbation distances instead of a single differential regulation table. Because it performs one alignment per perturbed gene, running time scales with the number of genes.
+- **Transcriptome-wide perturbation** (`transcriptomeWide = TRUE`) — Builds the WT network **once**, then knocks out every gene in the network (or a user-supplied subset passed through `gKO`). It returns a matrix of perturbation distances, and a matrix of predicted directions, instead of a single differential regulation table. By default it uses the heat manifold alignment, which computes the heat kernel of the WT network once and reads every knockout from it; set `ma_method = "manifold"` to run one manifold alignment per perturbed gene instead, whose running time scales with the number of genes.
+
+The comparison between the WT and KO networks is selected with `ma_method`. Both methods are available in both modes: `"manifold"` (the default for single and multi-gene knockouts) runs the non-linear manifold alignment of the WT and KO networks, and `"heat"` (the default for transcriptome-wide perturbation) uses the heat manifold alignment. The heat manifold alignment ranks the perturbed genes similarly to the manifold alignment (in the benchmark, AUROC for detecting the genes that change of 0.557 vs 0.555 in one atlas and 0.562 vs 0.580 in another), without recomputing an alignment for each knockout; use it when many knockouts are needed, and the manifold alignment when the best ranking for a few knockouts matters.
+
+## Direction of the Response
+
+When `dr_direction = TRUE` (the default), `scTenifoldKnk()` predicts whether each gene goes **up** or **down** after the knockout, using only the WT expression data (`knockoutDirection()`): the heat kernel of the gene-gene correlation matrix of log1p(CPM) expression is diffused from the knocked-out gene(s), and the sign of the result is the predicted direction.
+
+Benchmarked against bulk knockdown/knockout profiles of the same cell lines, the predicted direction is correct more often than chance in two of the three single-cell atlases tested, and it is stable across random seeds and the number of genes used (direction AUROC 0.56 on 892 knockout experiments in the largest atlas; there, the genes with the largest `directionScore` move in the predicted direction 71% of the time, compared with 55% expected by chance). Three limitations apply:
+
+- The predicted direction mostly reflects the response shared by most knockdowns along the dominant WT expression program, rather than regulation specific to the knocked-out gene. It is weakest for transcription factor knockouts.
+- Its accuracy varies between cell types (strong in some cell lines, close to chance in others).
+- It depends on the WT data set: with the third atlas, the same knockouts were predicted at close to chance level (direction AUROC 0.51), and the genes that change were also detected less accurately.
+
+The magnitude (which genes respond) and the direction are reported separately (`distance`/`p.value` and `direction`/`directionScore`), so the direction can be used or ignored independently of the differential regulation statistics.
 
 ## Reproducibility
 
@@ -91,7 +122,11 @@ Main entry point running the full virtual knockout pipeline.
 | `td_maxError` | `1e-05` | Relative Frobenius-norm error tolerance. |
 | `td_nDecimal` | `3` | Number of decimal places retained. |
 | `ma_nDim` | `2` | Number of manifold-alignment dimensions. |
+| `ma_method` | `NULL` | `"manifold"` (non-linear manifold alignment for each knockout) or `"heat"` (heat manifold alignment, one heat kernel for all knockouts). `NULL` uses `"manifold"` for single and multi-gene knockouts and `"heat"` for transcriptome-wide perturbation. |
+| `ma_heatT` | `10` | Diffusion time of the heat kernel of the WT network (`ma_method = "heat"`). |
 | `dr_empiricalNull` | `FALSE` | Assign differential regulation p-values using Efron's empirical null (via `locfdr`) instead of the theoretical chi-square null. |
+| `dr_direction` | `TRUE` | Predict the direction (up/down) of the change of each gene with `knockoutDirection()`. |
+| `dr_directionT` | `5` | Diffusion time of the correlation heat kernel used to predict the direction. |
 | `nCores` | `parallel::detectCores()` | Number of cores used by the manifold alignment. |
 | `seed` | `1` | Seed set before each random stage, so results are reproducible and do not depend on the caller's RNG state (which is restored on exit). Use different values to assess run-to-run variability, or `NULL` to use the caller's RNG state (e.g. a previous `set.seed()`). |
 
@@ -101,7 +136,19 @@ Standalone single-cell quality control. Arguments: `X` (raw counts matrix), `min
 
 ### `dRegulation()`
 
-Differential regulation testing from a manifold alignment. Arguments: `manifoldOutput` (the labeled `manifoldAlignment` matrix, `X_` genes followed by `Y_` genes in the same order), `gKO` (the knocked-out genes, left out of the expectation used for the fold-changes; `scTenifoldKnk()` passes them) and `empiricalNull` (if `TRUE`, estimate the null distribution of the Z-scores with Efron's empirical null via the `locfdr` package instead of the theoretical chi-square null). Returns the six-column differential regulation table described under [Output](#output).
+Differential regulation testing from a manifold alignment. Arguments: `manifoldOutput` (the labeled `manifoldAlignment` matrix, `X_` genes followed by `Y_` genes in the same order), `gKO` (the knocked-out genes, left out of the expectation used for the fold-changes; `scTenifoldKnk()` passes them) and `empiricalNull` (if `TRUE`, estimate the null distribution of the Z-scores with Efron's empirical null via the `locfdr` package instead of the theoretical chi-square null). An optional `direction` (named numeric vector of direction scores, e.g. a row of `knockoutDirection()`) adds the `direction` and `directionScore` columns. Returns the differential regulation table described under [Output](#output).
+
+### `heatKernel()`
+
+Spectral heat kernel of a gene-gene matrix, `H = sum_k exp(t (lambda_k / lambda_max - 1)) v_k v_k'`, from the eigendecomposition of its symmetric part. Arguments: `X` (square matrix), `t` (diffusion time; `t = 0` returns the identity) and `symmetric`.
+
+### `heatManifoldAlignment()`
+
+Heat manifold alignment of the WT network for one or many knockouts. The heat kernel of the WT network is computed once and the knockout of each gene `x` is read from it: `x` loses its mean log1p(CPM) expression and the change diffuses over the network, `delta_g = -mean(x) / sd(x) * H[x, g] * sd(g)`. Returns the matrix of perturbation distances `|delta_g|` (knockouts by genes). Arguments: `WT` (the WT network), `X` (WT raw counts), `gKO` (genes or a list of gene sets to knock out; `NULL` for every gene), `t` (default `10`) and an optional pre-computed kernel `H`.
+
+### `knockoutDirection()`
+
+Predicted direction of the response of each gene to a knockout, from the heat kernel of the WT gene-gene correlation matrix (see [Direction of the Response](#direction-of-the-response)). Arguments: `X` (WT raw counts), `gKO`, `genes` (genes to score) and `t` (default `5`). Returns a matrix of direction scores (positive: up, negative: down), knockouts by genes.
 
 ### `plotKO()`
 
@@ -126,21 +173,24 @@ See also: [plotKO() — Frequently Asked Questions](plotKO_FAQ.md)
 
 - **`tensorNetworks`** — Weight-averaged denoised gene regulatory network after CP tensor decomposition, containing:
   - `WT`: The network for the wild-type condition (a `Matrix` object). The knocked-out network is the same network with the rows of `gKO` set to 0; it is not returned, which roughly halves the size of the output (rebuild it with `KO <- output$tensorNetworks$WT; KO[gKO, ] <- 0`).
-- **`manifoldAlignment`** — A data frame of low-dimensional features from the non-linear manifold alignment, with 2 × *n* genes rows and *d* columns (default *d* = 2).
-- **`diffRegulation`** — A data frame with six columns:
+- **`manifoldAlignment`** — A data frame of low-dimensional features from the non-linear manifold alignment, with 2 × *n* genes rows and *d* columns (default *d* = 2). Only returned when `ma_method = "manifold"`.
+- **`diffRegulation`** — A data frame with eight columns (six when `dr_direction = FALSE`):
   - `gene`: Gene identifier.
   - `distance`: Euclidean distance between the gene's coordinates in the two conditions.
   - `Z`: Z-score after Box-Cox power transformation.
   - `FC`: Fold change of the squared distance with respect to the expectation, the mean squared distance of the genes that were not knocked out.
   - `p.value`: P-value from the chi-square distribution with one degree of freedom, or from Efron's empirical null when `dr_empiricalNull = TRUE`.
   - `p.adj`: Adjusted p-value (Benjamini & Hochberg FDR correction).
+  - `direction`: Predicted direction of the change of the gene, `"up"` or `"down"` (the knocked-out genes are `"down"` by construction).
+  - `directionScore`: Signed direction score from `knockoutDirection()` (`NA` for the knocked-out genes).
 
 ### Transcriptome-wide mode (`transcriptomeWide = TRUE`)
 
-`scTenifoldKnk()` returns a list with two elements:
+`scTenifoldKnk()` returns a list with three elements:
 
 - **`tensorNetworks`** — A list with the WT weight-averaged denoised gene regulatory network (`WT`).
-- **`perturbationDistances`** — A numeric matrix of manifold-alignment distances. Rows are the perturbed genes, columns are all genes in the WT network, and each entry is the distance of a gene under the corresponding knockout.
+- **`perturbationDistances`** — A numeric matrix of perturbation distances (heat manifold alignment by default, manifold-alignment distances with `ma_method = "manifold"`). Rows are the perturbed genes, columns are all genes in the WT network, and each entry is the distance of a gene under the corresponding knockout.
+- **`perturbationDirections`** — A numeric matrix with the same dimensions and the predicted direction of each gene under each knockout (`1` up, `-1` down, `0` undetermined). Only returned when `dr_direction = TRUE`.
 
 ## Running Time
 
@@ -215,8 +265,12 @@ KO['ng10', ] <- 0
 # Accessing the manifold alignment result
 head(output$manifoldAlignment)
 
-# Differential regulation results — top perturbed genes
+# Differential regulation results — top perturbed genes, with the predicted direction
 head(output$diffRegulation, n = 10)
+
+# The same knockout with the heat manifold alignment
+heatOutput <- scTenifoldKnk(X, gKO = "ng10", ma_method = "heat", qc_minLibSize = 30)
+head(heatOutput$diffRegulation, n = 10)
 
 # Plotting the KO-centered subnetwork
 plotKO(output, gKO = "ng10")
@@ -242,7 +296,7 @@ plotKO(dkoOutput, gKO = c("ng10", "ng20"))
 
 ### Transcriptome-wide perturbation
 
-Knock out every gene in the WT network and collect the manifold-alignment distances for each perturbation:
+Knock out every gene in the WT network and collect the perturbation distances and directions (heat manifold alignment by default):
 
 ```r
 twOutput <- scTenifoldKnk(
@@ -257,6 +311,12 @@ twOutput <- scTenifoldKnk(
 # Distance matrix: perturbed genes (rows) by all genes (columns)
 dim(twOutput$perturbationDistances)
 twOutput$perturbationDistances[1:5, 1:5]
+
+# Predicted directions (1 up, -1 down)
+twOutput$perturbationDirections[1:5, 1:5]
+
+# The manifold alignment for every perturbed gene remains available
+twManifold <- scTenifoldKnk(X, transcriptomeWide = TRUE, ma_method = "manifold", qc_minLibSize = 30)
 ```
 
 To restrict the perturbation to a subset of genes, pass them through `gKO`. Each gene is knocked out separately, unlike the multi-gene knockout above:

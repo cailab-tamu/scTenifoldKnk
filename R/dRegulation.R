@@ -32,7 +32,11 @@
 #'   Z-scores is estimated from the bulk of the data with \code{locfdr::locfdr}
 #'   instead of assuming the theoretical chi-square null. Requires the
 #'   \code{locfdr} package. Default: FALSE.
-#' @return A data frame with 6 columns as follows: \itemize{
+#' @param direction Optional named numeric vector of direction scores (names:
+#'   genes), for example a row of \code{\link{knockoutDirection}}. If given,
+#'   the columns \code{direction} and \code{directionScore} are appended.
+#'   Default: NULL.
+#' @return A data frame with 6 columns (8 when \code{direction} is given) as follows: \itemize{
 #' \item \code{gene} A character vector with the gene id identified from the
 #'   \code{manifoldAlignment} output.
 #' \item \code{distance} A numeric vector of the Euclidean distance computed
@@ -46,6 +50,11 @@
 #'   Chi-square distribution with one degree of freedom.
 #' \item \code{p.adj} A numeric vector of adjusted p-values using Benjamini &
 #'   Hochberg (1995) FDR correction.
+#' \item \code{direction} Only when \code{direction} is given: \code{"up"} or
+#'   \code{"down"}, the predicted direction of the change of the gene; the
+#'   knocked-out genes are \code{"down"} by construction.
+#' \item \code{directionScore} Only when \code{direction} is given: the
+#'   signed direction score (\code{NA} for the knocked-out genes).
 #' }
 #' @references \itemize{
 #' \item Benjamini, Y., and Yekutieli, D. (2001). The control of the false
@@ -101,7 +110,7 @@
 #' qqline(drOutput$Z)
 #' }
 
-dRegulation <- function(manifoldOutput, gKO = NULL, empiricalNull = FALSE) {
+dRegulation <- function(manifoldOutput, gKO = NULL, empiricalNull = FALSE, direction = NULL) {
 
   geneList <- rownames(manifoldOutput)
   geneList <- geneList[grepl('^X_', geneList)]
@@ -143,6 +152,17 @@ dRegulation <- function(manifoldOutput, gKO = NULL, empiricalNull = FALSE) {
     as.numeric(dist(rbind(X, Y)))
   })
 
+  # Distances at the level of floating-point noise mean the gene did not move
+  # between conditions; ranking them against each other would flag noise
+  noiseLevel <- sqrt(.Machine$double.eps) * max(abs(manifoldOutput))
+  .drStatistics(dMetric, geneList, isKO, empiricalNull, noiseLevel, direction)
+}
+
+# Box-Cox / Z-score / chi-square statistics of the per-gene distances, shared by
+# the manifold alignment and the heat manifold alignment routes
+.drStatistics <- function(dMetric, geneList, isKO, empiricalNull = FALSE, noiseLevel = 0,
+                          direction = NULL) {
+  nGenes <- length(geneList)
   # Box-Cox transformation
   lambdaValues <- seq(-2, 2, length.out = 1000)
   lambdaValues <- lambdaValues[lambdaValues != 0]
@@ -189,9 +209,6 @@ dRegulation <- function(manifoldOutput, gKO = NULL, empiricalNull = FALSE) {
     pValues <- pchisq(q = FC, df = 1, lower.tail = FALSE)
   }
 
-  # Distances at the level of floating-point noise mean the gene did not move
-  # between conditions; ranking them against each other would flag noise
-  noiseLevel <- sqrt(.Machine$double.eps) * max(abs(manifoldOutput))
   isNoise <- dMetric <= noiseLevel
   pValues[isNoise] <- 1
   if (all(isNoise)) {
@@ -208,6 +225,15 @@ dRegulation <- function(manifoldOutput, gKO = NULL, empiricalNull = FALSE) {
     p.value = pValues,
     p.adj = pAdjusted
   )
+  if (!is.null(direction)) {
+    if (!is.numeric(direction) || is.null(names(direction))) {
+      stop("'direction' must be a named numeric vector of direction scores")
+    }
+    score <- unname(direction[geneList])
+    score[isKO] <- NA
+    dOut$direction <- ifelse(isKO | score < 0, "down", ifelse(score > 0, "up", NA_character_))
+    dOut$directionScore <- score
+  }
   dOut <- dOut[order(dOut$p.value), ]
   dOut <- as.data.frame.array(dOut)
 

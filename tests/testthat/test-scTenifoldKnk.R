@@ -20,7 +20,8 @@ test_that("single-gene knockout: the gene is left out of the expectation", {
   DR <- O$diffRegulation
   expect_equal(DR$gene[1], 'g1')
   expect_equal(mean(DR$FC[DR$gene != 'g1']), 1)
-  expect_equal(DR, dRegulation(O$manifoldAlignment, gKO = 'g1'))
+  expect_equal(DR, dRegulation(O$manifoldAlignment, gKO = 'g1',
+                               direction = setNames(DR$directionScore, DR$gene)))
 })
 
 test_that("only the WT network is returned", {
@@ -41,7 +42,8 @@ test_that("multi-gene knockout: all genes are left out of the expectation", {
   DR <- O$diffRegulation
   expect_equal(mean(DR$FC[!DR$gene %in% gKO]), 1)
   expect_true(all(gKO %in% DR$gene))
-  expect_equal(DR, dRegulation(O$manifoldAlignment, gKO = gKO))
+  expect_equal(DR, dRegulation(O$manifoldAlignment, gKO = gKO,
+                               direction = setNames(DR$directionScore, DR$gene)))
 })
 
 test_that("transcriptome-wide mode still reports the distances", {

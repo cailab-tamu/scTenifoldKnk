@@ -26,7 +26,11 @@ scTenifoldKnk(
   td_maxError = 1e-05,
   td_nDecimal = 3,
   ma_nDim = 2,
+  ma_method = NULL,
+  ma_heatT = 10,
   dr_empiricalNull = FALSE,
+  dr_direction = TRUE,
+  dr_directionT = 5,
   nCores = parallel::detectCores(),
   seed = 1
 )
@@ -74,7 +78,15 @@ scTenifoldKnk(
 
 \item{ma_nDim}{An integer value. Defines the number of dimensions of the low-dimensional feature space to be returned from the non-linear manifold alignment.}
 
+\item{ma_method}{Character, \code{"manifold"} or \code{"heat"}. How the WT and KO networks are compared: \code{"manifold"} runs the non-linear manifold alignment for each knockout; \code{"heat"} uses the heat manifold alignment (\code{\link{heatManifoldAlignment}}), which computes the heat kernel of the WT network once and reads every knockout from it. If \code{NULL} (default), \code{"manifold"} is used for single and multi-gene knockouts and \code{"heat"} when \code{transcriptomeWide = TRUE}.}
+
+\item{ma_heatT}{A non-negative number. Diffusion time of the heat kernel used when \code{ma_method = "heat"}. Default: 10.}
+
 \item{dr_empiricalNull}{A boolean value (TRUE/FALSE). If TRUE, the differential regulation p-values are assigned using Efron's empirical null (estimated with \code{locfdr}) instead of the theoretical chi-square null. Requires the \code{locfdr} package. Default: FALSE.}
+
+\item{dr_direction}{A boolean value (TRUE/FALSE). If TRUE, the predicted direction of the change of each gene (up/down) is added to the output, computed from the WT expression with \code{\link{knockoutDirection}}. Default: TRUE.}
+
+\item{dr_directionT}{A non-negative number. Diffusion time of the correlation heat kernel used to predict the direction. Default: 5.}
 
 \item{nCores}{An integer value. Defines the number of cores to be used.}
 
@@ -84,13 +96,14 @@ scTenifoldKnk(
 In single knockout mode (\code{transcriptomeWide = FALSE}), a list with 3 slots as follows:
 \itemize{
 \item{tensorNetworks:} A list with the WT weight-averaged denoised gene regulatory network. The KO network is the WT network with the rows of \code{gKO} set to 0; it is not returned, which roughly halves the size of the output.
-\item{manifoldAlignment:} The generated low-dimensional features result of the non-linear manifold alignment.
-\item{diffRegulation:} The results of the differential regulation analysis.
+\item{manifoldAlignment:} The generated low-dimensional features result of the non-linear manifold alignment (only when \code{ma_method = "manifold"}).
+\item{diffRegulation:} The results of the differential regulation analysis (see \code{\link{dRegulation}}), including the \code{direction} and \code{directionScore} columns when \code{dr_direction = TRUE}.
 }
 In transcriptome-wide mode (\code{transcriptomeWide = TRUE}), a list with 2 slots as follows:
 \itemize{
 \item{tensorNetworks:} A list with the WT weight-averaged denoised gene regulatory network.
-\item{perturbationDistances:} A numeric matrix of manifold-alignment distances with the perturbed genes as rows and all genes in the WT network as columns.
+\item{perturbationDistances:} A numeric matrix of perturbation distances (heat manifold alignment by default, manifold alignment when \code{ma_method = "manifold"}) with the perturbed genes as rows and all genes in the WT network as columns.
+\item{perturbationDirections:} Only when \code{dr_direction = TRUE}: a numeric matrix of the same dimensions with the predicted direction of each gene (1 up, -1 down, 0 undetermined).
 }
 }
 \description{

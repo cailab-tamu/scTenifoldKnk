@@ -1,5 +1,6 @@
 #' @export scTenifoldKnk
 #' @importFrom methods as
+#' @importFrom stats setNames
 #' @importFrom cli cli_h1 cli_alert_info cli_alert_success
 #' @importFrom Matrix Matrix
 #' @importFrom scTenifoldNet makeNetworks tensorDecomposition manifoldAlignment cpmNormalization checkMemory
@@ -28,19 +29,24 @@
 #' @param td_maxError A decimal value between 0 and 1. Defines the relative Frobenius norm error tolerance.
 #' @param td_nDecimal An integer value indicating the number of decimal places to be used.
 #' @param ma_nDim An integer value. Defines the number of dimensions of the low-dimensional feature space to be returned from the non-linear manifold alignment.
+#' @param ma_method Character, \code{"manifold"} or \code{"heat"}. How the WT and KO networks are compared: \code{"manifold"} runs the non-linear manifold alignment for each knockout; \code{"heat"} uses the heat manifold alignment (\code{\link{heatManifoldAlignment}}), which computes the heat kernel of the WT network once and reads every knockout from it. If \code{NULL} (default), \code{"manifold"} is used for single and multi-gene knockouts and \code{"heat"} when \code{transcriptomeWide = TRUE}.
+#' @param ma_heatT A non-negative number. Diffusion time of the heat kernel used when \code{ma_method = "heat"}. Default: 10.
 #' @param dr_empiricalNull A boolean value (TRUE/FALSE). If TRUE, the differential regulation p-values are assigned using Efron's empirical null (estimated with \code{locfdr}) instead of the theoretical chi-square null. Requires the \code{locfdr} package. Default: FALSE.
+#' @param dr_direction A boolean value (TRUE/FALSE). If TRUE, the predicted direction of the change of each gene (up/down) is added to the output, computed from the WT expression with \code{\link{knockoutDirection}}. Default: TRUE.
+#' @param dr_directionT A non-negative number. Diffusion time of the correlation heat kernel used to predict the direction. Default: 5.
 #' @param nCores An integer value. Defines the number of cores to be used.
 #' @param seed An integer value. The RNG is set to this seed before each random stage (network construction, tensor decomposition and manifold alignment), so results are reproducible and independent of the caller's RNG state; the caller's RNG state is restored on exit. Use different values to assess run-to-run variability. If \code{NULL}, the RNG is never reseeded and the caller's RNG state (e.g. a previous \code{set.seed()}) drives all random stages. Default: 1.
 #' @return In single knockout mode (\code{transcriptomeWide = FALSE}), a list with 3 slots as follows:
 #' \itemize{
 #' \item{tensorNetworks:} A list with the WT weight-averaged denoised gene regulatory network. The KO network is the WT network with the rows of \code{gKO} set to 0; it is not returned, which roughly halves the size of the output.
-#' \item{manifoldAlignment:} The generated low-dimensional features result of the non-linear manifold alignment.
-#' \item{diffRegulation:} The results of the differential regulation analysis.
+#' \item{manifoldAlignment:} The generated low-dimensional features result of the non-linear manifold alignment (only when \code{ma_method = "manifold"}).
+#' \item{diffRegulation:} The results of the differential regulation analysis (see \code{\link{dRegulation}}), including the \code{direction} and \code{directionScore} columns when \code{dr_direction = TRUE}.
 #' }
 #' In transcriptome-wide mode (\code{transcriptomeWide = TRUE}), a list with 2 slots as follows:
 #' \itemize{
 #' \item{tensorNetworks:} A list with the WT weight-averaged denoised gene regulatory network.
-#' \item{perturbationDistances:} A numeric matrix of manifold-alignment distances with the perturbed genes as rows and all genes in the WT network as columns.
+#' \item{perturbationDistances:} A numeric matrix of perturbation distances (heat manifold alignment by default, manifold alignment when \code{ma_method = "manifold"}) with the perturbed genes as rows and all genes in the WT network as columns.
+#' \item{perturbationDirections:} Only when \code{dr_direction = TRUE}: a numeric matrix of the same dimensions with the predicted direction of each gene (1 up, -1 down, 0 undetermined).
 #' }
 #' @examples
 #' library(scTenifoldKnk)
@@ -118,7 +124,9 @@ scTenifoldKnk <- function(countMatrix, gKO = NULL, transcriptomeWide = FALSE,
                           nc_priorNetwork = NULL, td_K = 3,
                           td_maxIter = 1000, td_maxError = 1e-05,
                           td_nDecimal = 3, ma_nDim = 2,
+                          ma_method = NULL, ma_heatT = 10,
                           dr_empiricalNull = FALSE,
+                          dr_direction = TRUE, dr_directionT = 5,
                           nCores = parallel::detectCores(),
                           seed = 1) {
 
@@ -143,6 +151,8 @@ scTenifoldKnk <- function(countMatrix, gKO = NULL, transcriptomeWide = FALSE,
     stop("At least one gene symbol must be provided in 'gKO' to perform the knockout")
   }
   gKO <- unique(gKO)
+  if (is.null(ma_method)) ma_method <- if (isTRUE(transcriptomeWide)) "heat" else "manifold"
+  ma_method <- match.arg(ma_method, c("manifold", "heat"))
 
   # Check that the requested genes are present in the input matrix
   missingGenes <- gKO[!gKO %in% rownames(countMatrix)]
@@ -168,6 +178,8 @@ scTenifoldKnk <- function(countMatrix, gKO = NULL, transcriptomeWide = FALSE,
 
   # Warn early when the networks will not fit in the available memory
   checkMemory(nrow(countMatrix), nNet = nc_nNet, nConditions = 1)
+
+  qcCounts <- countMatrix
 
   # Step 2: CPM Normalization
   cli::cli_alert_info("Step 2/7: CPM normalization")
@@ -209,29 +221,38 @@ scTenifoldKnk <- function(countMatrix, gKO = NULL, transcriptomeWide = FALSE,
     }
 
     cli::cli_alert_info(
-      "Step 5/5: Perturbing {length(targetGenes)} gene{?s} transcriptome-wide"
+      "Step 5/5: Perturbing {length(targetGenes)} gene{?s} transcriptome-wide ({ma_method} alignment)"
     )
 
-    perturbationDistances <- matrix(
-      NA_real_, nrow = length(targetGenes), ncol = length(geneList),
-      dimnames = list(targetGenes, geneList)
-    )
-
-    cli::cli_progress_bar("Perturbing genes", total = length(targetGenes))
-    for (g in targetGenes) {
-      KO <- WT
-      KO[g, ] <- 0
-      if (!is.null(seed)) set.seed(seed)
-      MA <- manifoldAlignment(WT, KO, d = ma_nDim, nCores = nCores)
-      DR <- dRegulation(MA, gKO = g, empiricalNull = dr_empiricalNull)
-      perturbationDistances[g, DR$gene] <- DR$distance
-      cli::cli_progress_update()
+    if (ma_method == "heat") {
+      # The heat kernel of the WT network is computed once and every knockout is read from it
+      perturbationDistances <- heatManifoldAlignment(WT, qcCounts, gKO = as.list(targetGenes), t = ma_heatT)
+    } else {
+      perturbationDistances <- matrix(
+        NA_real_, nrow = length(targetGenes), ncol = length(geneList),
+        dimnames = list(targetGenes, geneList)
+      )
+      cli::cli_progress_bar("Perturbing genes", total = length(targetGenes))
+      for (g in targetGenes) {
+        KO <- WT
+        KO[g, ] <- 0
+        if (!is.null(seed)) set.seed(seed)
+        MA <- manifoldAlignment(WT, KO, d = ma_nDim, nCores = nCores)
+        DR <- dRegulation(MA, gKO = g, empiricalNull = dr_empiricalNull)
+        perturbationDistances[g, DR$gene] <- DR$distance
+        cli::cli_progress_update()
+      }
+      cli::cli_progress_done()
     }
-    cli::cli_progress_done()
 
     outputList <- list()
     outputList$tensorNetworks$WT <- Matrix(WT)
     outputList$perturbationDistances <- perturbationDistances
+    if (isTRUE(dr_direction)) {
+      outputList$perturbationDirections <- sign(
+        knockoutDirection(qcCounts, gKO = as.list(targetGenes), genes = geneList, t = dr_directionT)
+      )
+    }
 
     cli::cli_alert_success("scTenifoldKnk pipeline complete")
     return(outputList)
@@ -255,19 +276,39 @@ scTenifoldKnk <- function(countMatrix, gKO = NULL, transcriptomeWide = FALSE,
             "knocking them out has no effect: ", paste(noEdges, collapse = ", "))
   }
 
-  # Step 6: Manifold alignment
-  cli::cli_alert_info("Step 6/7: Manifold alignment")
-  if (!is.null(seed)) set.seed(seed)
-  MA <- manifoldAlignment(WT, KO, d = ma_nDim, nCores = nCores)
-
-  # Step 7: Differential regulation analysis
-  cli::cli_alert_info("Step 7/7: Differential regulation analysis")
-  DR <- dRegulation(MA, gKO = gKO, empiricalNull = dr_empiricalNull)
+  # Predicted direction (up/down) of each gene, from the WT expression
+  direction <- NULL
+  if (isTRUE(dr_direction)) {
+    direction <- knockoutDirection(qcCounts, gKO = list(gKO), genes = rownames(WT), t = dr_directionT)
+    direction <- setNames(as.numeric(direction), colnames(direction))
+  }
 
   outputList <- list()
   # The KO network is the WT network with the gKO rows set to 0, so only WT is returned
   outputList$tensorNetworks$WT <- Matrix(WT)
-  outputList$manifoldAlignment <- MA
+
+  if (ma_method == "heat") {
+    # Step 6: Heat manifold alignment
+    cli::cli_alert_info("Step 6/7: Heat manifold alignment")
+    dMetric <- heatManifoldAlignment(WT, qcCounts, gKO = list(gKO), t = ma_heatT)[1, ]
+
+    # Step 7: Differential regulation analysis
+    cli::cli_alert_info("Step 7/7: Differential regulation analysis")
+    DR <- .drStatistics(dMetric, names(dMetric), names(dMetric) %in% gKO,
+                        empiricalNull = dr_empiricalNull,
+                        noiseLevel = sqrt(.Machine$double.eps) * max(dMetric),
+                        direction = direction)
+  } else {
+    # Step 6: Manifold alignment
+    cli::cli_alert_info("Step 6/7: Manifold alignment")
+    if (!is.null(seed)) set.seed(seed)
+    MA <- manifoldAlignment(WT, KO, d = ma_nDim, nCores = nCores)
+    outputList$manifoldAlignment <- MA
+
+    # Step 7: Differential regulation analysis
+    cli::cli_alert_info("Step 7/7: Differential regulation analysis")
+    DR <- dRegulation(MA, gKO = gKO, empiricalNull = dr_empiricalNull, direction = direction)
+  }
   outputList$diffRegulation <- DR
 
   cli::cli_alert_success("scTenifoldKnk pipeline complete")
