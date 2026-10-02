@@ -136,12 +136,11 @@ hkManifoldAlignment <- function(WT, X, gKO = NULL, t = 10, H = NULL) {
 #'   \deqn{s_g = -\sum_{x \in gKO} \frac{mean(x)}{sd(x)} H[x, g] \, sd(g)},
 #'   and the sign of \eqn{s_g} is the predicted direction.
 #'
-#'   Benchmarked against bulk knockdown/knockout profiles of the same cell
-#'   lines, this direction is correct more often than chance (direction AUROC
-#'   about 0.56 in the largest data set), but it mostly reflects the response
-#'   shared by most knockdowns along the dominant WT expression program rather
-#'   than regulation specific to \code{gKO}, and its accuracy varies between
-#'   cell types and WT data sets.
+#'   Evaluated against bulk knockdown/knockout profiles of the same cell
+#'   lines, this direction is correct more often than chance, but it mostly
+#'   reflects the response shared by most knockdowns along the dominant WT
+#'   expression program rather than regulation specific to \code{gKO}, and its
+#'   accuracy varies between cell types and WT data sets.
 #' @param X Raw counts matrix (genes x cells) of the WT cells.
 #' @param gKO A character vector or a list, as in
 #'   \code{\link{hkManifoldAlignment}}.

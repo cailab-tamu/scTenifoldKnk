@@ -48,9 +48,9 @@ The required input is a **raw counts matrix** with genes as rows and cells (barc
 
 ## Quality Control: Best Practices
 
-These recommendations come from benchmarking virtual knockouts against bulk knockdown/knockout RNA-seq profiles of the same cell lines (about 1,200 knockout experiments in 17 cell lines, with WT data from three single-cell atlases).
+These recommendations are based on evaluations of virtual knockouts against bulk knockdown and knockout RNA-seq profiles of the same cell lines; a reference describing these evaluations will be added when it is available.
 
-- **Remove ribosomal and mitochondrial genes before building the networks.** Ribosomal protein genes (including their pseudogenes) and mitochondrial genes form dense, highly co-expressed modules that otherwise dominate the networks and crowd the top of the differential regulation table with ribosomal genes, whatever gene is knocked out. Removing them was the largest single improvement found:
+- **Remove ribosomal and mitochondrial genes before building the networks.** Ribosomal protein genes (including their pseudogenes) and mitochondrial genes form dense, highly co-expressed modules that otherwise dominate the networks and crowd the top of the differential regulation table with ribosomal genes, whatever gene is knocked out. Removing them markedly improves the results:
 
   ```r
   riboMito <- grepl('^(RP[LS][0-9]|RPLP[0-9]|RPSA|MRP[LS][0-9]|MT-|MTND[0-9]|MTCO[0-9]|MTATP[0-9]|MTCYB|MTRNR2L)',
@@ -59,7 +59,7 @@ These recommendations come from benchmarking virtual knockouts against bulk knoc
   ```
 
   Apply the mitochondrial read filter (`qc_maxMTratio`) before removing these genes, for example by running `scQC()` first.
-- **Average over seeds when ranking genes for a single knockout matters.** Rankings of the same knockout agree at a Spearman correlation of about 0.9 between seeds; averaging two or three seeds (`seed = 1, 2, 3`) smooths that variation.
+- **Average over seeds when ranking genes for a single knockout matters.** Rankings of the same knockout vary somewhat between seeds; averaging two or three seeds (`seed = 1, 2, 3`) smooths that variation.
 
 ## Operating Modes
 
@@ -68,23 +68,23 @@ These recommendations come from benchmarking virtual knockouts against bulk knoc
 - **Knockout** (`transcriptomeWide = FALSE`, default) — Knocks out one target gene, or several genes together (a character vector in `gKO`, e.g. `c("Hnf4a", "Hnf4g")`), and returns the WT/KO networks, the manifold alignment, and the differential regulation table. If none of the target genes has outgoing edges in the WT network, the knockout leaves the network unchanged and a warning says the results are only numerical noise. Target genes without outgoing edges are also reported when only some of them lack edges.
 - **Transcriptome-wide perturbation** (`transcriptomeWide = TRUE`) — Builds the WT network **once**, then knocks out every gene in the network (or a user-supplied subset passed through `gKO`). It returns a matrix of perturbation distances, and a matrix of predicted directions, instead of a single differential regulation table. By default it uses the heat manifold alignment, which computes the heat kernel of the WT network once and reads every knockout from it; set `ma_method = "manifold"` to run one manifold alignment per perturbed gene instead, whose running time scales with the number of genes.
 
-The comparison between the WT and KO networks is selected with `ma_method`. Both methods are available in both modes: `"manifold"` (the default for single and multi-gene knockouts) runs the non-linear manifold alignment of the WT and KO networks, and `"heat"` (the default for transcriptome-wide perturbation) uses the heat manifold alignment. The heat manifold alignment ranks the perturbed genes similarly to the manifold alignment (in the benchmark, AUROC for detecting the genes that change of 0.557 vs 0.555 in one atlas and 0.562 vs 0.580 in another), without recomputing an alignment for each knockout; use it when many knockouts are needed, and the manifold alignment when the best ranking for a few knockouts matters.
+The comparison between the WT and KO networks is selected with `ma_method`. Both methods are available in both modes: `"manifold"` (the default for single and multi-gene knockouts) runs the non-linear manifold alignment of the WT and KO networks, and `"heat"` (the default for transcriptome-wide perturbation) uses the heat manifold alignment. The heat manifold alignment ranks the perturbed genes similarly to the manifold alignment, without recomputing an alignment for each knockout; use it when many knockouts are needed, and the manifold alignment when the best ranking for a few knockouts matters.
 
 ## Direction of the Response
 
 When `dr_direction = TRUE` (the default), `scTenifoldKnk()` predicts whether each gene goes **up** or **down** after the knockout, using only the WT expression data (`knockoutDirection()`): the heat kernel of the gene-gene correlation matrix of log1p(CPM) expression is diffused from the knocked-out gene(s), and the sign of the result is the predicted direction.
 
-Benchmarked against bulk knockdown/knockout profiles of the same cell lines, the predicted direction is correct more often than chance in two of the three single-cell atlases tested, and it is stable across random seeds and the number of genes used (direction AUROC 0.56 on 892 knockout experiments in the largest atlas; there, the genes with the largest `directionScore` move in the predicted direction 71% of the time, compared with 55% expected by chance). Three limitations apply:
+Evaluated against bulk knockdown and knockout profiles of the same cell lines, the predicted direction is correct more often than chance and is stable across random seeds. Three limitations apply:
 
 - The predicted direction mostly reflects the response shared by most knockdowns along the dominant WT expression program, rather than regulation specific to the knocked-out gene. It is weakest for transcription factor knockouts.
-- Its accuracy varies between cell types (strong in some cell lines, close to chance in others).
-- It depends on the WT data set: with the third atlas, the same knockouts were predicted at close to chance level (direction AUROC 0.51), and the genes that change were also detected less accurately.
+- Its accuracy varies between cell types (better in some cell lines, close to chance in others).
+- It depends on the WT data set: with some single-cell data sets, the same knockouts were predicted at close to chance level, and the genes that change were also detected less accurately.
 
 The magnitude (which genes respond) and the direction are reported separately (`distance`/`p.value` and `direction`/`directionScore`), so the direction can be used or ignored independently of the differential regulation statistics.
 
 ## Applying scTenifoldKnk to Tissues and Disease Data
 
-The benchmark above used cell lines, where large collections of matched knockout experiments exist. The main use of virtual knockouts is in tissues and disease samples, where such experiments are difficult; these recommendations adapt the pipeline to that setting:
+The evaluations behind these recommendations used cell lines, where large collections of matched knockout experiments exist. The main use of virtual knockouts is in tissues and disease samples, where such experiments are difficult; these recommendations adapt the pipeline to that setting:
 
 - **Build one network per cell type or state.** A tissue sample mixes cell types, and co-expression driven by cell identity would otherwise dominate the network. Subset the WT cells to the population of interest (at least about 500 cells) before running `scTenifoldKnk()`.
 - **Correct ambient RNA when cells from other types are present.** Contamination from other cell types creates spurious co-expression; ambient-RNA correction (for example DecontX) is advisable for tissue samples, unlike single cell lines where it did not help.
