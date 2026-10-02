@@ -84,6 +84,18 @@ Benchmarked against bulk knockdown/knockout profiles of the same cell lines, the
 
 The magnitude (which genes respond) and the direction are reported separately (`distance`/`p.value` and `direction`/`directionScore`), so the direction can be used or ignored independently of the differential regulation statistics.
 
+## Applying scTenifoldKnk to Tissues and Disease Data
+
+The benchmark above used cell lines, where large collections of matched knockout experiments exist. The main use of virtual knockouts is in tissues and disease samples, where such experiments are difficult; these recommendations adapt the pipeline to that setting:
+
+- **Build one network per cell type or state.** A tissue sample mixes cell types, and co-expression driven by cell identity would otherwise dominate the network. Subset the WT cells to the population of interest (at least about 500 cells) before running `scTenifoldKnk()`.
+- **Correct ambient RNA when cells from other types are present.** Contamination from other cell types creates spurious co-expression; ambient-RNA correction (for example DecontX) is advisable for tissue samples, unlike single cell lines where it did not help.
+- **Expect weaker networks with shallow or sparse data** and follow the [quality control best practices](#quality-control-best-practices); averaging over seeds helps.
+- **Screen candidate targets transcriptome-wide and score them by magnitude.** Run `transcriptomeWide = TRUE` (heat manifold alignment) on the disease cell type and rank each candidate by how strongly its most perturbed genes overlap the disease program (for example disease-vs-healthy differentially expressed genes or pathways). Avoid scores that rely on the predicted direction alone, such as signature reversal, because the direction is the least reliable part of the prediction.
+- **Down-weight generic responders.** Genes that rank among the most perturbed for many different knockouts reflect the response shared by most perturbations; the transcriptome-wide distance matrix provides this background directly.
+
+Virtual knockouts prioritize candidates for experimental testing; they do not replace it.
+
 ## Reproducibility
 
 Network construction subsamples cells at random, so results depend on the random seed. The `seed` argument (default `1`) is set before each random step. The same input and parameters therefore give the same result on every run, whatever the caller's RNG state, and that state is restored when the function returns.
