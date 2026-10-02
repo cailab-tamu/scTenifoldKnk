@@ -10,7 +10,7 @@ knockoutDirection(X, gKO, genes = rownames(X), t = 5)
 \item{X}{Raw counts matrix (genes x cells) of the WT cells.}
 
 \item{gKO}{A character vector or a list, as in
-\code{\link{heatManifoldAlignment}}.}
+\code{\link{hkManifoldAlignment}}.}
 
 \item{genes}{A character vector with the genes to score (for example the
 genes of the WT network). Default: all genes of \code{X}.}

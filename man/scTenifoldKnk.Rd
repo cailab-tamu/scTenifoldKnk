@@ -78,7 +78,7 @@ scTenifoldKnk(
 
 \item{ma_nDim}{An integer value. Defines the number of dimensions of the low-dimensional feature space to be returned from the non-linear manifold alignment.}
 
-\item{ma_method}{Character, \code{"manifold"} or \code{"heat"}. How the WT and KO networks are compared: \code{"manifold"} runs the non-linear manifold alignment for each knockout; \code{"heat"} uses the heat manifold alignment (\code{\link{heatManifoldAlignment}}), which computes the heat kernel of the WT network once and reads every knockout from it. If \code{NULL} (default), \code{"manifold"} is used for single and multi-gene knockouts and \code{"heat"} when \code{transcriptomeWide = TRUE}.}
+\item{ma_method}{Character, \code{"manifold"} or \code{"heat"}. How the WT and KO networks are compared: \code{"manifold"} runs the non-linear manifold alignment for each knockout; \code{"heat"} uses the heat manifold alignment (\code{\link{hkManifoldAlignment}}), which computes the heat kernel of the WT network once and reads every knockout from it. If \code{NULL} (default), \code{"manifold"} is used for single and multi-gene knockouts and \code{"heat"} when \code{transcriptomeWide = TRUE}.}
 
 \item{ma_heatT}{A non-negative number. Diffusion time of the heat kernel used when \code{ma_method = "heat"}. Default: 10.}
 

@@ -76,9 +76,9 @@ test_that("transcriptome-wide mode uses the heat kernel by default and reports d
   expect_equal(dim(O$perturbationDistances), c(2, 60))
   expect_equal(dim(O$perturbationDirections), c(2, 60))
   expect_true(all(O$perturbationDirections %in% c(-1, 0, 1)))
-  # equivalent to calling heatManifoldAlignment on the returned WT network
+  # equivalent to calling hkManifoldAlignment on the returned WT network
   expect_equal(O$perturbationDistances,
-               heatManifoldAlignment(O$tensorNetworks$WT, X, gKO = c('g1', 'g2')))
+               hkManifoldAlignment(O$tensorNetworks$WT, X, gKO = c('g1', 'g2')))
   # the manifold alignment remains available
   M <- runKnk(X, gKO = c('g1', 'g2'), transcriptomeWide = TRUE, ma_method = 'manifold')
   expect_false(anyNA(M$perturbationDistances))

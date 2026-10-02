@@ -2,7 +2,7 @@
 
 export(dRegulation)
 export(heatKernel)
-export(heatManifoldAlignment)
+export(hkManifoldAlignment)
 export(knockoutDirection)
 export(plotKO)
 export(scQC)

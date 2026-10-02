@@ -37,7 +37,7 @@ The `scTenifoldKnk()` function orchestrates a virtual knockout pipeline built on
 | 3 | `makeNetworks` | Constructs gene regulatory networks from subsampled cells using principal component regression (`pcNet`). All the per-gene regressions come from one eigendecomposition, which gives the same networks as fitting each gene separately |
 | 4 | `tensorDecomposition` | CANDECOMP/PARAFAC (CP) tensor decomposition for network denoising |
 | 5 | `strictDirection` | Enforces directionality of the reconstructed adjacency matrix |
-| 6 | `manifoldAlignment` or `heatManifoldAlignment` | Comparison of the WT and KO denoised networks: non-linear manifold alignment (one alignment per knockout), or heat manifold alignment (one heat kernel of the WT network, read for every knockout) |
+| 6 | `manifoldAlignment` or `hkManifoldAlignment` | Comparison of the WT and KO denoised networks: non-linear manifold alignment (one alignment per knockout), or heat manifold alignment (one heat kernel of the WT network, read for every knockout) |
 | 7 | `dRegulation` | Differential regulation testing via Box-Cox transformation and chi-square statistics, with the predicted direction (up/down) of each gene from `knockoutDirection` |
 
 Individual functions are exported and fully documented, allowing users to run or modify any step independently.
@@ -142,7 +142,7 @@ Differential regulation testing from a manifold alignment. Arguments: `manifoldO
 
 Spectral heat kernel of a gene-gene matrix, `H = sum_k exp(t (lambda_k / lambda_max - 1)) v_k v_k'`, from the eigendecomposition of its symmetric part. Arguments: `X` (square matrix), `t` (diffusion time; `t = 0` returns the identity) and `symmetric`.
 
-### `heatManifoldAlignment()`
+### `hkManifoldAlignment()`
 
 Heat manifold alignment of the WT network for one or many knockouts. The heat kernel of the WT network is computed once and the knockout of each gene `x` is read from it: `x` loses its mean log1p(CPM) expression and the change diffuses over the network, `delta_g = -mean(x) / sd(x) * H[x, g] * sd(g)`. Returns the matrix of perturbation distances `|delta_g|` (knockouts by genes). Arguments: `WT` (the WT network), `X` (WT raw counts), `gKO` (genes or a list of gene sets to knock out; `NULL` for every gene), `t` (default `10`) and an optional pre-computed kernel `H`.
 

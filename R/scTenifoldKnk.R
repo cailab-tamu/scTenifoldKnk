@@ -29,7 +29,7 @@
 #' @param td_maxError A decimal value between 0 and 1. Defines the relative Frobenius norm error tolerance.
 #' @param td_nDecimal An integer value indicating the number of decimal places to be used.
 #' @param ma_nDim An integer value. Defines the number of dimensions of the low-dimensional feature space to be returned from the non-linear manifold alignment.
-#' @param ma_method Character, \code{"manifold"} or \code{"heat"}. How the WT and KO networks are compared: \code{"manifold"} runs the non-linear manifold alignment for each knockout; \code{"heat"} uses the heat manifold alignment (\code{\link{heatManifoldAlignment}}), which computes the heat kernel of the WT network once and reads every knockout from it. If \code{NULL} (default), \code{"manifold"} is used for single and multi-gene knockouts and \code{"heat"} when \code{transcriptomeWide = TRUE}.
+#' @param ma_method Character, \code{"manifold"} or \code{"heat"}. How the WT and KO networks are compared: \code{"manifold"} runs the non-linear manifold alignment for each knockout; \code{"heat"} uses the heat manifold alignment (\code{\link{hkManifoldAlignment}}), which computes the heat kernel of the WT network once and reads every knockout from it. If \code{NULL} (default), \code{"manifold"} is used for single and multi-gene knockouts and \code{"heat"} when \code{transcriptomeWide = TRUE}.
 #' @param ma_heatT A non-negative number. Diffusion time of the heat kernel used when \code{ma_method = "heat"}. Default: 10.
 #' @param dr_empiricalNull A boolean value (TRUE/FALSE). If TRUE, the differential regulation p-values are assigned using Efron's empirical null (estimated with \code{locfdr}) instead of the theoretical chi-square null. Requires the \code{locfdr} package. Default: FALSE.
 #' @param dr_direction A boolean value (TRUE/FALSE). If TRUE, the predicted direction of the change of each gene (up/down) is added to the output, computed from the WT expression with \code{\link{knockoutDirection}}. Default: TRUE.
@@ -226,7 +226,7 @@ scTenifoldKnk <- function(countMatrix, gKO = NULL, transcriptomeWide = FALSE,
 
     if (ma_method == "heat") {
       # The heat kernel of the WT network is computed once and every knockout is read from it
-      perturbationDistances <- heatManifoldAlignment(WT, qcCounts, gKO = as.list(targetGenes), t = ma_heatT)
+      perturbationDistances <- hkManifoldAlignment(WT, qcCounts, gKO = as.list(targetGenes), t = ma_heatT)
     } else {
       perturbationDistances <- matrix(
         NA_real_, nrow = length(targetGenes), ncol = length(geneList),
@@ -290,7 +290,7 @@ scTenifoldKnk <- function(countMatrix, gKO = NULL, transcriptomeWide = FALSE,
   if (ma_method == "heat") {
     # Step 6: Heat manifold alignment
     cli::cli_alert_info("Step 6/7: Heat manifold alignment")
-    dMetric <- heatManifoldAlignment(WT, qcCounts, gKO = list(gKO), t = ma_heatT)[1, ]
+    dMetric <- hkManifoldAlignment(WT, qcCounts, gKO = list(gKO), t = ma_heatT)[1, ]
 
     # Step 7: Differential regulation analysis
     cli::cli_alert_info("Step 7/7: Differential regulation analysis")

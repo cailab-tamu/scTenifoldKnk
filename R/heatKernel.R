@@ -75,8 +75,8 @@ heatKernel <- function(X, t = 10, symmetric = TRUE) {
   out
 }
 
-#' @export heatManifoldAlignment
-#' @title Heat manifold alignment for in-silico knockouts
+#' @export hkManifoldAlignment
+#' @title Heat-kernel (hk) manifold alignment for in-silico knockouts
 #' @description Kernel counterpart of the non-linear manifold alignment used by
 #'   \code{scTenifoldKnk}. The heat kernel of the WT network is computed once
 #'   (\code{\link{heatKernel}}), and the knockout of each gene (or gene set) is
@@ -105,7 +105,7 @@ heatKernel <- function(X, t = 10, symmetric = TRUE) {
 #'   amount they lose) with one row per knockout (named by the knocked-out genes, joined with \code{"+"}
 #'   for multi-gene knockouts) and one column per gene of the network.
 #' @seealso \code{\link{heatKernel}}, \code{\link{knockoutDirection}}
-heatManifoldAlignment <- function(WT, X, gKO = NULL, t = 10, H = NULL) {
+hkManifoldAlignment <- function(WT, X, gKO = NULL, t = 10, H = NULL) {
   WT <- as.matrix(WT)
   genes <- rownames(WT)
   if (is.null(gKO)) gKO <- as.list(genes)
@@ -144,7 +144,7 @@ heatManifoldAlignment <- function(WT, X, gKO = NULL, t = 10, H = NULL) {
 #'   cell types and WT data sets.
 #' @param X Raw counts matrix (genes x cells) of the WT cells.
 #' @param gKO A character vector or a list, as in
-#'   \code{\link{heatManifoldAlignment}}.
+#'   \code{\link{hkManifoldAlignment}}.
 #' @param genes A character vector with the genes to score (for example the
 #'   genes of the WT network). Default: all genes of \code{X}.
 #' @param t A non-negative number. Diffusion time of the heat kernel. Default:
