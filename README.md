@@ -65,8 +65,8 @@ These recommendations are based on evaluations of virtual knockouts against bulk
 
 `scTenifoldKnk()` supports two modes, selected with the `transcriptomeWide` argument:
 
-- **Knockout** (`transcriptomeWide = FALSE`, default) — Knocks out one target gene, or several genes together (a character vector in `gKO`, e.g. `c("Hnf4a", "Hnf4g")`), and returns the WT/KO networks, the manifold alignment, and the differential regulation table. If none of the target genes has outgoing edges in the WT network, the knockout leaves the network unchanged and a warning says the results are only numerical noise. Target genes without outgoing edges are also reported when only some of them lack edges.
-- **Transcriptome-wide perturbation** (`transcriptomeWide = TRUE`) — Builds the WT network **once**, then knocks out every gene in the network (or a user-supplied subset passed through `gKO`). It returns a matrix of perturbation distances, and a matrix of predicted directions, instead of a single differential regulation table. By default it uses the heat manifold alignment, which computes the heat kernel of the WT network once and reads every knockout from it; set `ma_method = "manifold"` to run one manifold alignment per perturbed gene instead, whose running time scales with the number of genes.
+- **Knockout** (`transcriptomeWide = FALSE`, default): Knocks out one target gene, or several genes together (a character vector in `gKO`, e.g. `c("Hnf4a", "Hnf4g")`), and returns the WT/KO networks, the manifold alignment, and the differential regulation table. If none of the target genes has outgoing edges in the WT network, the knockout leaves the network unchanged and a warning says the results are only numerical noise. Target genes without outgoing edges are also reported when only some of them lack edges.
+- **Transcriptome-wide perturbation** (`transcriptomeWide = TRUE`): Builds the WT network **once**, then knocks out every gene in the network (or a user-supplied subset passed through `gKO`). It returns a matrix of perturbation distances, and a matrix of predicted directions, instead of a single differential regulation table. By default it uses the heat manifold alignment, which computes the heat kernel of the WT network once and reads every knockout from it; set `ma_method = "manifold"` to run one manifold alignment per perturbed gene instead, whose running time scales with the number of genes.
 
 The comparison between the WT and KO networks is selected with `ma_method`. Both methods are available in both modes: `"manifold"` (the default for single and multi-gene knockouts) runs the non-linear manifold alignment of the WT and KO networks, and `"heat"` (the default for transcriptome-wide perturbation) uses the heat manifold alignment. The heat manifold alignment ranks the perturbed genes similarly to the manifold alignment, without recomputing an alignment for each knockout; use it when many knockouts are needed, and the manifold alignment when the best ranking for a few knockouts matters.
 
@@ -181,10 +181,10 @@ See also: [plotKO() — Frequently Asked Questions](plotKO_FAQ.md)
 
 `scTenifoldKnk()` returns a list with three elements:
 
-- **`tensorNetworks`** — Weight-averaged denoised gene regulatory network after CP tensor decomposition, containing:
+- **`tensorNetworks`**: Weight-averaged denoised gene regulatory network after CP tensor decomposition, containing:
   - `WT`: The network for the wild-type condition (a `Matrix` object). The knocked-out network is the same network with the rows of `gKO` set to 0; it is not returned, which roughly halves the size of the output (rebuild it with `KO <- output$tensorNetworks$WT; KO[gKO, ] <- 0`).
-- **`manifoldAlignment`** — A data frame of low-dimensional features from the non-linear manifold alignment, with 2 × *n* genes rows and *d* columns (default *d* = 2). Only returned when `ma_method = "manifold"`.
-- **`diffRegulation`** — A data frame with eight columns (six when `dr_direction = FALSE`):
+- **`manifoldAlignment`**: A data frame of low-dimensional features from the non-linear manifold alignment, with 2 × *n* genes rows and *d* columns (default *d* = 2). Only returned when `ma_method = "manifold"`.
+- **`diffRegulation`**: A data frame with eight columns (six when `dr_direction = FALSE`):
   - `gene`: Gene identifier.
   - `distance`: Euclidean distance between the gene's coordinates in the two conditions.
   - `Z`: Z-score after Box-Cox power transformation.
@@ -198,9 +198,9 @@ See also: [plotKO() — Frequently Asked Questions](plotKO_FAQ.md)
 
 `scTenifoldKnk()` returns a list with three elements:
 
-- **`tensorNetworks`** — A list with the WT weight-averaged denoised gene regulatory network (`WT`).
-- **`perturbationDistances`** — A numeric matrix of perturbation distances (heat manifold alignment by default, manifold-alignment distances with `ma_method = "manifold"`). Rows are the perturbed genes, columns are all genes in the WT network, and each entry is the distance of a gene under the corresponding knockout.
-- **`perturbationDirections`** — A numeric matrix with the same dimensions and the predicted direction of each gene under each knockout (`1` up, `-1` down, `0` undetermined). Only returned when `dr_direction = TRUE`.
+- **`tensorNetworks`**: A list with the WT weight-averaged denoised gene regulatory network (`WT`).
+- **`perturbationDistances`**: A numeric matrix of perturbation distances (heat manifold alignment by default, manifold-alignment distances with `ma_method = "manifold"`). Rows are the perturbed genes, columns are all genes in the WT network, and each entry is the distance of a gene under the corresponding knockout.
+- **`perturbationDirections`**: A numeric matrix with the same dimensions and the predicted direction of each gene under each knockout (`1` up, `-1` down, `0` undetermined). Only returned when `dr_direction = TRUE`.
 
 ## Running Time
 
@@ -275,7 +275,7 @@ KO['ng10', ] <- 0
 # Accessing the manifold alignment result
 head(output$manifoldAlignment)
 
-# Differential regulation results — top perturbed genes, with the predicted direction
+# Differential regulation results: top perturbed genes, with the predicted direction
 head(output$diffRegulation, n = 10)
 
 # The same knockout with the heat manifold alignment
