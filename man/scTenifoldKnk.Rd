@@ -31,6 +31,7 @@ scTenifoldKnk(
   dr_empiricalNull = FALSE,
   dr_direction = TRUE,
   dr_directionT = 5,
+  dr_directionRegressLibSize = FALSE,
   nCores = parallel::detectCores(),
   seed = 1
 )
@@ -87,6 +88,8 @@ scTenifoldKnk(
 \item{dr_direction}{A boolean value (TRUE/FALSE). If TRUE, the predicted direction of the change of each gene (up/down) is added to the output, computed from the WT expression with \code{\link{knockoutDirection}}. Default: TRUE.}
 
 \item{dr_directionT}{A non-negative number. Diffusion time of the correlation heat kernel used to predict the direction. Default: 5.}
+
+\item{dr_directionRegressLibSize}{A boolean value (TRUE/FALSE). If TRUE, the log library size is regressed out of each gene's expression before computing the gene-gene correlations used to predict the direction (see \code{\link{knockoutDirection}}); consider it when nearly all genes are predicted down. Default: FALSE.}
 
 \item{nCores}{An integer value. Defines the number of cores to be used.}
 

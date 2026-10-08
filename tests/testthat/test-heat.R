@@ -41,6 +41,28 @@ test_that("knockoutDirection: genes of the knocked-out gene's module go down", {
   expect_equal(rownames(knockoutDirection(X, gKO = list(c('g1', 'g4')))), 'g1+g4')
 })
 
+test_that("knockoutDirection: regressing library size removes the sequencing-depth axis", {
+  X <- simulateModules()
+  # the same modules, shallower and with cell-to-cell differences in sequencing depth
+  set.seed(2)
+  depth <- exp(rnorm(ncol(X), 0, 0.8))
+  Xd <- matrix(rpois(length(X), lambda = 0.3 * sweep(X + 0.5, 2, depth, '*')), nrow(X), dimnames = dimnames(X))
+  other <- rownames(X)[moduleOf(rownames(X)) != 1]
+  same <- setdiff(rownames(X)[moduleOf(rownames(X)) == 1], 'g1')
+  # without the regression (default) the depth axis dominates and every gene is predicted down
+  D0 <- knockoutDirection(Xd, gKO = 'g1')
+  expect_true(all(D0[1, -1] < 0))
+  # with it only the module of the knocked-out gene goes down
+  D <- knockoutDirection(Xd, gKO = 'g1', regressLibSize = TRUE)
+  expect_true(all(D[1, same] < 0))
+  expect_gt(mean(D[1, other] > 0), 0.8)
+  # the pipeline exposes the option
+  O <- runKnk(Xd, gKO = 'g1')
+  expect_true(all(O$diffRegulation$direction == 'down'))
+  O1 <- runKnk(Xd, gKO = 'g1', dr_directionRegressLibSize = TRUE)
+  expect_gt(mean(O1$diffRegulation$direction == 'up'), 0.5)
+})
+
 test_that("default diffRegulation gains direction columns; existing columns are unchanged", {
   X <- simulateModules()
   O <- runKnk(X, gKO = 'g1')

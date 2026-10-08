@@ -4,7 +4,7 @@
 \alias{knockoutDirection}
 \title{Direction of the response to an in-silico knockout}
 \usage{
-knockoutDirection(X, gKO, genes = rownames(X), t = 5)
+knockoutDirection(X, gKO, genes = rownames(X), t = 5, regressLibSize = FALSE)
 }
 \arguments{
 \item{X}{Raw counts matrix (genes x cells) of the WT cells.}
@@ -17,6 +17,11 @@ genes of the WT network). Default: all genes of \code{X}.}
 
 \item{t}{A non-negative number. Diffusion time of the heat kernel. Default:
 5.}
+
+\item{regressLibSize}{A boolean value (TRUE/FALSE). If TRUE, the log library
+size of each cell (column sums of \code{X}) is regressed out of the
+log1p(CPM) expression of each gene before computing the gene-gene
+correlation matrix. Default: FALSE.}
 }
 \value{
 A numeric matrix of direction scores \eqn{s_g} (positive: predicted
@@ -36,6 +41,16 @@ Predicts whether each gene goes up or down after knocking out
   reflects the response shared by most knockdowns along the dominant WT
   expression program rather than regulation specific to \code{gKO}, and its
   accuracy varies between cell types and WT data sets.
+
+  In single-cell data, log1p(CPM) expression often keeps a dependence on
+  sequencing depth that makes nearly all genes correlate positively; the
+  heat kernel then follows that axis and predicts almost every gene to go
+  down. With \code{regressLibSize = TRUE}, log library size is regressed
+  out of each gene before computing the correlations, which removes the
+  depth axis. It is off by default: it corrected tissue data where nearly
+  all genes were predicted down, but in cell lines it left the direction
+  unchanged or made it slightly worse, because the expression that follows
+  library size can be biological.
 }
 \seealso{
 \code{\link{heatKernel}}, \code{\link{dRegulation}}

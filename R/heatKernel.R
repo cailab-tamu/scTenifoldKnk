@@ -58,7 +58,18 @@ heatKernel <- function(X, t = 10, symmetric = TRUE) {
   mu <- rowMeans(L)
   sdev <- sqrt(rowMeans((L - mu)^2))
   sdev[sdev == 0] <- NA
-  list(L = L, mu = mu, sd = sdev)
+  list(L = L, mu = mu, sd = sdev, libSize = libSize)
+}
+
+# Residuals of each gene's log1p(CPM) after a least-squares fit on log library size
+# (with intercept), removing the sequencing-depth axis from the gene-gene correlations
+.regressLibSize <- function(S) {
+  ll <- log(S$libSize)
+  ll <- ll - mean(ll)
+  Lc <- S$L - S$mu
+  if (sum(ll^2) == 0) return(Lc)
+  beta <- as.numeric(Lc %*% ll) / sum(ll^2)
+  Lc - outer(beta, ll)
 }
 
 # Signed change of every gene when the genes in each element of 'gKOs' are removed:
@@ -141,6 +152,16 @@ hkManifoldAlignment <- function(WT, X, gKO = NULL, t = 10, H = NULL) {
 #'   reflects the response shared by most knockdowns along the dominant WT
 #'   expression program rather than regulation specific to \code{gKO}, and its
 #'   accuracy varies between cell types and WT data sets.
+#'
+#'   In single-cell data, log1p(CPM) expression often keeps a dependence on
+#'   sequencing depth that makes nearly all genes correlate positively; the
+#'   heat kernel then follows that axis and predicts almost every gene to go
+#'   down. With \code{regressLibSize = TRUE}, log library size is regressed
+#'   out of each gene before computing the correlations, which removes the
+#'   depth axis. It is off by default: it corrected tissue data where nearly
+#'   all genes were predicted down, but in cell lines it left the direction
+#'   unchanged or made it slightly worse, because the expression that follows
+#'   library size can be biological.
 #' @param X Raw counts matrix (genes x cells) of the WT cells.
 #' @param gKO A character vector or a list, as in
 #'   \code{\link{hkManifoldAlignment}}.
@@ -148,11 +169,15 @@ hkManifoldAlignment <- function(WT, X, gKO = NULL, t = 10, H = NULL) {
 #'   genes of the WT network). Default: all genes of \code{X}.
 #' @param t A non-negative number. Diffusion time of the heat kernel. Default:
 #'   5.
+#' @param regressLibSize A boolean value (TRUE/FALSE). If TRUE, the log library
+#'   size of each cell (column sums of \code{X}) is regressed out of the
+#'   log1p(CPM) expression of each gene before computing the gene-gene
+#'   correlation matrix. Default: FALSE.
 #' @return A numeric matrix of direction scores \eqn{s_g} (positive: predicted
 #'   up, negative: predicted down) with one row per knockout and one column per
 #'   gene.
 #' @seealso \code{\link{heatKernel}}, \code{\link{dRegulation}}
-knockoutDirection <- function(X, gKO, genes = rownames(X), t = 5) {
+knockoutDirection <- function(X, gKO, genes = rownames(X), t = 5, regressLibSize = FALSE) {
   if (!is.list(gKO)) gKO <- as.list(gKO)
   names(gKO) <- vapply(gKO, paste, character(1), collapse = "+")
   missingGenes <- setdiff(unlist(gKO), genes)
@@ -160,7 +185,7 @@ knockoutDirection <- function(X, gKO, genes = rownames(X), t = 5) {
     stop("The following genes are not present in 'genes': ", paste(missingGenes, collapse = ", "))
   }
   S <- .logCPM(X, genes)
-  R <- cor(t(S$L))
+  R <- cor(t(if (isTRUE(regressLibSize)) .regressLibSize(S) else S$L))
   R[is.na(R)] <- 0
   H <- heatKernel(R, t = t)
   .kernelEffect(H, S, gKO)

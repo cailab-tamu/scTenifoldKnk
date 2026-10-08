@@ -34,6 +34,7 @@
 #' @param dr_empiricalNull A boolean value (TRUE/FALSE). If TRUE, the differential regulation p-values are assigned using Efron's empirical null (estimated with \code{locfdr}) instead of the theoretical chi-square null. Requires the \code{locfdr} package. Default: FALSE.
 #' @param dr_direction A boolean value (TRUE/FALSE). If TRUE, the predicted direction of the change of each gene (up/down) is added to the output, computed from the WT expression with \code{\link{knockoutDirection}}. Default: TRUE.
 #' @param dr_directionT A non-negative number. Diffusion time of the correlation heat kernel used to predict the direction. Default: 5.
+#' @param dr_directionRegressLibSize A boolean value (TRUE/FALSE). If TRUE, the log library size is regressed out of each gene's expression before computing the gene-gene correlations used to predict the direction (see \code{\link{knockoutDirection}}); consider it when nearly all genes are predicted down. Default: FALSE.
 #' @param nCores An integer value. Defines the number of cores to be used.
 #' @param seed An integer value. The RNG is set to this seed before each random stage (network construction, tensor decomposition and manifold alignment), so results are reproducible and independent of the caller's RNG state; the caller's RNG state is restored on exit. Use different values to assess run-to-run variability. If \code{NULL}, the RNG is never reseeded and the caller's RNG state (e.g. a previous \code{set.seed()}) drives all random stages. Default: 1.
 #' @return In single knockout mode (\code{transcriptomeWide = FALSE}), a list with 3 slots as follows:
@@ -127,6 +128,7 @@ scTenifoldKnk <- function(countMatrix, gKO = NULL, transcriptomeWide = FALSE,
                           ma_method = NULL, ma_heatT = 10,
                           dr_empiricalNull = FALSE,
                           dr_direction = TRUE, dr_directionT = 5,
+                          dr_directionRegressLibSize = FALSE,
                           nCores = parallel::detectCores(),
                           seed = 1) {
 
@@ -250,7 +252,8 @@ scTenifoldKnk <- function(countMatrix, gKO = NULL, transcriptomeWide = FALSE,
     outputList$perturbationDistances <- perturbationDistances
     if (isTRUE(dr_direction)) {
       outputList$perturbationDirections <- sign(
-        knockoutDirection(qcCounts, gKO = as.list(targetGenes), genes = geneList, t = dr_directionT)
+        knockoutDirection(qcCounts, gKO = as.list(targetGenes), genes = geneList, t = dr_directionT,
+                          regressLibSize = dr_directionRegressLibSize)
       )
     }
 
@@ -279,7 +282,8 @@ scTenifoldKnk <- function(countMatrix, gKO = NULL, transcriptomeWide = FALSE,
   # Predicted direction (up/down) of each gene, from the WT expression
   direction <- NULL
   if (isTRUE(dr_direction)) {
-    direction <- knockoutDirection(qcCounts, gKO = list(gKO), genes = rownames(WT), t = dr_directionT)
+    direction <- knockoutDirection(qcCounts, gKO = list(gKO), genes = rownames(WT), t = dr_directionT,
+                                   regressLibSize = dr_directionRegressLibSize)
     direction <- setNames(as.numeric(direction), colnames(direction))
   }
 
