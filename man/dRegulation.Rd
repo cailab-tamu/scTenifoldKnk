@@ -5,7 +5,12 @@
 \title{Evaluates gene differential regulation based on manifold alignment
   distances.}
 \usage{
-dRegulation(manifoldOutput, gKO = NULL, empiricalNull = FALSE)
+dRegulation(
+  manifoldOutput,
+  gKO = NULL,
+  empiricalNull = FALSE,
+  direction = NULL
+)
 }
 \arguments{
 \item{manifoldOutput}{A matrix. The output of the non-linear manifold
@@ -24,9 +29,14 @@ assigned using Efron's empirical null: the null distribution of the
 Z-scores is estimated from the bulk of the data with \code{locfdr::locfdr}
 instead of assuming the theoretical chi-square null. Requires the
 \code{locfdr} package. Default: FALSE.}
+
+\item{direction}{Optional named numeric vector of direction scores (names:
+genes), for example a row of \code{\link{knockoutDirection}}. If given,
+the columns \code{direction} and \code{directionScore} are appended.
+Default: NULL.}
 }
 \value{
-A data frame with 6 columns as follows: \itemize{
+A data frame with 6 columns (8 when \code{direction} is given) as follows: \itemize{
 \item \code{gene} A character vector with the gene id identified from the
   \code{manifoldAlignment} output.
 \item \code{distance} A numeric vector of the Euclidean distance computed
@@ -40,6 +50,11 @@ A data frame with 6 columns as follows: \itemize{
   Chi-square distribution with one degree of freedom.
 \item \code{p.adj} A numeric vector of adjusted p-values using Benjamini &
   Hochberg (1995) FDR correction.
+\item \code{direction} Only when \code{direction} is given: \code{"up"} or
+  \code{"down"}, the predicted direction of the change of the gene; the
+  knocked-out genes are \code{"down"} by construction.
+\item \code{directionScore} Only when \code{direction} is given: the
+  signed direction score (\code{NA} for the knocked-out genes).
 }
 }
 \description{
