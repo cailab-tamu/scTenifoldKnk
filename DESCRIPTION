@@ -29,7 +29,8 @@ Imports: Matrix,
         enrichR,
         igraph,
         reshape2,
-        grDevices
+        grDevices,
+        graphics
 Suggests:
         testthat (>= 2.1.0),
         locfdr
