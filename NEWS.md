@@ -26,11 +26,11 @@
 # scTenifoldKnk 1.1.3
 
 - Warning when the networks of the requested genes do not fit in memory (#10).
-- `plotKO()` enrichment works without attaching enrichR (#43); data.frame input is rejected (#44).
 
 # scTenifoldKnk 1.1.2
 
 - Multi-gene knockout: several genes in `gKO` are knocked out together (#47).
+- `plotKO()` enrichment works without attaching enrichR (#43); data.frame input is rejected (#44).
 
 # scTenifoldKnk 1.1.1
 

@@ -33,9 +33,9 @@ Changes in behaviour: `diffRegulation` gains the `direction` and `directionScore
 | 2 | `cpmNormalization` | Counts-per-million normalization |
 | 3 | `makeNetworks` | Principal component regression networks (`pcNet`) on subsamples of cells |
 | 4 | `tensorDecomposition` | CANDECOMP/PARAFAC decomposition of the stacked networks (denoising) |
-| 5 | `strictDirection` | Keeps the stronger direction of each pair of edges |
+| 5 | `strictDirection` | Optionally keeps only the stronger direction of each pair of edges (`nc_lambda`; the default 0 leaves the network unchanged) |
 | 6 | `manifoldAlignment` / `hkManifoldAlignment` | Comparison of the WT and KO networks |
-| 7 | `dRegulation` | Box-Cox transformed distances tested against a chi-square null, with the predicted direction |
+| 7 | `dRegulation` | Chi-square test (df = 1) of each gene's squared distance relative to the mean, Z-scores of the Box-Cox transformed distances, and the predicted direction |
 
 **Knockout.** The rows of the knocked-out genes in the WT network are set to zero.
 
@@ -74,7 +74,7 @@ signature <- setNames(rnorm(ncol(tw$perturbationDistances)), colnames(tw$perturb
 pm <- perturbationMap(tw, signature = signature, genes = c("ng10", "ng20"))
 ```
 
-Every argument is documented in `?scTenifoldKnk`. The network size (`nc_nNet = 10` networks of `nc_nCells = 500` cells, `nc_q = 0.9`) and the tensor rank (`td_K = 3`) follow the original publication.
+Every argument is documented in `?scTenifoldKnk`. By default, `nc_nNet = 10` networks are built from `nc_nCells = 500` cells each, keeping the top 10% of edges by absolute weight (`nc_q = 0.9`), and decomposed with rank `td_K = 3`.
 
 ## Output
 
@@ -131,7 +131,7 @@ Running time grows with the number of genes, not cells, because each network use
 | 5,000 | 3.7 min | 8.2 min | ~3.6 h | 8.6 GB |
 | 10,000 | | | | 34 GB |
 
-Single knockouts: 1,000 to 5,000 cells, Apple M2 Pro, R 4.5 reference BLAS. Transcriptome-wide: network, heat kernel and directions for all genes on an Apple M4; manifold times are extrapolated from the measured time per knockout.
+Single knockouts: 1,000 to 5,000 cells, Apple M2 Pro, R 4.5 reference BLAS. Transcriptome-wide: WT MCF7 cells, Apple M4; times include the network and the distances and directions of all knockouts; manifold times are extrapolated from the measured time per knockout.
 
 ## Citation
 
